@@ -1,8 +1,8 @@
 # librarianz-scripts
 ##### Description
 A series of tools to automate the Digital Library for the LSJUMB
-##### Authors
-Dominic "Frodo" DeMarco and Ben "Caffa" Rocklin
+##### Author
+Dominic "Frodo" DeMarco
 ##### Contact
 webmaster@lsjumb.com (Webmaster) or demarcod@stanford.edu (Primary Author)
 ##### Notice
