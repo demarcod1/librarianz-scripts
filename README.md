@@ -10,8 +10,11 @@ The scripts included in this folder are to be edited and used at your own risk. 
 
 
 # Setup
+1. Clone this repository
 1. Log in to librarian@lsjumb.com online
-2. Open a terminal window and navigate to the librarian-scripts folder. If you are on windows, the following steps might work better in WSL or Ubuntu. 
+1. Follow the instructions [here](https://developers.google.com/drive/api/v3/quickstart/python#step_1_turn_on_the) after clicking the "Enable the Drive API" button.
+1. When prompted, download the "credentials.json" file and move it into your working directory (likely called librarianz-scripts).
+2. Open a terminal window and navigate to the working directory. If you are on windows, the following steps might work better in WSL or Ubuntu. 
 3. Run "pip3 install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib" in terminal.
 4. Run "python3 login.py" in terminal.
 5. Follow the link in the Terminal and authorize the program for the webmaster account.
