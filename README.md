@@ -19,7 +19,7 @@ The scripts included in this folder are to be edited and used at your own risk. 
 4. Run "python3 login.py" in terminal.
 5. Follow the link in the Terminal and authorize the program for the webmaster account.
 
-After you run the login script, you will not need to run it again. If the tokens are somehow invalidated, any script you run will prompt you with a link in the Terminal, which corresponds to step 4.
+After you run the login script, you will not need to run it again. If the tokens are somehow invalidated, any script you run will prompt you with a link in the Terminal, which corresponds to the final step.
 
 # Scripts
 
