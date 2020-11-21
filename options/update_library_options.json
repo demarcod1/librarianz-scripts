@@ -1,0 +1,4 @@
+{
+    "update-directory": "../../Staging/",
+    "supported-file-types": [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv", ".pdf", ".sib", ".xml"]
+}
