@@ -1,7 +1,5 @@
-from login import fetch_credentials
-import util
-import json, sys
-from googleapiclient.discovery import build
+import util.util as util
+import sys
 
 # List of acceptable resources
 RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]
@@ -88,13 +86,10 @@ def write_song(service, chart, current_chartz_id, new_folder_id, new_resources_i
 
 def main():
     # Build service
-    creds = fetch_credentials()
-    service = build('drive', 'v3', credentials=creds)
+    service = util.build_service()
 
     # Read folder locations
-    redvest_options = None
-    with open("redvest_options.json") as f:
-        redvest_options = json.load(f)
+    redvest_options = util.parse_options("redvest_options.json")
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
@@ -107,19 +102,14 @@ def main():
     section_ids = None
     if redvest_options["individual-sections"] == "True":
         # Read parts
-        parts_dict = None
-        with open("parts.json") as f:
-            parts_dict = json.load(f)
+        parts_dict = util.parse_options("parts.json")
         
         # Make individual section folders
         print("Making individual section folders...")
         section_ids = make_section_folders(service, new_folder_id, parts_dict.keys())
 
         # Invert parts_dict to create map of alias's -> folder
-        alias_map = {}
-        for part in parts_dict.keys():
-            for alias in parts_dict[part]:
-                alias_map[alias] = part
+        alias_map = util.make_alias_map(parts_dict)
 
     # Write each chart to the new redvest folder
     for chart in redvest_options["chartz"]:

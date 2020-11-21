@@ -1,6 +1,6 @@
 from login import fetch_credentials
-from util import get_digital_library
-import json, os.path, sys, time
+from util.util import get_digital_library, parse_options
+import json
 from googleapiclient.discovery import build
 
 def delete_existing_directory(service, library_id):
@@ -210,9 +210,7 @@ def main():
     creds = fetch_credentials()
     service = build('drive', 'v3', credentials=creds)
 
-    parts_dict = None
-    with open("parts.json") as f:
-        parts_dict = json.load(f)
+    parts_dict = parse_options("parts.json")
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
