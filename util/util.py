@@ -2,7 +2,6 @@ import os, sys, json, pickle, re, mimetypes
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from apiclient import errors
 from apiclient.http import MediaFileUpload
 
 # Builds the drive service
