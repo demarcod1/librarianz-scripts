@@ -1,5 +1,4 @@
 import util.util as util
-import sys
 
 # Adds a file to the library, also adding shortcuts to separated sib files/section parts if needed
 def add_file(service, file_name, separated_ids, alias_map, cache, options):
@@ -93,4 +92,3 @@ def update_file(service, filename, alias_map, cache, options):
             if(util.update_file(service, file.get("id"), f'{directory}{filename}', new_mime_type=mimeType)):
                 return True
     return False
-    

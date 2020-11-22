@@ -1,11 +1,11 @@
 {
     "create-shortcuts": true,
     "current": true,
-    "mode": 2,
+    "mode": 1,
     "new-chartz": [
         {
             "is-current": true,
-            "name": "You Can Call Me Al"
+            "name": "Sample Song Name"
         }
     ],
     "require-titles-match": true,
