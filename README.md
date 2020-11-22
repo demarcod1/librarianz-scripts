@@ -10,6 +10,10 @@ The scripts included in this folder are to be edited and used at your own risk. 
 
 
 # Setup
+
+<details>
+   <summary>Click to show setup steps</summary>
+
 1. Clone this repository
 1. Log in to librarian@lsjumb.com online
 1. Follow the instructions [here](https://developers.google.com/drive/api/v3/quickstart/python#step_1_turn_on_the) after clicking the "Enable the Drive API" button.
@@ -21,10 +25,14 @@ The scripts included in this folder are to be edited and used at your own risk. 
 
 After you run the login script, you will not need to run it again. If the tokens are somehow invalidated, any script you run will prompt you with a link in the Terminal, which corresponds to the final step.
 
+</details>
+
 # Scripts
 
 ## Upload Files Script
 This script will intelligently upload files from a specified location on your machine into the Digital Library system.
+<details>
+   <summary>Click for more details</summary>
 
 ### To upload files to the Digital Library
 
@@ -45,8 +53,14 @@ This script will intelligently upload files from a specified location on your ma
 1. Shortcuts for parts and sibelius files will automatically be generated. If the Digital Library is already live, it will update in real-time without any further action
 2. If the script is telling you that a file or folder already exists, but you can't see it on the web, then check the trash
 
+</details>
+
 ## Move Chartz Script
 This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Archive` directories
+
+<details>
+   <summary>Click for more details</summary>
+
 ### To move a chart to a different location
 
 1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
@@ -67,8 +81,13 @@ This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Ar
    2. If the chart is being moved from the archive back into the main library, the shortcuts will be re-added, and the `Shortcuts` folder will be removed
 2. Once a chart has been moved to the archive, it can be found in the `Archive/Chart Data` directory. From there, it can be safely manipulated or deleted without affecting the live DigitalLibrary
 
+</details>
+
 ## Redvest Script
 This script will create a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
+
+<details>
+   <summary>Click for more details</summary>
 
 ### To create Red Vest Folders
 
@@ -79,8 +98,13 @@ This script will create a folder containing the parts and audio/video files for 
 1. If you wish to have the new folders appear in a new location, you will need to change the `parent-name` field reflect the name of the directory in which to place the new redvest folder.
 2. If you wish to output folders grouped per-instrument, set the `individual-sections` field to `True`
 
+</details>
+
 ## Seperated Folders Script
 This script creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you have added/removed chartz in the Digital Library, or shifted chartz from current to old (or vice versa). Use the Update Chartz script (which does not yet exist) if you are merely updating existing charts.
+
+<details>
+   <summary>Click for more details</summary>
 
 ### To separate the folders and safely reconstruct the Live Digital Library
 1. Make sure that the existing Separated Section Folders are no longer contained in the `[LIVE] DigitalLibrary` directory. You will likely see shortcuts to `Current Chartz` and `Old Chartz` folders within the `LSJUMB Digital Chartz` folder inside the live directory. These shortcuts will be broken when you run this script, and should be deleted.
@@ -92,3 +116,5 @@ You will need to take the Digital Library offline when running this script. The 
 
 #### Note
 Configure which sections go to which output folders in `options\parts.json`. The format of this file is a series of key-value pairs in the format `OUTPUT_NAME: [INSTRUMENT NAMES]`. For instance, the pair `"CPG": ["Clarz", "Picz"]` would send all pieces with `"Clarz"` or `"Picz"` in the name to the folder `"CPG"` (inside the main `Separated Section Parts` output folder). In other words, if you want all songs labelled `SONGNAME - Clarz` and `SONGNAME - Picz` to go to the `CPG` folder, the above example would accomplish this.
+
+</details>
