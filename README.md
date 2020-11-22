@@ -49,7 +49,7 @@ This script will intelligently upload files from a specified location on your ma
 This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Archive` directories
 ### To move a chart to a different location
 
-1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them to
+1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
 2. Run `python3 move_chartz.py` in the terminal
 
 #### Configuring move_chartz_options.json
