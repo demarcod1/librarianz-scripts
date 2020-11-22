@@ -108,14 +108,14 @@ def make_folder(service, name, parent):
 
 # Moves a file (or folder)
 def move_file(service, file_id, old_parent, new_parent):
-    #try:
+    try:
         service.files().update(fileId=file_id,
                                 addParents=new_parent,
                                 removeParents=old_parent,
                                 fields='id, parents').execute()
-    #except:
-    #    print(f'ERROR: Unable to move file')
-    #    sys.exit()
+    except:
+        print(f'ERROR: Unable to move file')
+        sys.exit()
 
 # Creates a shortcut
 def make_shortcut(service, name, target_id, parent):
@@ -274,7 +274,7 @@ def get_separated_folders(service, library_id):
     
     return separated_ids
 
-# Search folder for specific file endings
+# Search folder for specific files/folders
 def get_drive_files(service, id, file_types=None, files_only=True, name=None):
     output = []
     q = f'"{id}" in parents'
