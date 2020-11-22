@@ -32,7 +32,7 @@ After you run the login script, you will not need to run it again. If the tokens
 # Scripts
 
 ## Upload Files Script
-This script will intelligently upload files from a specified location on your machine into the Digital Library system.
+This script intelligently uploads files from a specified location on your machine into the Digital Library system.
 
 <details>
    <summary>Show/Hide Details</summary>
@@ -59,7 +59,7 @@ This script will intelligently upload files from a specified location on your ma
 </details>
 
 ## Move Chartz Script
-This script will move charts to/from the Current Chartz, Old Chartz, and Archive directories
+This script moves charts to/from the Current Chartz, Old Chartz, and Archive directories
 
 <details>
    <summary>Show/Hide Details</summary>
@@ -88,7 +88,7 @@ This script will move charts to/from the Current Chartz, Old Chartz, and Archive
 </details>
 
 ## Redvest Script
-This script will create a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
+This script creates a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
 
 <details>
    <summary>Show/Hide Details</summary>
