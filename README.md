@@ -14,6 +14,8 @@ The scripts included in this folder are to be edited and used at your own risk. 
 <details>
    <summary>Click to show setup steps</summary>
 
+### Setup steps
+
 1. Clone this repository
 1. Log in to librarian@lsjumb.com online
 1. Follow the instructions [here](https://developers.google.com/drive/api/v3/quickstart/python#step_1_turn_on_the) after clicking the "Enable the Drive API" button.
@@ -31,8 +33,9 @@ After you run the login script, you will not need to run it again. If the tokens
 
 ## Upload Files Script
 This script will intelligently upload files from a specified location on your machine into the Digital Library system.
+
 <details>
-   <summary>Click for more details</summary>
+   <summary>Show/Hide Details</summary>
 
 ### To upload files to the Digital Library
 
@@ -56,10 +59,11 @@ This script will intelligently upload files from a specified location on your ma
 </details>
 
 ## Move Chartz Script
-This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Archive` directories
+This script will move charts to/from the Current Chartz, Old Chartz, and Archive directories
 
 <details>
-   <summary>Click for more details</summary>
+   <summary>Show/Hide Details</summary>
+      
 
 ### To move a chart to a different location
 
@@ -87,7 +91,7 @@ This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Ar
 This script will create a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
 
 <details>
-   <summary>Click for more details</summary>
+   <summary>Show/Hide Details</summary>
 
 ### To create Red Vest Folders
 
@@ -104,7 +108,7 @@ This script will create a folder containing the parts and audio/video files for 
 This script creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you have added/removed chartz in the Digital Library, or shifted chartz from current to old (or vice versa). Use the Update Chartz script (which does not yet exist) if you are merely updating existing charts.
 
 <details>
-   <summary>Click for more details</summary>
+   <summary>Show/Hide Details</summary>
 
 ### To separate the folders and safely reconstruct the Live Digital Library
 1. Make sure that the existing Separated Section Folders are no longer contained in the `[LIVE] DigitalLibrary` directory. You will likely see shortcuts to `Current Chartz` and `Old Chartz` folders within the `LSJUMB Digital Chartz` folder inside the live directory. These shortcuts will be broken when you run this script, and should be deleted.
