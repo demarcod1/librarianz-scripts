@@ -106,6 +106,17 @@ def make_folder(service, name, parent):
     response = service.files().create(body=file_metadata, fields='id').execute()
     return response.get('id')
 
+# Moves a file (or folder)
+def move_file(service, file_id, old_parent, new_parent):
+    #try:
+        service.files().update(fileId=file_id,
+                                addParents=new_parent,
+                                removeParents=old_parent,
+                                fields='id, parents').execute()
+    #except:
+    #    print(f'ERROR: Unable to move file')
+    #    sys.exit()
+
 # Creates a shortcut
 def make_shortcut(service, name, target_id, parent):
     shortcut_metadata = {
@@ -221,6 +232,21 @@ def get_digital_library(service):
 
     return library_id, current_id, past_id
 
+def get_chart_data_archive(service, library_id):
+    # Archive folder
+    archive_res = get_folder_ids(service, name="Archive", parent=library_id)
+    if (not archive_res or len(archive_res) != 1):
+        print('"Archive" folder not found in "DigitalLibrary" directory, please check Google Drive')
+        sys.exit(1)
+    archive_id = archive_res[0]
+
+    # Chart Data folder
+    chart_data_res = get_folder_ids(service, name="Chart Data", parent=archive_id)
+    if (not chart_data_res or len(chart_data_res) != 1):
+        print('"Chart Data" folder not found in "Archive" directory, please check Google Drive')
+        sys.exit(1)
+    return chart_data_res[0]
+
 # Get seperated section or separated sibelius parts folders
 def get_separated_folders(service, library_id):
     separated_ids = {}
@@ -249,19 +275,22 @@ def get_separated_folders(service, library_id):
     return separated_ids
 
 # Search folder for specific file endings
-def get_drive_files(service, id, file_types):
+def get_drive_files(service, id, file_types=None, files_only=True, name=None):
     output = []
-    # Get all files in the folder
+    q = f'"{id}" in parents'
+    if files_only: q += ' and not mimeType = "application/vnd.google-apps.folder"'
+    if name: q += f' and name contains "{name}"'
+
+    # Get all files/folders in the folder
     file_results = service.files().list(corpora="user",
                                         fields="files(id, name)",
-                                        q=f'not mimeType = "application/vnd.google-apps.folder" and'
-                                          f'"{id}" in parents',
+                                        q=q,
                                         spaces="drive").execute()
     items = file_results.get('files', [])
 
-    # Add shortcuts to these resources
+    # Check that file extensions match
     for item in items:
-        if item.get('name')[-4:] in file_types:
+        if not file_types or item.get('name')[-4:] in file_types:
             output.append(item)
     
     return output

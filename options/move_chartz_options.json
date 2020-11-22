@@ -1,8 +1,12 @@
 {
     "chartz": [
         {
-            "name": "You Can Call Me Al",
-            "move-to": 0
+            "name": "Sample Chart",
+            "to": 0
+        },
+        {
+            "name": "Sample Chart 2",
+            "to": 2
         }
     ]
 }
