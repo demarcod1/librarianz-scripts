@@ -1,0 +1,12 @@
+{
+    "chartz": [
+        {
+            "name": "Sample Chart",
+            "to": 0
+        },
+        {
+            "name": "Sample Chart 2",
+            "to": 2
+        }
+    ]
+}
