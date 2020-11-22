@@ -1,12 +1,7 @@
 {
     "mode": 1,
-    "new-chartz": [
-        {
-            "is-current": true,
-            "name": "Sample Song Name"
-        }
-    ],
+    "new-chartz": [],
     "require-titles-match": true,
     "resources-directory": "../../Staging/",
-    "supported-file-types": [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv", ".pdf", ".sib", ".xml"]
+    "supported-file-types": [".mid", ".mp3", ".mp4", ".m4a", ".mov", ".wav", ".wmv", ".pdf", ".sib", ".xml"]
 }

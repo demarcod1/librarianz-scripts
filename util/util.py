@@ -222,23 +222,31 @@ def get_digital_library(service):
     return library_id, current_id, past_id
 
 # Get seperated section or separated sibelius parts folders
-def get_separated_folders(service, library_id, folder_name):
-    ids = get_folder_ids(service, name=folder_name, parent=library_id)
-    if len(ids) != 1:
-        print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
-        sys.exit()
+def get_separated_folders(service, library_id):
+    separated_ids = {}
+    folder_names = [("Separated Sibelius Files", "sib"), ("Separated Section Parts", "sec")]
+    for folder_name, abbr in folder_names:
+        # Look for folder within Digital Library
+        ids = get_folder_ids(service, name=folder_name, parent=library_id)
+        if len(ids) != 1:
+            print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
+            sys.exit()
+        
+        # Look for Current Chartz folder
+        curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
+        if len(curr_ids) != 1:
+            print(f'ERROR: Unable to find folder "Current Chartz" within "{folder_name}"')
+            sys.exit()
+        separated_ids[f'{abbr}_curr'] = curr_ids[0]
+        
+        # Look for Old Chartz folder
+        old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
+        if len(old_ids) != 1:
+            print(f'ERROR: Unable to find folder "Old Chartz" within "{folder_name}"')
+            sys.exit()
+        separated_ids[f'{abbr}_old'] = old_ids[0]
     
-    curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
-    if len(curr_ids) != 1:
-        print(f'ERROR: Unable to find folder "Current Chartz" within "{folder_name}"')
-        sys.exit()
-    
-    old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
-    if len(old_ids) != 1:
-        print(f'ERROR: Unable to find folder "Old Chartz" within "{folder_name}"')
-        sys.exit()
-    
-    return curr_ids[0], old_ids[0]
+    return separated_ids
 
 # Search folder for specific file endings
 def get_drive_files(service, id, file_types):

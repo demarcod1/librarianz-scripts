@@ -15,14 +15,7 @@ def main():
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, curr_id, old_id = util.get_digital_library(service)
-    sep_sib_ids = util.get_separated_folders(service, library_id, "Separated Sibelius Files")
-    sep_sec_ids = util.get_separated_folders(service, library_id, "Separated Section Parts")
-    separated_ids = {
-        "sib_curr": sep_sib_ids[0],
-        "sib_old": sep_sib_ids[1],
-        "sec_curr": sep_sec_ids[0],
-        "sec_old": sep_sec_ids[1]
-    }
+    separated_ids = util.get_separated_folders(service, library_id)
 
     # Cache will store folder + parts folder ids and a list of files
     cache = {}
