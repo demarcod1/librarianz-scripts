@@ -59,7 +59,7 @@ This script intelligently uploads files from a specified location on your machin
 </details>
 
 ## Move Chartz Script
-This script moves charts to/from the Current Chartz, Old Chartz, and Archive directories
+This script moves chartz to/from the Current Chartz, Old Chartz, and Archive directories
 
 <details>
    <summary>Show/Hide Details</summary>
