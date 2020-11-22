@@ -49,7 +49,7 @@ def add_parts_shortcut(service, chart, chart_id, new_folder_id, section_ids=None
 
 def add_individual_parts(service, parts_id, section_ids, alias_map):
     # Get and process parts
-    for item in util.get_file_types(service, parts_id, [".pdf"]):
+    for item in util.get_drive_files(service, parts_id, [".pdf"]):
         alias = item.get('name').split('-')[-1].strip()[:-4]
         part = alias_map.get(alias)
 
@@ -63,7 +63,7 @@ def add_individual_parts(service, parts_id, section_ids, alias_map):
 
 def add_resources(service, chart, chart_id, new_resources_id):
     # Search chart folder for audio/video resources
-    items = util.get_file_types(service, chart_id, RESOURCES)
+    items = util.get_drive_files(service, chart_id, RESOURCES)
     
     # Add shortcuts to these resources
     for item in items:
@@ -75,7 +75,7 @@ def add_resources(service, chart, chart_id, new_resources_id):
 def write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
     print(f"Writing chart \"{chart}\"...")
 
-    chart_id = util.get_chart_id(service, chart, [current_chartz_id])
+    chart_id = util.get_chart_id(service, chart, [current_chartz_id]).get("chart_id")
     if (chart_id == None): return
 
     # add shortcut to parts folder

@@ -65,7 +65,7 @@ def make_alias_map(parts_dict):
             alias_map[alias] = part
     return alias_map
 
-# Gets the desired chart folder, searching in the directories in the id list
+# Gets the desired chart folder, searching in the directories in the id list. Returns a dictionary containing chart id and parent id
 def get_chart_id(service, chart, id_list):
     for id in id_list:
         results = service.files().list(corpora="user",
@@ -76,7 +76,7 @@ def get_chart_id(service, chart, id_list):
                                        spaces="drive").execute()
         items = results.get('files', [])
         if len(items) == 1:
-            return items[0].get('id')
+            return { "chart_id": items[0].get('id'), "parent_id": id }
     
     print(f'WARNING: "{chart}" folder not found in Digital Library directory')
     return None
@@ -146,6 +146,24 @@ def update_file(service, file_id, new_filename, new_title=None, new_description=
         print(f'Error when attempting to update file: {new_filename}')
         return None
 
+# Upload a file to a folder in the drive
+def upload_file(service, new_filename, display_name, parent, title=None, mime_type=None):
+    try:
+        # Create file metadata
+        file_metadata = {
+            'name' : display_name,
+            'parents': [parent]
+        }
+        if title: file_metadata['title'] = title
+        if mime_type: file_metadata['mimeType'] = mime_type
+
+        # Make the file
+        media = MediaFileUpload(new_filename, mimetype=mime_type)
+        return service.files().create(body=file_metadata, media_body=media, fields='id').execute().get('id')
+    except:
+        print(f'WARNING: Unable to create file "{display_name}"')
+        return None
+
 # Returns the id(s) of a folder with the given id or name (optionally can specify parent directory)
 def get_folder_ids(service, id = None, name = None, parent = None):
     # Chech folder by id
@@ -203,8 +221,27 @@ def get_digital_library(service):
 
     return library_id, current_id, past_id
 
+# Get seperated section or separated sibelius parts folders
+def get_separated_folders(service, library_id, folder_name):
+    ids = get_folder_ids(service, name=folder_name, parent=library_id)
+    if len(ids) != 1:
+        print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
+        sys.exit()
+    
+    curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
+    if len(curr_ids) != 1:
+        print(f'ERROR: Unable to find folder "Current Chartz" within "{folder_name}"')
+        sys.exit()
+    
+    old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
+    if len(old_ids) != 1:
+        print(f'ERROR: Unable to find folder "Old Chartz" within "{folder_name}"')
+        sys.exit()
+    
+    return curr_ids[0], old_ids[0]
+
 # Search folder for specific file endings
-def get_file_types(service, id, file_types):
+def get_drive_files(service, id, file_types):
     output = []
     # Get all files in the folder
     file_results = service.files().list(corpora="user",
@@ -220,3 +257,13 @@ def get_file_types(service, id, file_types):
             output.append(item)
     
     return output
+
+# Return list of files in a given directory with a specific extension
+def get_dir_files(dir, file_types):
+    try:
+        files = [ file for file in os.listdir(dir) if file[-4:] in file_types ]
+        if len(files) == 0: raise Exception
+        return files
+    except:
+        print(f'ERROR: No supported files found in directory "{dir}"')
+        sys.exit()
