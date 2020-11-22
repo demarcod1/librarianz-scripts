@@ -46,8 +46,7 @@ This script will intelligently upload files from a specified location on your ma
 2. If the script is telling you that a file or folder already exists, but you can't see it on the web, then check the trash
 
 ## Move Chartz Script
-This script will move charts to/from the `Current Chartz`, `Old Chartz`, and archive (where it can be safely deleted/manipulated without affecting the live Digital Library)
-
+This script will move charts to/from the `Current Chartz`, `Old Chartz`, and `Archive` directories
 ### To move a chart to a different location
 
 1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them to
@@ -63,7 +62,10 @@ This script will move charts to/from the `Current Chartz`, `Old Chartz`, and arc
       * 2 - Archive this chart (move it to `Digital LibraryArchives/Chart Data` directory
 
 #### Notes
-This script will automatically update all shortcuts and references in the Separated Sibelius Files/Section Parts directories
+1. This script will automatically update all shortcuts and references in the Separated Sibelius Files/Section Parts directories
+   1. If the chart is being moved to the archive, a new subdirectory called `Shortcuts` will be created to store the shortcuts
+   2. If the chart is being moved from the archive back into the main library, the shortcuts will be re-added, and the `Shortcuts` folder will be removed
+2. Once a chart has been moved to the archive, it can be found in the `Archive/Chart Data` directory. From there, it can be safely manipulated or deleted without affecting the live DigitalLibrary
 
 ## Redvest Script
 This script will create a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
