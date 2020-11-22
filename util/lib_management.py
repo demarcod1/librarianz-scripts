@@ -93,3 +93,4 @@ def update_file(service, filename, alias_map, cache, options):
             if(util.update_file(service, file.get("id"), f'{directory}{filename}', new_mime_type=mimeType)):
                 return True
     return False
+    
