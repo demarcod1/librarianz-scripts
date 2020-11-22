@@ -37,7 +37,7 @@ This script will intelligently upload files from a specified location on your ma
     * 1 - add new files (but do not update existing ones)
     * 2 - update and add files
 * `new-charts` is an array of `{ "is-current" : bool, "name": string }` entries, specifying the name of a new chart and whether it should be placed in the current or old chartz category
-* `require-titles-match` controls whether, when updating part files, the titles must exactly match or can differ in the alias used to refer to a certain part. For example, if you wish to update the file "Chart Name - toobz.pdf" with the file "Chart Name - tööbz.pdf", you will need to change this option to false
+* `require-titles-match` controls whether, when updating part files, the titles must exactly match or can differ in the alias used to refer to a certain part. For example, if you wish to update the file `Chart Name - toobz.pdf` with the file `Chart Name - tööbz.pdf`, you will need to change this option to false
 * `resources-directory` is a file path to the directory that contains the files you wish to add/update. This script will not recursively check subdirectories, so all files that are intended to be added must live directly in this directory
 * `supported-file-types` is a list of file extensions that can be added to the Digital Library
 
