@@ -23,13 +23,35 @@ After you run the login script, you will not need to run it again. If the tokens
 
 # Scripts
 
+## Upload Files Script
+This script will intelligently upload files from a specified location on your machine into the Digital Library system.
+
+### To upload files to the Digital Library
+
+1. Edit the upload_options.json folder as needed
+2. Run "python3 upload_files.py" in the terminal
+
+#### Configuring upload_options.json
+* "mode" can be one of the following:
+    * 0 - update existing files (but do not add new ones)
+    * 1 - add new files (but do not update existing ones)
+    * 2 - update and add files
+* "new-charts" is an array of { "is-current" : bool, "name": string } entries, specifying the name of a new chart and whether it should be placed in the current or old chartz category
+* "require-titles-match" controls whether, when updating part files, the titles must exactly match or can differ in the alias used to refer to a certain part. For example, if you wish to update the file "Chart Name - toobz.pdf" with the file "Chart Name - tööbz.pdf", you will need to change this option to false
+* "resources-directory" is a file path to the directory that contains the files you wish to add/update. This script will not recursively check subdirectories, so all files that are intended to be added must live directly in this directory
+* "supported-file-types": a list of file extensions that can be added to the Digital Library
+
+#### Notes
+1. Shortcuts for parts and sibelius files will automatically be generated. If the Digital Library is already live, it will update in real-time without any further action
+2. If the script is telling you that a file or folder already exists, but you can't see it on the web, then check the trash
+
 ## Redvest Script
 This script will create a folder containing the parts and audio/video files for a set of songs that are to be rehearsed in redvest. This was designed for the virtual format, but may prove useful later on.
 
 ### To create Red Vest Folders
 
 1. Edit the redvest.json file to contain the name of the new folder you wish to add along with the list of chartz that will be rehearsed.
-2. Run "python3 redvest-creator.py" in the terminal.
+2. Run "python3 redvest_creator.py" in the terminal.
 
 #### Notes
 1. If you wish to have the new folders appear in a new location, you will need to change the "parent-name" field reflect the name of the directory in which to place the new redvest folder.
