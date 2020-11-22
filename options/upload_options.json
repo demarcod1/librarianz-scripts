@@ -1,0 +1,14 @@
+{
+    "create-shortcuts": true,
+    "current": true,
+    "mode": 2,
+    "new-chartz": [
+        {
+            "is-current": true,
+            "name": "You Can Call Me Al"
+        }
+    ],
+    "require-titles-match": true,
+    "resources-directory": "../../Staging/",
+    "supported-file-types": [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv", ".pdf", ".sib", ".xml"]
+}
