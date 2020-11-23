@@ -105,7 +105,7 @@ This script creates a folder containing the parts and audio/video files for a se
 </details>
 
 ## Seperated Folders Script
-This script creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you have added/removed chartz in the Digital Library, or shifted chartz from current to old (or vice versa). Use the Update Chartz script (which does not yet exist) if you are merely updating existing charts.
+This script (re)creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you wish to completely remake the Digital Library. Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library.
 
 <details>
    <summary>Show/Hide Details</summary>
