@@ -51,6 +51,8 @@ def main():
             print(f'Successfully updated "{file}"')
         elif added == True:
             print(f'Successfully added "{file}"')
+        elif updated == False:
+            print(f'WARNING: Unable to update "{file}"')
 
 if __name__ == '__main__':
     main()
