@@ -8,19 +8,18 @@ import glob, os
 
 def main():
     options = parse_options("folder_creator_options.json")
-    path = os.path.join(options["parts-dir"], "Bonz")
+    path = os.path.join(options["parts-dir"], "Trumpz")
     output = PdfFileWriter()
+    title_map = pdf_tools.process_files(sorted(glob.glob(f'{path}/*.pdf')))
+    lettered, numbered, fingering_chart = pdf_tools.categorize_parts(title_map, options)
 
-    i = 1
-    for file in sorted(glob.glob(f'{path}/*.pdf')):
-        try:
-            input_page = PdfFileReader(open(file, 'rb')).getPage(0)
-            output.addPage(pdf_tools.add_page_num(input_page, f'{i}', options))
-            i += 1
-        except:
-            print(f'Error when parsing "{file}"')
+    for page in pdf_tools.enumerate_pages(lettered, options, style=1):
+        output.addPage(page)
     
-    with open('../tmp/New PDF.pdf', 'wb') as f:
+    for page in pdf_tools.enumerate_pages(numbered, options):
+        output.addPage(page)
+    
+    with open('../test_folder/tmp/Duplicate titles test.pdf', 'wb') as f:
         output.write(f)
 
 

@@ -45,11 +45,11 @@ def parse_options(filename, path = "options/"):
         sys.exit()
 
 # Parse title of a file into [chartname, partname (if applicable), mimeType]
-def parse_file(filename, alias_map):
+def parse_file(filename, alias_map=None):
     # pdf part format
     match = re.search('(.*) - (.*).pdf', filename)
     if match:
-        return match.group(1), alias_map[match.group(2)], mimetypes.guess_type(filename)[0]
+        return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
     
     # other file type format
     match = re.search('(.*)\.[\w+]', filename)

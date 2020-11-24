@@ -1,5 +1,10 @@
 {
     "download-from-drive": true,
+    "enforce-order": [
+        [ "Foreplay", "Knights Of Cydonia" ],
+        [ "All Right Now", "All Right Now (Victory Mix)" ]
+    ],
+    "fingering-chart": { "include": true, "prefix": "fingering chart"},
     "filler-dir": "../test_folder/filler",
     "filler-order": [
         "title_page",
