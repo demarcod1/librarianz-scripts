@@ -37,6 +37,18 @@ This script generates pdf folders for the specified parts
 <details>
    <summary>Show/Hide Details</summary>
    
+### To genereate folders
+
+1. Edit the `options/folder_creator_options.json` file. More details about this file can be found [here](#understanding-folder_creator_optionsjson)
+2. Run `python3 folder_creator.py` in the terminal
+
+#### Notes
+
+1. It is required that you have already downloaded the parts files from the Digital Library before running this script by using the [Download Parts Script](#download-parts-script). It is recommended to download somewhat frequently to ensure your local machine's files are up-to-date
+2. The `"folder-dir"` option must be the same for when you downloaded the files and when you wish to create the folders
+3. For more detailed output, set the `"verbose"` option to `true`
+4. Some error-checking will happen when you run this script, but it is recommended to run the [Validate Folder Files Script](#validate-folder-files-script) with `"verbose": true` to double-check your file spellings and generate a sample table of contents page
+   
 </details>
 
 ## Upload Files Script
@@ -134,6 +146,25 @@ This script creates a folder containing the parts and audio/video files for a se
 1. If you wish to have the new folders appear in a new location, you will need to change the `parent-name` field reflect the name of the directory in which to place the new redvest folder.
 2. If you wish to output folders grouped per-instrument, set the `individual-sections` field to `True`
 
+</details>
+
+## Validate Folder Files Script
+This script performs error-checking on your config file for the [Folder Creator Script](#folder-creator-script) and optionally output a sample table of contents page
+
+<details>
+   <summary>Show/Hide Details</summary>
+   
+### To validate the files for the folder creator
+
+1. Edit the `options/folder_creator_options.json` file to specify the destination of folder files and whether or not to generate table of contents files.
+2. Run `python3 validate_folder_files.py`
+
+#### Configuring `folder_creator_options.json`
+This config file has a large number of options, which are fully detailed [here](#understanding-folder_creator_optionsjson). However, you only need to worry about 2 options for the downloading step:
+
+1. `"generate-on-validation"` is `true` if you wish to generate a sample of the table of contents, `false` otherwise
+2. `"folder-dir"` is the directory where the parts will be downloaded
+   
 </details>
 
 ## Seperated Folders Script
