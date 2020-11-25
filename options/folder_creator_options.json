@@ -43,20 +43,37 @@
         "You're Gonna Go Far Kid",
         "Zoot Suit Riot"
     ],
-    "download-from-drive": true,
+    "download-parts": [
+        "does not exist"
+    ],
     "enforce-order": [
-        [ "Foreplay", "Knights Of Cydonia" ],
-        [ "All Right Now", "All Right Now (Victory Mix)" ]
+        [
+            "Foreplay",
+            "Knights Of Cydonia"
+        ],
+        [
+            "All Right Now",
+            "All Right Now (Victory Mix)"
+        ]
     ],
     "enumerate-pages": true,
-    "fingering-chart": { "include": true, "titles": ["fingering chart"]},
-    "filler-dir": "../test_folder/filler",
+    "fingering-chart": {
+        "include": true,
+        "titles": [
+            "fingering chart"
+        ]
+    },
     "filler-order": [
         "title_page",
         "table_of_contents",
         "manager",
         "drum_major",
         "librarianz"
+    ],
+    "folder-dir": "../test_folder",
+    "folder-parts": [
+        "Bonz",
+        "Clarz"
     ],
     "lettered-chartz": [
         "All Right Now",
@@ -70,17 +87,39 @@
         "The Star Spangled Banner",
         "Throne Room Fanfare"
     ],
-    "page-size": { "width": 7.5, "height": 5.5 },
-    "page-num-font": { "name": "Helvetica-Bold", "size": 18 },
-    "parts": ["Bonz"],
-    "parts-dir": "../test_folder/parts/",
-    "teazers": { "include": true, "titles": [ "Fall 2019 Teazers", "Gay Bar" ] },
+    "page-size": {
+        "width": 7.5,
+        "height": 5.5
+    },
+    "page-num-font": {
+        "name": "Helvetica-Bold",
+        "size": 18
+    },
+    "teazers": {
+        "include": true,
+        "titles": [
+            "Fall 2019 Teazers",
+            "Gay Bar"
+        ]
+    },
     "toc": {
-        "entry": { "font-normal": "Helvetica", "font-dollie": "Helvetica-Bold", "size": 8},
-        "title": { "label": "Table of Contents", "font": "Times-Roman", "size": 26 },
-        "footer": { "label": "Folder Created by Dominic \"Frodo\" DeMarco", "font": "Courier-Bold", "size": 8 },
+        "entry": {
+            "font-normal": "Helvetica",
+            "font-dollie": "Helvetica-Bold",
+            "size": 10
+        },
+        "generate-on-validation": true,
+        "title": {
+            "label": "Table of Contents",
+            "font": "Times-Roman",
+            "size": 26
+        },
+        "footer": {
+            "label": "Folder Created by Dominic \"Frodo\" DeMarco",
+            "font": "Courier-Bold",
+            "size": 8
+        },
         "num-cols": 3
     },
-    "tmp-dir": "../test_folder/tmp/",
     "verbose": true
 }

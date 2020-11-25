@@ -1,6 +1,6 @@
-import os
+import json, os, glob
 import util.util as util
-from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from PyPDF2 import PdfFileReader, PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -11,7 +11,7 @@ def add_page_num(page, text: str, options):
     # Get page num information
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
-    path = os.path.join(options["tmp-dir"], "page_num.pdf")
+    path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
 
     # Draw text on canvas
     page_num = canvas.Canvas(path, pagesize=(width, height))
@@ -55,19 +55,21 @@ def categorize_parts(title_map, options):
 
 # Downloads all the files from a Separated Section Parts folder
 def download_part_files(service, curr_parts_id, part, dir, verbose=False):
+    # Retrieve files
+    folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
+    if not folders or len(folders) != 1:
+        print(f'WARNING: Unable to find folder "{part}"')
+        return
+    files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
+    if not files or len(files) == 0:
+        print(f'WARNING: Could not find any part files for "{part}"')
+        return
+    
     # Validate target directory
     path = os.path.join(dir, part)
     if not os.path.exists(path):
         os.makedirs(path)
         if verbose: print(f'DEBUG: Making directory "{path}"')
-    
-    # Retrieve files
-    folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
-    if not folders or len(folders) != 1:
-        print(f'WARNING: Unable to find folder "{part}"')
-    files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
-    if not files or len(files) == 0:
-        print(f'WARNING: Could not find any part files for "{part}"')
     
     # Download files
     for file in files:
@@ -96,22 +98,28 @@ def enforceRules(list, rules, title_map):
             list.insert(first_pos + 1, chart)
 
 # Enumerates all the pdf documents, returning a list of pages
-# Style: 0 = numbers, 1 = Letters
-def enumerate_pages(files, options, style=0, start=None, page_map=None):
+# style: 0 = numbers, 1 = Letters, parts_map: will be modified to include mapping from counter -> file
+# write_pages: true if you wish to return a bunch of pages, false if you only want mappings
+def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pages=False):
     pages = []
     if start == None:
         start = 1 if style == 0 else 'A'
     counter = start
 
     for file in files:
-        try:
+        try:         
+            # Save page num assignment to map
+            if page_map != None: page_map[counter] = file
+
+            # Exit iteration if we don't wish to assemble pages
+            if not write_pages:
+                counter = (counter + 1) if style == 0 else (chr(ord(counter) + 1))
+                continue
+
             # Read input file
             input = PdfFileReader(open(file, 'rb'))
             num_pages = input.getNumPages()
             page_num = f'{counter}'
-
-            # Save page num assignment to map
-            if page_map != None: page_map[counter] = file
 
             # Add all the pages to the list
             for i in range(num_pages):
@@ -126,14 +134,39 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None):
 
     return pages
 
+# Generates the song files for a folder, returning a list of pages
+# If write_pages is false, it will populate maps but not write any actual pages
+def generate_parts_pages(title_map, toc_maps, options, write_pages=False):
+    output = []
+    lettered, numbered, special = categorize_parts(title_map, options)
+
+    # Fingering chart
+    if write_pages and len(special["fingering_chart"]):
+        output.extend(to_pages(special["fingering_chart"][0]))
+
+    # Lettered chartz
+    output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages))
+
+    # Numbered chartz
+    output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages))
+
+    # Teazers
+    if len(special["teazers"]):
+        output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages))
+    
+    return output
+
 # Generates the table of contents file
-def generate_toc(toc_maps, options):
+def generate_toc(toc_maps, options, file, verbose=False):
     # Get page num information
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
-    path = os.path.join(options["tmp-dir"], "toc.pdf")
+    path = os.path.dirname(file)
+    if not os.path.exists(path):
+        if verbose: print(f'DEBUG: Creating directory "{path}"')
+        os.makedirs(path)
     
     # Generate toc doc and data
-    toc = SimpleDocTemplate(path, pagesize=(width, height),
+    toc = SimpleDocTemplate(file, pagesize=(width, height),
                             leftMargin=inch * .5, rightMargin=inch * .5,
                             topMargin=.75 * inch, bottomMargin=inch*.25)
     styles = generate_toc_styles(options)
@@ -142,8 +175,8 @@ def generate_toc(toc_maps, options):
     # Construct table
     table = Table(data)
     table.setStyle(TableStyle([
-        ('RIGHTPADDING', (0,0), (-1,-1), 2),
-        ('LEFTPADDING', (0,0), (-1,-1), 2),
+        ('RIGHTPADDING', (0,0), (-1,-1), -3),
+        ('LEFTPADDING', (0,0), (-1,-1), -3),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ('TOPPADDING', (0,0), (-1,-1), 0)
     ]))
@@ -161,6 +194,7 @@ def generate_toc(toc_maps, options):
 
     # write the document to disk
     toc.build([table], onFirstPage=onFirstPage)
+    if verbose: print(f'Successfully created table of contents file at "{file}"')
 
 # Generates the data in the proper form
 def generate_toc_data(toc_maps, options, styles):
@@ -230,3 +264,57 @@ def process_files(files):
 def to_pages(file):
     file_in = PdfFileReader(file)
     return file_in.pages
+
+# Validates that a part's files are properly formatted
+def validate_part(part, options):
+    path = os.path.join(options["folder-dir"], "parts", part)
+    if not os.path.exists(path):
+        print(f'WARNING: Path to files for part "{part}" does not exist')
+    
+    # Validate titles
+    title_map = process_files(sorted(glob.glob(f'{path}/*.pdf')))
+    if len(title_map.keys()) == 0:
+        print(f'WARNING: No files found for part "{part}", folder will not be generated')
+        return None
+    validate_titles(title_map, options, "options/folder_creator_options.json", verbose=options["verbose"])
+
+    return title_map
+
+# Validate and update the lists of files in the options list
+def validate_titles(title_map, options, update_path=None, verbose=False):
+    titles = title_map.keys()
+    
+    # Helper method to find case-insensitive match
+    def find_match(song: str):
+        song_lower = song.lower()
+        for title in titles:
+            if song_lower == title.lower():
+                if verbose: print(f'DEBUG: Found match for song "{song}": "{title}".')
+                return title
+
+    # Go through all the file lists and make repairs if necessary
+    for i, song in enumerate(options["dollie-songs"]):
+        if not song in titles:
+            if update_path:
+                match = find_match(song)
+                if match: options["dollie-songs"][i] = match
+                elif verbose: print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found.')
+    
+    for i, song in enumerate(options["lettered-chartz"]):
+        if not song in titles:            
+            if update_path:
+                match = find_match(song)
+                if match: options["lettered-chartz"][i] = match
+                elif verbose: print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found.')
+    
+    for i, rule in enumerate(options["enforce-order"]):
+        for j, song in enumerate(rule):
+            if not song in titles:
+                if update_path:
+                    match = find_match(song)
+                    if match: options["enforce-order"][i][j] = match
+                    elif verbose: print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
+    
+    if update_path:
+        with open(update_path, 'w') as f:
+            json.dump(options, f, indent=4)
