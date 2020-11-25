@@ -31,6 +31,14 @@ After you run the login script, you will not need to run it again. If the tokens
 
 # Scripts
 
+## Folder Creator Script
+This script generates pdf folders for the specified parts
+
+<details>
+   <summary>Show/Hide Details</summary>
+   
+</details>
+
 ## Upload Files Script
 This script intelligently uploads files from a specified location on your machine into the Digital Library system.
 
@@ -42,7 +50,7 @@ This script intelligently uploads files from a specified location on your machin
 1. Edit the `options/upload_options.json` file as needed
 2. Run `python3 upload_files.py` in the terminal
 
-#### Configuring upload_options.json
+#### Configuring `upload_options.json`
 * `mode` can be one of the following:
     * 0 - update existing files (but do not add new ones)
     * 1 - add new files (but do not update existing ones)
@@ -55,7 +63,31 @@ This script intelligently uploads files from a specified location on your machin
 #### Notes
 1. Shortcuts for parts and sibelius files will automatically be generated. If the Digital Library is already live, it will update in real-time without any further action
 2. If the script is telling you that a file or folder already exists, but you can't see it on the web, then check the trash
+3. In order for part files to be recognized, the must be named `{chartname} - {partname}.pdf` (for example, `All Right Now - Bonz.pdf`). The chartnames must match for all files.
 
+</details>
+
+## Download Parts Script
+This script downloads the part files form the Digital Library and stores them on your local machine to be read by the folder creator script
+
+<details>
+   <summary>Show/Hide Details</summary>
+   
+### To download the part files
+
+1. Edit the `options/folder_creator_options.json` file to specify the destination of the downloaded items and the parts to download.
+2. Run `python3 download_parts.py`
+
+#### Configuring `folder_creator_options.json`
+This config file has a large number of options, which are fully detailed [here](#understanding-folder_creator_optionsjson). However, you only need to worry about 2 options for the downloading step:
+
+1. `"download-parts"` is an array of part names to download
+2. `"folder-dir"` is the directory where the parts will be downloaded
+
+#### Notes
+
+1. If the path in `"folder-dir"` does not already exist, it will be created. If it does exist, any files with the same name will be overwritten
+   
 </details>
 
 ## Move Chartz Script
@@ -70,7 +102,7 @@ This script moves chartz to/from the Current Chartz, Old Chartz, and Archive dir
 1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
 2. Run `python3 move_chartz.py` in the terminal
 
-#### Configuring move_chartz_options.json
+#### Configuring `move_chartz_options.json`
 
 * `chartz` is an array of chartz that you wish to move. Each element `{ "name": string, "to": number }` contains:
    * `name` - the name of the chart
@@ -122,3 +154,42 @@ You will need to take the Digital Library offline when running this script. The 
 Configure which sections go to which output folders in `options\parts.json`. The format of this file is a series of key-value pairs in the format `OUTPUT_NAME: [INSTRUMENT NAMES]`. For instance, the pair `"CPG": ["Clarz", "Picz"]` would send all pieces with `"Clarz"` or `"Picz"` in the name to the folder `"CPG"` (inside the main `Separated Section Parts` output folder). In other words, if you want all songs labelled `SONGNAME - Clarz` and `SONGNAME - Picz` to go to the `CPG` folder, the above example would accomplish this.
 
 </details>
+
+# Understanding `folder_creator_options.json`
+This configuration file for the folder creator is relatively complex. The fields and their meanings are detailed here
+
+* `"dollie-songs"` - An array of song names that have Dollie dances. These songs will appear in boldface in the Table of Contents
+* `"download-parts"`- An array of part names that should be downloaded from the Digital Library
+* `"enforce-order"` - An array of orders that must be followed, where each order is an array of song names that must appear one-after-the-other
+   * For example, if the song `Foreplay` must be followed by `Knights of Cydonia`, then you will need to add the following rule: `"enforce-order": [ [ "Foreplay", "Knights of Cydonia" ] ]
+* `"enumerate-pages"` - `true` if you wish to add letters/numbers to the chartz, `false` otherwise. For troubleshooting, setting this to `false` make the generation take significantly less time, but remember to set this back to `true` before generating the production folder
+* `"fingering-chart"`
+   * `"include"` - `true` if you wish to include the fingering chart in the folder, `false` otherwise
+   * `"titles"` - An array of names of files that contain the fingering chart data
+* `"folder-dir"` - The path to the directory where the folder files will be downloaded to/read from
+* `"folder-name"` - The name of the folder - is part of the filename
+* `"folder-parts"` - An array of part names for which a folder will be generated
+* `"lettered-chartz"` - An array of chart names that should be enumerated with a letter, not a number (such as `All Right Now`)
+* `"page-size"` - The dimensions of the page. You probably don't want to change this unless you're changing the page dimensions of all our music
+* `"page-num-font"`
+   * `"name"` - The name of the font you wish to use for the page numbers. By default, only a small selection of fonts are supported
+   * `"size"` - The size of the font you wish to use for the page numbers
+* `"teazers"`
+   * `"include"` - `true` if you wish to include the teazers in the folder, `false` otherwise
+   * `"titles"` - An array of chart names that are teazers
+* `"toc"`
+   * `"entry"`
+      * `"font-normal"` - The font to use in the table of contents for a normal entry (not a dollie song)
+      * `"font-dollie"` - The font to use in the table of contents for a dollie song
+      * `"size"` - The size of the font - can be adjusted to ensure toc remains on one page
+   * `"generate-on-validation"` - `true` if you wish to generate table of contents pages when running the validation script, `false` otherwise. This is useful for ensuring the formatting is how you desire before generating the entire folder
+   * `"title"`
+      * `"label"` - The title of the table of contents page
+      * `"font"` - The font to use for the title
+      * `"size"` - The font size to use for the title
+   * `"footer"`
+      * `"label"` - The text at the bottom of the table of contents page
+      * `"font"` - The font to use for the footer
+      * `"size"` - The font size to use for the footer
+   * `"num-cols"` - The number of columns in the table of contents
+* `"verbose"` - `true` if you wish for a more detailed output, `false` otherwise
