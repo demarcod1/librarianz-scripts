@@ -161,7 +161,7 @@ This configuration file for the folder creator is relatively complex. The fields
 * `"dollie-songs"` - An array of song names that have Dollie dances. These songs will appear in boldface in the Table of Contents
 * `"download-parts"`- An array of part names that should be downloaded from the Digital Library
 * `"enforce-order"` - An array of orders that must be followed, where each order is an array of song names that must appear one-after-the-other
-   * For example, if the song `Foreplay` must be followed by `Knights of Cydonia`, then you will need to add the following rule: `"enforce-order": [ [ "Foreplay", "Knights of Cydonia" ] ]
+   * For example, if the song `Foreplay` must be followed by `Knights of Cydonia`, then you will need to add the following rule: `"enforce-order": [ [ "Foreplay", "Knights of Cydonia" ] ]`
 * `"enumerate-pages"` - `true` if you wish to add letters/numbers to the chartz, `false` otherwise. For troubleshooting, setting this to `false` make the generation take significantly less time, but remember to set this back to `true` before generating the production folder
 * `"fingering-chart"`
    * `"include"` - `true` if you wish to include the fingering chart in the folder, `false` otherwise
