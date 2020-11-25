@@ -1,4 +1,5 @@
 import util.util as util
+import os
 
 # Adds a file to the library, also adding shortcuts to separated sib files/section parts if needed
 def add_file(service, file_name, separated_ids, alias_map, cache, options):
@@ -23,7 +24,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     
     # Add parts files to the Parts folder and create a shortcut
     if part:
-        file_id = util.upload_file(service, f'{directory}{file_name}', file_name, parts_id, mime_type=mimeType)
+        file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, parts_id, mime_type=mimeType)
         sep_part_ids = util.get_folder_ids(service, name=part, parent=sep_sec_id)
         if len(sep_part_ids) != 1:
             print(f'WARNING: Unable to create shortcut in Separated Section Parts for "{file_name}"')
@@ -31,7 +32,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
         return True
     
     # Add other files to the chart's main folder
-    file_id = util.upload_file(service, f'{directory}{file_name}', file_name, chart_id, mime_type=mimeType)
+    file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, chart_id, mime_type=mimeType)
     if (file_name.endswith('.sib')):
         util.make_shortcut(service, file_name, file_id, sep_sib_id)
     return True
@@ -81,14 +82,17 @@ def update_file(service, filename, alias_map, cache, options):
 
     # Retrieve updatable files
     if not chart in cache or not "files" in cache[chart]:
+        print(f'WARNING: No cache entry found for "{chart}"')
         return False
     files = cache.get(chart).get('files')
-    if not files: return False
+    if not files or len(files) == 0:
+        print(f'WARNING: No files found for "{chart}"')
+        return False
 
     for file in files:
         # if part field is non-null, we can also check that aliases match up
         if file.get("name") == filename or (not titles_match and part and
                                             util.parse_file(file.get("name"), alias_map)[1] == part):
-            if(util.update_file(service, file.get("id"), f'{directory}{filename}', new_mime_type=mimeType)):
+            if(util.update_file(service, file.get("id"), os.path.join(directory, filename), new_mime_type=mimeType)):
                 return True
     return False

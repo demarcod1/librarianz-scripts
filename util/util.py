@@ -1,8 +1,8 @@
-import os, sys, json, pickle, re, mimetypes
+import os, io, sys, json, pickle, re, mimetypes
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from apiclient.http import MediaFileUpload
+from apiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 # Builds the drive service
 def build_service():
@@ -45,11 +45,11 @@ def parse_options(filename, path = "options/"):
         sys.exit()
 
 # Parse title of a file into [chartname, partname (if applicable), mimeType]
-def parse_file(filename, alias_map):
+def parse_file(filename, alias_map=None):
     # pdf part format
     match = re.search('(.*) - (.*).pdf', filename)
     if match:
-        return match.group(1), alias_map[match.group(2)], mimetypes.guess_type(filename)[0]
+        return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
     
     # other file type format
     match = re.search('(.*)\.[\w+]', filename)
@@ -175,6 +175,27 @@ def upload_file(service, new_filename, display_name, parent, title=None, mime_ty
         print(f'WARNING: Unable to create file "{display_name}"')
         return None
 
+# Downloads a file (or folder) from the drive
+def download_file(service, file_id, dir, file_name, verbose=False):
+    try:
+        # Get target file
+        request = service.files().get_media(fileId=file_id)
+
+        # Resolve destination
+        if not os.path.exists(dir): os.makedirs(dir)
+        fh = io.FileIO(os.path.join(dir, file_name), "w")
+
+        # Execute download
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        if verbose: print(f'Starting download of "{file_name}"')
+        while done is False:
+            status, done = downloader.next_chunk()
+            if verbose: print(f'Progress: {status.progress() * 100}%')
+        if verbose: print("Completed download")
+    except:
+        print(f'WARNING: Unable to download "{file_name}"')
+
 # Returns the id(s) of a folder with the given id or name (optionally can specify parent directory)
 def get_folder_ids(service, id = None, name = None, parent = None):
     # Chech folder by id
@@ -275,15 +296,17 @@ def get_separated_folders(service, library_id):
     return separated_ids
 
 # Search folder for specific files/folders
-def get_drive_files(service, id, file_types=None, files_only=True, name=None):
+def get_drive_files(service, id, file_types=None, files_only=True, name=None, is_shortcut=False):
     output = []
     q = f'"{id}" in parents'
     if files_only: q += ' and not mimeType = "application/vnd.google-apps.folder"'
     if name: q += f' and name contains "{name}"'
 
+    fields = f'files(id, name{", shortcutDetails" if is_shortcut else ""})'
+
     # Get all files/folders in the folder
     file_results = service.files().list(corpora="user",
-                                        fields="files(id, name)",
+                                        fields=fields,
                                         q=q,
                                         spaces="drive").execute()
     items = file_results.get('files', [])
