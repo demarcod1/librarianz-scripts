@@ -70,24 +70,11 @@
             "fingering chart"
         ]
     },
-    "filler-order": [
-        "title_page",
-        "table_of_contents",
-        "manager",
-        "drum_major",
-        "librarianz"
-    ],
     "folder-dir": "../test_folder",
     "folder-name": "November 2020 Folder",
     "folder-parts": [
         "Picz",
-        "Clarz",
-        "Altoz",
-        "Tenrz",
-        "Trumpz",
-        "Mellz",
-        "Bonz",
-        "Toobz"
+        "Clarz"
     ],
     "lettered-chartz": [
         "All Right Now",

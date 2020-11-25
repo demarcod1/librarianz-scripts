@@ -20,14 +20,14 @@ def main():
             output.addPage(page)
         
         # Add table of contents (toc)
-        pdf_tools.generate_toc(toc_maps, options, os.path.join(options["folder-dir"], "tmp", "toc.pdf"))
-        output.insertPage(pdf_tools.to_pages(os.path.join(options["folder-dir"], "tmp", "toc.pdf"))[0], 0)
+        toc_path = os.path.join(options["folder-dir"], "tmp", "toc.pdf")
+        pdf_tools.generate_toc(toc_maps, options, toc_path)
+        output.insertPage(pdf_tools.to_pages(toc_path)[0], 0)
+        os.remove(toc_path)
 
         # Write file
         file_path = os.path.join(options["folder-dir"], "Output")
-        if not os.path.exists(file_path):
-            if options["verbose"]: print(f'DEBUG: Creating directory "{file_path}"')
-            os.makedirs(file_path)
+        pdf_tools.validate_dir(file_path, options["verbose"])
         with open(os.path.join(file_path,  f'{options["folder-name"]} - {part}.pdf'), 'wb') as f:
             output.write(f)
         print(f'Finished writing {part} folder to "{file_path}"')

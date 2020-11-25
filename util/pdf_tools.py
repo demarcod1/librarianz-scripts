@@ -23,6 +23,7 @@ def add_page_num(page, text: str, options):
     # Add page number to existing page
     page_num = PdfFileReader(open(path, 'rb')).getPage(0)
     page.mergePage(page_num)
+    os.remove(path)
     return page
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
@@ -67,9 +68,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     
     # Validate target directory
     path = os.path.join(dir, part)
-    if not os.path.exists(path):
-        os.makedirs(path)
-        if verbose: print(f'DEBUG: Making directory "{path}"')
+    validate_dir(path, verbose)
     
     # Download files
     for file in files:
@@ -161,9 +160,7 @@ def generate_toc(toc_maps, options, file, verbose=False):
     # Get page num information
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     path = os.path.dirname(file)
-    if not os.path.exists(path):
-        if verbose: print(f'DEBUG: Creating directory "{path}"')
-        os.makedirs(path)
+    validate_dir(path, verbose)
     
     # Generate toc doc and data
     toc = SimpleDocTemplate(file, pagesize=(width, height),
@@ -264,6 +261,12 @@ def process_files(files):
 def to_pages(file):
     file_in = PdfFileReader(file)
     return file_in.pages
+
+# Validates the existence of a directory, creating it if need be
+def validate_dir(path, verbose=False):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        if verbose: print(f'DEBUG: Making directory "{path}"')
 
 # Validates that a part's files are properly formatted
 def validate_part(part, options):
