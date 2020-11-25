@@ -158,6 +158,9 @@ Configure which sections go to which output folders in `options\parts.json`. The
 # Understanding `folder_creator_options.json`
 This configuration file for the folder creator is relatively complex. The fields and their meanings are detailed here
 
+<details>
+   <summary>Show/Hide Details</summary>
+
 * `"dollie-songs"` - An array of song names that have Dollie dances. These songs will appear in boldface in the Table of Contents
 * `"download-parts"`- An array of part names that should be downloaded from the Digital Library
 * `"enforce-order"` - An array of orders that must be followed, where each order is an array of song names that must appear one-after-the-other
@@ -193,3 +196,5 @@ This configuration file for the folder creator is relatively complex. The fields
       * `"size"` - The font size to use for the footer
    * `"num-cols"` - The number of columns in the table of contents
 * `"verbose"` - `true` if you wish for a more detailed output, `false` otherwise
+
+</details>
