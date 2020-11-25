@@ -1,14 +1,15 @@
 import os
-from typing import Dict
 import util.util as util
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
+from reportlab.lib.styles import ParagraphStyle
 
 # Adds the page number (or any arbitrary text) to the chart pdf file
 def add_page_num(page, text: str, options):
     # Get page num information
-    width, height = (72 * options["page-size"]["width"], 72 * options["page-size"]["height"])
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
     path = os.path.join(options["tmp-dir"], "page_num.pdf")
 
@@ -26,14 +27,18 @@ def add_page_num(page, text: str, options):
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
 def categorize_parts(title_map, options):
-    lettered, numbered, fingering_chart = [], [], []
+    lettered, numbered, special = [], [], { "fingering_chart": [], "teazers": [] }
     for title in title_map:
         # parse filename
         file = title_map[title]
 
         # check to see if it's a fingering chart
-        if options["fingering-chart"]["include"] and options["fingering-chart"]["prefix"] in title:
-            fingering_chart.append(file)
+        if options["fingering-chart"]["include"] and title in options["fingering-chart"]["titles"]:
+            special["fingering_chart"].append(file)
+        
+        # check to see if it's a teazer
+        elif options["teazers"]["include"] and title in options["teazers"]["titles"]:
+            special["teazers"].append(file)
         
         # check to see if it's a lettered chart
         elif title in options["lettered-chartz"]:
@@ -43,10 +48,10 @@ def categorize_parts(title_map, options):
         else:
             numbered.append(file)
 
-    for list in (lettered, numbered):
+    for list in (lettered, numbered, special["teazers"]):
         enforceRules(list, options["enforce-order"], title_map)
 
-    return lettered, numbered, fingering_chart
+    return lettered, numbered, special
 
 # Downloads all the files from a Separated Section Parts folder
 def download_part_files(service, curr_parts_id, part, dir, verbose=False):
@@ -106,13 +111,13 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None):
             page_num = f'{counter}'
 
             # Save page num assignment to map
-            if page_map: page_map[counter] = file
+            if page_map != None: page_map[counter] = file
 
             # Add all the pages to the list
             for i in range(num_pages):
                 input_page = input.getPage(i)
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
-                pages.append(add_page_num(input_page, page_num, options))
+                pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
         except:
             print(f'Error when parsing "{file}"')
         
@@ -120,6 +125,85 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None):
         counter = (counter + 1) if style == 0 else (chr(ord(counter) + 1))
 
     return pages
+
+# Generates the table of contents file
+def generate_toc(toc_maps, options):
+    # Get page num information
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
+    path = os.path.join(options["tmp-dir"], "toc.pdf")
+    
+    # Generate toc doc and data
+    toc = SimpleDocTemplate(path, pagesize=(width, height),
+                            leftMargin=inch * .5, rightMargin=inch * .5,
+                            topMargin=.75 * inch, bottomMargin=inch*.25)
+    styles = generate_toc_styles(options)
+    data = generate_toc_data(toc_maps, options, styles)
+
+    # Construct table
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('RIGHTPADDING', (0,0), (-1,-1), 2),
+        ('LEFTPADDING', (0,0), (-1,-1), 2),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+        ('TOPPADDING', (0,0), (-1,-1), 0)
+    ]))
+
+    # Add title and footer
+    def onFirstPage(canvas: canvas.Canvas, doc):
+        canvas.saveState()
+        font, size = (options["toc"]["title"]["font"], options["toc"]["title"]["size"])
+        canvas.setFont(font, size)
+        canvas.drawCentredString(width / 2, height - (.02 * inch * size), options["toc"]["title"]["label"])
+        font, size = (options["toc"]["footer"]["font"], options["toc"]["footer"]["size"])
+        canvas.setFont(font, size)
+        canvas.drawCentredString(width / 2, (.02 * inch * size), options["toc"]["footer"]["label"])
+        canvas.restoreState()
+
+    # write the document to disk
+    toc.build([table], onFirstPage=onFirstPage)
+
+# Generates the data in the proper form
+def generate_toc_data(toc_maps, options, styles):
+    # Make a list of all the chartz, in lettered -> numbered -> teazers order
+    raw_list = [] # list of title in toc + dollie
+    for map in toc_maps:
+        if not map: continue
+        for key, val in map.items():
+            title, _, _ = util.parse_file(os.path.basename(val))
+            # Case insensitive match
+            raw_list.append((f'{key}: {title}', 0 + (title in options["dollie-songs"])))
+        raw_list.append(("", False))
+    if len(raw_list) > 0: del raw_list[-1]
+
+    # Refactor the data into table format
+    data = []
+    num_cols = options["toc"]["num-cols"]
+    num_rows = -(len(raw_list) // -num_cols)
+    for i in range(num_rows):
+        row = []
+        for j in range(num_cols):
+            index = (num_rows * j) + i
+            text, style = ("", styles[0]) if index >= len(raw_list) else (raw_list[index][0], styles[raw_list[index][1]])
+            row.append(Paragraph(text=text, style=style))
+        data.append(row)
+
+    return data
+
+# Generates the paragraph styles from the toc
+def generate_toc_styles(options):
+    # Non-dollie songs
+    style_normal = ParagraphStyle("toc_normal",
+                            fontName=options["toc"]["entry"]["font-normal"],
+                            fontSize=options["toc"]["entry"]["size"],
+                            alignment=0)
+    
+    # Dollie songs
+    style_dollie = ParagraphStyle("toc_dollie",
+                            fontName=options["toc"]["entry"]["font-dollie"],
+                            fontSize=options["toc"]["entry"]["size"],
+                            alignment=0)
+
+    return style_normal, style_dollie
 
 # This merges files of the same chart together and outputs a map from chartname -> filename
 def process_files(files):
@@ -141,3 +225,8 @@ def process_files(files):
         os.remove(file)
 
     return title_map
+
+# Converts a pdf file into a list of pages
+def to_pages(file):
+    file_in = PdfFileReader(file)
+    return file_in.pages

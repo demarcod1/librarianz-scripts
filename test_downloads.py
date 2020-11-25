@@ -10,7 +10,7 @@ def main():
     library_id, _, _ = util.get_digital_library(service)
     curr_parts_id = util.get_separated_folders(service, library_id)["sec_curr"]
 
-    pdf_tools.download_part_files(service, curr_parts_id, "Trumpz", options["parts-dir"], True)
+    pdf_tools.download_part_files(service, curr_parts_id, "Bonz", options["parts-dir"], True)
 
 if __name__ == '__main__':
     main()
