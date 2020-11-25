@@ -28,7 +28,7 @@ def main():
         if not os.path.exists(file_path):
             if options["verbose"]: print(f'DEBUG: Creating directory "{file_path}"')
             os.makedirs(file_path)
-        with open(os.path.join(file_path,  f'{part} - Folder.pdf'), 'wb') as f:
+        with open(os.path.join(file_path,  f'{options["folder-name"]} - {part}.pdf'), 'wb') as f:
             output.write(f)
         print(f'Finished writing {part} folder to "{file_path}"')
 

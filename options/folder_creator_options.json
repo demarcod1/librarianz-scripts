@@ -44,7 +44,14 @@
         "Zoot Suit Riot"
     ],
     "download-parts": [
-        "does not exist"
+        "Picz",
+        "Clarz",
+        "Altoz",
+        "Tenrz",
+        "Trumpz",
+        "Mellz",
+        "Bonz",
+        "Toobz"
     ],
     "enforce-order": [
         [
@@ -71,9 +78,16 @@
         "librarianz"
     ],
     "folder-dir": "../test_folder",
+    "folder-name": "November 2020 Folder",
     "folder-parts": [
+        "Picz",
+        "Clarz",
+        "Altoz",
+        "Tenrz",
+        "Trumpz",
+        "Mellz",
         "Bonz",
-        "Clarz"
+        "Toobz"
     ],
     "lettered-chartz": [
         "All Right Now",
@@ -82,7 +96,7 @@
         "Bill Tell",
         "Come Join the Band",
         "Dies Irae",
-        "Hail, Stanford, Hail (Eb)",
+        "Hail, Stanford, Hail",
         "Swingtown",
         "The Star Spangled Banner",
         "Throne Room Fanfare"
@@ -121,5 +135,5 @@
         },
         "num-cols": 3
     },
-    "verbose": true
+    "verbose": false
 }
