@@ -1,8 +1,9 @@
-import util.util as util
-import util.pdf_tools as pdf_tools
+from .util import util
+from .util import pdf_tools
 import os
 
-def main():
+# Main method
+def download_parts():
     service = util.build_service()
     options = util.parse_options("folder_creator_options.json")
 
@@ -19,6 +20,3 @@ def main():
     for part in options["download-parts"]:
         print(f'Downloading files for part "{part}"')
         pdf_tools.download_part_files(service, curr_parts_id, part, os.path.join(options["folder-dir"], "parts"), options["verbose"])
-
-if __name__ == '__main__':
-    main()

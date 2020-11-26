@@ -1,4 +1,4 @@
-import util.util as util
+from . import util
 import os
 
 # Adds a file to the library, also adding shortcuts to separated sib files/section parts if needed

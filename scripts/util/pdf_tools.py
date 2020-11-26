@@ -1,5 +1,5 @@
 import json, os, glob
-import util.util as util
+from . import util
 from PyPDF2 import PdfFileReader, PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
@@ -69,6 +69,11 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Validate target directory
     path = os.path.join(dir, part)
     validate_dir(path, verbose)
+
+    # Delete all existing files in that directory
+    to_delete = glob.glob(f'{path}/*')
+    for f in to_delete:
+        os.remove(f)
     
     # Download files
     for file in files:
@@ -279,7 +284,7 @@ def validate_part(part, options):
     if len(title_map.keys()) == 0:
         print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
-    validate_titles(title_map, options, "options/folder_creator_options.json", verbose=options["verbose"])
+    validate_titles(title_map, options, "scripts/options/folder_creator_options.json", verbose=options["verbose"])
 
     return title_map
 

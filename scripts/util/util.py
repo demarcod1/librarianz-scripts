@@ -36,7 +36,7 @@ def fetch_credentials():
     return creds
 
 # Parse json options file
-def parse_options(filename, path = "options/"):
+def parse_options(filename, path = "scripts/options/"):
     try:
         with open(f'{path}{filename}') as f:
             return json.load(f)

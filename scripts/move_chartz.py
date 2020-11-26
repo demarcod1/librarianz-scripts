@@ -1,5 +1,4 @@
-from sys import get_asyncgen_hooks
-import util.util as util
+from .util import util
 
 # Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
 def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
@@ -52,7 +51,6 @@ def move_shortcuts(service, ids, sep_parts, chart, src, dst):
         for file in util.get_drive_files(service, sep_parts[src][part], [".pdf"], name=chart):
             util.move_file(service, file.get("id"), sep_parts[src][part], sep_parts[dst][part])
         
-
 # Moves the chart to new location
 def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     # Parse the destination
@@ -83,9 +81,8 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     dirname = "Current Chartz" if dest == "curr" else "Old Chartz" if dest == "old" else "Archive/Chart Data"
     print(f'Successfully moved chart "{chart}" to "{dirname}"')
 
-
-
-def main():
+# Main method
+def move_chartz():
     # Build service
     service = util.build_service()
 
@@ -107,6 +104,3 @@ def main():
     for chart_to_move in options["chartz"]:
         print(f'Moving chart {chart_to_move["name"]}...')
         move_chart(service, ids, sep_parts, chart_to_move, alias_map)
-
-if __name__ == '__main__':
-    main()

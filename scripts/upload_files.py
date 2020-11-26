@@ -1,7 +1,8 @@
-import util.util as util
-import util.lib_management as lib_management
+from .util import util
+from .util import lib_management
 
-def main():
+# Main method
+def upload_files():
     # Build service
     service = util.build_service()
 
@@ -53,6 +54,3 @@ def main():
             print(f'Successfully added "{file}"')
         elif updated == False:
             print(f'WARNING: Unable to update "{file}"')
-
-if __name__ == '__main__':
-    main()
