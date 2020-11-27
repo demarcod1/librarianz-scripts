@@ -3,12 +3,16 @@ from .util import lib_management
 
 # Main method
 def upload_files():
+    # A quick print statement to let the user know what script they're running
+    print("Starting Upload Files script...")
+
     # Build service
     service = util.build_service()
 
     # Read options
     alias_map = util.make_alias_map(util.parse_options("parts.json"))
     options = util.parse_options("upload_options.json")
+    if options == None: return 1
 
     # Get list of files that need to be uploaded
     files = util.get_dir_files(options["resources-directory"], options["supported-file-types"])
@@ -16,7 +20,10 @@ def upload_files():
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, curr_id, old_id = util.get_digital_library(service)
+    if library_id == None: return 1
+    
     separated_ids = util.get_separated_folders(service, library_id)
+    if separated_ids == None: return 1
 
     # Cache will store folder + parts folder ids and a list of files
     cache = {}
@@ -54,3 +61,5 @@ def upload_files():
             print(f'Successfully added "{file}"')
         elif updated == False:
             print(f'WARNING: Unable to update "{file}"')
+    
+    return 0

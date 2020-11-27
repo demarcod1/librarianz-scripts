@@ -89,12 +89,19 @@ def move_chartz():
     # Read options
     alias_map = util.make_alias_map(util.parse_options("parts.json"))
     options = util.parse_options("move_chartz_options.json")
+    if options == None: return
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, curr_id, old_id = util.get_digital_library(service)
+    if library_id == None: return 1
+
     archive_id = util.get_chart_data_archive(service, library_id)
+    if archive_id == None: return 1
+
     ids = util.get_separated_folders(service, library_id)
+    if ids == None: return 1
+    
     ids.update({ "curr": curr_id, "old": old_id, "archive": archive_id })
     sep_parts = {
         age: { folder["name"]: folder["id"] for folder in util.get_drive_files(service, ids[f"sec_{age}"], files_only=False) }
@@ -104,3 +111,5 @@ def move_chartz():
     for chart_to_move in options["chartz"]:
         print(f'Moving chart {chart_to_move["name"]}...')
         move_chart(service, ids, sep_parts, chart_to_move, alias_map)
+    
+    return 0

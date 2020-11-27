@@ -15,6 +15,7 @@ def validate_toc(part, title_map, options):
 # Main method
 def validate_folder_files():
     options = parse_options("folder_creator_options.json")
+    if options == None: return 1
 
     for part in options["folder-parts"]:        
         # Validate part files
@@ -23,4 +24,6 @@ def validate_folder_files():
 
         # Generate sample table of contents
         if options["toc"]["generate-on-validation"]:
-            validate_toc(part, title_map, options)  
+            validate_toc(part, title_map, options)
+    
+    return 0

@@ -6,6 +6,7 @@ import os
 def download_parts():
     service = util.build_service()
     options = util.parse_options("folder_creator_options.json")
+    if options == None: return
 
     # Ensure that there are parts to download
     if len(options["download-parts"]) == 0:
@@ -15,8 +16,13 @@ def download_parts():
     # Get the current parts id
     print("Verifying DigitalLibrary format...")
     library_id, _, _ = util.get_digital_library(service)
+    if library_id == None: return 1
+    
     curr_parts_id = util.get_separated_folders(service, library_id)["sec_curr"]
+    if curr_parts_id == None: return 1
 
     for part in options["download-parts"]:
         print(f'Downloading files for part "{part}"')
         pdf_tools.download_part_files(service, curr_parts_id, part, os.path.join(options["folder-dir"], "parts"), options["verbose"])
+    
+    return 0

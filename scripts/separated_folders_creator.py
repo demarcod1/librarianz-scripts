@@ -205,7 +205,7 @@ def build_shortcuts(service, curr_chart_in, old_chart_in, curr_sec_out, old_sec_
 # Main method
 def separated_folders_creator():
     print("currently disabled")
-    return
+    return 1
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.
     """
@@ -213,10 +213,12 @@ def separated_folders_creator():
     service = build('drive', 'v3', credentials=creds)
 
     parts_dict = parse_options("parts.json")
+    if parts_dict == None: return 1
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, current_chartz_id, old_chartz_id = get_digital_library(service)
+    if library_id == None: return 1
 
     # Delete output from prior runs to avoid side effects
     print("Deleting old output...")
@@ -231,6 +233,7 @@ def separated_folders_creator():
     print("Writing output...")
     build_shortcuts(service, current_chartz_id, old_chartz_id, curr_sec_out, old_sec_out, curr_sib_out, old_sib_out)
 
+    return 0
     # if not items:
     #     print('No files found.')
     # else:

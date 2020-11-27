@@ -12,13 +12,13 @@ def verify_redvest(service, redvest_options):
     # Ensure redvest folder exists
     if len(util.get_folder_ids(service, id=redvest_id)) == 0:
         print('Specified Redvest folder not found Librarianz Drive, please check Google Drive')
-        sys.exit(1)
+        return None, None
 
     # See if target folder already exists
     if len(util.get_folder_ids(service, name=folder_name, parent=redvest_id)) > 0:
         print(f'Folder \"{folder_name}\" already exists!')
         print("(You may need to remove the folder from the Trash in the Librarianz Drive)")
-        sys.exit(1)
+        return None, None
 
     # Create new class folder
     new_folder_id = util.make_folder(service, folder_name, redvest_id)
@@ -91,12 +91,15 @@ def redvest_creator():
 
     # Read folder locations
     redvest_options = util.parse_options("redvest_options.json")
+    if redvest_options == None: return 1
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     _, current_chartz_id, _ = util.get_digital_library(service)
+    if current_chartz_id == None: return 1
     print("Verifying Redvest folder...")
     new_folder_id, new_resources_id = verify_redvest(service, redvest_options)
+    if new_folder_id == None or new_resources_id == None: return 1
 
     # Only make individual section folders if field set to true
     alias_map = None
@@ -104,6 +107,7 @@ def redvest_creator():
     if redvest_options["individual-sections"] == "True":
         # Read parts
         parts_dict = util.parse_options("parts.json")
+        if parts_dict == None: return 1
         
         # Make individual section folders
         print("Making individual section folders...")
@@ -117,3 +121,4 @@ def redvest_creator():
         write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids, alias_map)
     
     print(f'Succesfully created new folder "{redvest_options["folder-name"]}"!')
+    return 0

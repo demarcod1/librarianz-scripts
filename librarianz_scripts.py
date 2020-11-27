@@ -1,3 +1,4 @@
+from gui.notebook_test import NotebookTest
 import sys
 import tkinter as tk
 from getopt import getopt, GetoptError
@@ -52,10 +53,9 @@ def main(argv):
         script()
         return
     
-    window = tk.Tk()
-    greeting = tk.Label(text="Hello, Tkinter")
-    greeting.pack()
-    window.mainloop()
+    root = tk.Tk()
+    NotebookTest(root)
+    root.mainloop()
 
 if __name__ == '__main__':
     main(sys.argv[1:])

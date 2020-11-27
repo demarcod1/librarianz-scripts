@@ -6,6 +6,7 @@ import os
 # Main  method
 def folder_creator():
     options = parse_options("folder_creator_options.json")
+    if options == None: return 1
 
     for part in options["folder-parts"]:
         # Validate part files
@@ -31,3 +32,5 @@ def folder_creator():
         with open(os.path.join(file_path,  f'{options["folder-name"]} - {part}.pdf'), 'wb') as f:
             output.write(f)
         print(f'Finished writing {part} folder to "{file_path}"')
+    
+    return 0
