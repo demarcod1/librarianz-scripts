@@ -24,7 +24,10 @@ def folder_creator():
         toc_path = os.path.join(options["folder-dir"], "tmp", "toc.pdf")
         pdf_tools.generate_toc(toc_maps, options, toc_path)
         output.insertPage(pdf_tools.to_pages(toc_path)[0], 0)
+
+        # Cleanup temp files
         os.remove(toc_path)
+        os.remove(os.path.join(options["folder-dir"], "tmp", "page_num.pdf"))
 
         # Write file
         file_path = os.path.join(options["folder-dir"], "Output")

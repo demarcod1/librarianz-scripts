@@ -58,13 +58,13 @@ class Multiselect(ttk.Labelframe):
         # New item entry
         self.entry_text = StringVar()
         entry = ttk.Entry(self, textvariable=self.entry_text)
-        entry.grid(row=0, column=1, padx=5, pady=5, sticky=(W))
+        entry.grid(row=0, column=1, padx=5, pady=5, sticky=(W, S))
         self.entry_text.trace_add('write', self.entry_changed)
 
         # Add item entry
         add_text = kwargs.get("addtext") or 'Add Item'
         self.add_entry = ttk.Button(self, text=add_text, command=self.add_item_cmd)
-        self.add_entry.grid(row=0, column=2, sticky=(E, W), padx=10, pady=5)
+        self.add_entry.grid(row=0, column=2, sticky=(E, W, S), padx=10, pady=5)
         self.add_entry.state(["disabled"])
         bind_button(self.add_entry)
         entry.bind("<Return>", lambda e: self.add_entry.invoke())
@@ -92,7 +92,7 @@ class Multiselect(ttk.Labelframe):
             for i in range(3):
                 select_dest_frame.columnconfigure(i, weight="1")
 
-            select_dest_frame.grid(row=1, column=1, columnspan=2, sticky=(N, E, S, W), padx=10, pady=5)
+            select_dest_frame.grid(row=1, column=1, columnspan=2, sticky=(N, E, W), padx=10, pady=5)
         
         # Clear/Delete selection button
         self.clear_sel = ttk.Button(self, text='Clear Selection', command=self.clear_selection)
@@ -157,6 +157,8 @@ class Multiselect(ttk.Labelframe):
         if messagebox.askokcancel(title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning'):
             for item in selection:
                 self.tree.delete(item)
+            self.del_sel.state(['disabled'])
+            self.clear_sel.state(['disabled'])
 
     # Adds an item to the tree, in sorted order
     def add_item_cmd(self, *args):

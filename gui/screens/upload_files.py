@@ -7,10 +7,10 @@ from scripts.upload_files import upload_files
 from tkinter import *
 from tkinter import ttk
 
-class UploadFilesScreen(Frame):
+class UploadFilesScreen(ttk.Frame):
 
     def __init__(self, parent, *args, **kwargs):
-        Frame.__init__(self, parent, *args, **kwargs)
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
 
         # Parse upload files options
         self.options = parse_options("upload_options.json")
@@ -86,5 +86,5 @@ class UploadFilesScreen(Frame):
             print(f"Thread Finished with code {code}")
         
 
-        script_progress = ScriptProgress(self, script=upload_files, callback=callback, title="Uploading Files...", name="Upload Files")
+        ScriptProgress(self, script=upload_files, callback=callback, title="Uploading Files...", name="Upload Files")
         self.master.master.withdraw()

@@ -21,9 +21,9 @@ def add_page_num(page, text: str, options):
     page_num.save()
 
     # Add page number to existing page
-    page_num = PdfFileReader(open(path, 'rb')).getPage(0)
-    page.mergePage(page_num)
-    os.remove(path)
+    with open(path, 'rb') as f:
+        page_num = PdfFileReader(f).getPage(0)
+        page.mergePage(page_num)
     return page
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart

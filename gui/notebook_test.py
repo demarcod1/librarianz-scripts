@@ -1,3 +1,4 @@
+from gui.screens.move_chartz import MoveChartzScreen
 from gui.screens.upload_files import UploadFilesScreen
 from tkinter import *
 from tkinter import ttk
@@ -16,7 +17,7 @@ class NotebookTest:
         # Add each frame to the notebook
         folder_creator_frame = ttk.Frame(n, relief='solid')
         upload_files_frame = UploadFilesScreen(n)
-        move_chartz_frame = ttk.Frame(n, relief='sunken')
+        move_chartz_frame = MoveChartzScreen(n)
         redvest_creator_frame = ttk.Frame(n, relief='groove')
 
         n.add(folder_creator_frame, text='Folder Creator')

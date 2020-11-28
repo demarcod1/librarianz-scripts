@@ -1,12 +1,12 @@
 {
     "chartz": [
         {
-            "name": "Sample Chart",
+            "name": "Hail, Stanford, Hail",
             "to": 0
         },
         {
-            "name": "Sample Chart 2",
-            "to": 2
+            "name": "She's Not There",
+            "to": 1
         }
     ]
 }

@@ -69,17 +69,10 @@
             "fingering chart"
         ]
     },
-    "folder-dir": "../test_folder",
+    "folder-dir": "..\\test_folder",
     "folder-name": "November 2020 Folder",
     "folder-parts": [
-        "Picz",
-        "Clarz",
-        "Altoz",
-        "Tenrz",
-        "Mellz",
-        "Trumpz",
-        "Bonz",
-        "Toobz"
+        "Picz"
     ],
     "lettered-chartz": [
         "All Right Now",

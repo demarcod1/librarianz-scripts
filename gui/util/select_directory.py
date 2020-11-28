@@ -12,7 +12,7 @@ class SelectDirectory(ttk.Labelframe):
         ttk.Labelframe.__init__(self, parent, relief=relief, text=self.title)
 
         # Textbox that contains the path
-        self.path_textbox = Text(self, width=40, height=1, wrap="none")
+        self.path_textbox = Text(self, width=40, height=1, wrap="none", font='TkDefaultFont')
         self.path_textbox.insert("1.0", self.path)
         self.path_textbox["state"] = "disabled"
         self.path_textbox.grid(column=0, row=0, padx=10, pady=5, sticky=(E, W))
