@@ -15,11 +15,11 @@ class SelectDirectory(ttk.Labelframe):
         self.path_textbox = Text(self, width=40, height=1, wrap="none")
         self.path_textbox.insert("1.0", self.path)
         self.path_textbox["state"] = "disabled"
-        self.path_textbox.grid(column=0, row=0, padx=5, pady=5, sticky=(N, E, S, W))
+        self.path_textbox.grid(column=0, row=0, padx=10, pady=5, sticky=(E, W))
 
         # Button that prompts user for a new path
         path_button = ttk.Button(self, text="Choose Folder", command=self.choose_folder)
-        path_button.grid(column=1, row=0, padx=5, pady=5, sticky=(N, S))
+        path_button.grid(column=1, row=0, padx=10, pady=5, sticky=(E, W))
         bind_button(path_button)
 
         # Allow this to be resizeable

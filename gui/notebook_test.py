@@ -8,9 +8,10 @@ class NotebookTest:
 
         # Set title
         parent.title("Digital Library Manager")
+        parent.minsize(600, 550)
 
         # Create notebook
-        n = ttk.Notebook(parent, width=600, height=500)
+        n = ttk.Notebook(parent, width=650, height=600)
 
         # Add each frame to the notebook
         folder_creator_frame = ttk.Frame(n, relief='solid')

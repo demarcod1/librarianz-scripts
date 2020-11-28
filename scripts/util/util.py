@@ -39,7 +39,7 @@ def fetch_credentials():
 def write_options(options, filename, path = "scripts/options/"):
     full_path = os.path.join(path, filename)
     try:
-        with open(full_path) as f:
+        with open(full_path, 'w') as f:
             json.dump(options, f, indent=4)
     except:
         print(f'ERROR: could not write to file "{full_path}"')

@@ -1,7 +1,27 @@
 {
     "mode": 0,
-    "new-chartz": [],
+    "new-chartz": [
+        {
+            "name": "You Can Call Me Al",
+            "to": 0
+        },
+        {
+            "name": "She's Not There",
+            "to": 1
+        }
+    ],
     "require-titles-match": true,
-    "resources-directory": "../../Staging/",
-    "supported-file-types": [".mid", ".mp3", ".mp4", ".m4a", ".mov", ".wav", ".wmv", ".pdf", ".sib", ".xml"]
+    "resources-directory": "../../Staging",
+    "supported-file-types": [
+        ".mid",
+        ".mp3",
+        ".mp4",
+        ".m4a",
+        ".mov",
+        ".wav",
+        ".wmv",
+        ".pdf",
+        ".sib",
+        ".xml"
+    ]
 }

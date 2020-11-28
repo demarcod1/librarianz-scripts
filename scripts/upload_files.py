@@ -34,7 +34,7 @@ def upload_files():
     # Create new folders (if in proper mode)
     if mode != 0:
         for chart_info in options["new-chartz"]:
-            is_curr = chart_info["is-current"]
+            is_curr = chart_info["to"] == 0
             chart_id, parts_id = lib_management.create_chart_structure(service, curr_id if is_curr else old_id, chart_info["name"])
             if chart_id:
                 cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "is_current": is_curr, "files": [] }
