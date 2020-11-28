@@ -2,6 +2,7 @@ import os, io, sys, json, pickle, re, mimetypes
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from apiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 # Builds the drive service
@@ -41,7 +42,7 @@ def write_options(options, filename, path = "scripts/options/"):
     try:
         with open(full_path, 'w') as f:
             json.dump(options, f, indent=4)
-    except:
+    except OSError:
         print(f'ERROR: could not write to file "{full_path}"')
 
 # Parse json options file
@@ -50,7 +51,7 @@ def parse_options(filename, path = "scripts/options/"):
     try:
         with open(full_path) as f:
             return json.load(f)
-    except:
+    except OSError:
         print(f'ERROR: could not parse file "{full_path}"')
         return None
 
@@ -88,8 +89,8 @@ def get_chart_id(service, chart, id_list):
         if len(items) == 1:
             return { "chart_id": items[0].get('id'), "parent_id": id }
     
-    print(f'WARNING: "{chart}" folder not found in Digital Library directory')
-    return None
+    print(f'ERROR: "{chart}" folder not found in Digital Library directory')
+    return { "chart_id": None, "parent_id": None }
 
 # Gets the chart's parts folder, return its id (or None)
 def get_parts_folder(service, chart, chart_id):
@@ -102,7 +103,7 @@ def get_parts_folder(service, chart, chart_id):
                                         spaces="drive").execute()
     items = folder_results.get('files', [])
     if len(items) != 1:
-        print("WARNING: Single parts folder not found for current chart with name:", chart)
+        print("ERROR: Parts folder not found for current chart with name:", chart)
         return None
     return items[0].get('id')
 
@@ -123,7 +124,7 @@ def move_file(service, file_id, old_parent, new_parent):
                                 addParents=new_parent,
                                 removeParents=old_parent,
                                 fields='id, parents').execute()
-    except:
+    except HttpError:
         print(f'ERROR: Unable to move file')
 
 # Creates a shortcut
@@ -162,7 +163,7 @@ def update_file(service, file_id, new_filename, new_title=None, new_description=
             media_body=media_body,
             fields='id').execute()
         return updated_file["id"]
-    except:
+    except HttpError:
         print(f'Error when attempting to update file: {new_filename}')
         return None
 
@@ -180,7 +181,7 @@ def upload_file(service, new_filename, display_name, parent, title=None, mime_ty
         # Make the file
         media = MediaFileUpload(new_filename, mimetype=mime_type)
         return service.files().create(body=file_metadata, media_body=media, fields='id').execute().get('id')
-    except:
+    except HttpError:
         print(f'WARNING: Unable to create file "{display_name}"')
         return None
 
@@ -202,18 +203,18 @@ def download_file(service, file_id, dir, file_name, verbose=False):
             status, done = downloader.next_chunk()
             if verbose: print(f'Progress: {status.progress() * 100}%')
         if verbose: print("Completed download")
-    except:
+    except (OSError, HttpError):
         print(f'WARNING: Unable to download "{file_name}"')
 
 # Returns the id(s) of a folder with the given id or name (optionally can specify parent directory)
 def get_folder_ids(service, id = None, name = None, parent = None):
-    # Chech folder by id
+    # Check folder by id
     if (id != None):
         res = service.files().get(fileId=id, fields="id").execute()
-        if res["id"] and res["id"] == id: return [id]
-        return None
+        if res.get("id") and res["id"] == id: return [id]
+        return [None]
     
-    if (name == None): return None
+    if (name == None): return [None]
 
     # Check folder by name + parent (optional) 
     qstring = f'name="{name}" and mimeType="application/vnd.google-apps.folder"'
@@ -224,7 +225,7 @@ def get_folder_ids(service, id = None, name = None, parent = None):
                                     fields='files(id)',
                                     includeItemsFromAllDrives=True,
                                     supportsAllDrives=True).execute()
-    return [ res.get("id") for res in results["files"] ]
+    return [ res.get("id") for res in results.get("files") or [{}] ]
 
 # Verify and return the digital library
 def get_digital_library(service):
@@ -333,6 +334,6 @@ def get_dir_files(dir, file_types):
         files = [ file for file in os.listdir(dir) if file[-4:] in file_types ]
         if len(files) == 0: raise Exception
         return files
-    except:
+    except OSError:
         print(f'ERROR: No supported files found in directory "{dir}"')
         sys.exit()

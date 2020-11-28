@@ -1,4 +1,4 @@
-from gui.notebook_test import NotebookTest
+from gui.main_menu import MainMenu
 import sys
 import tkinter as tk
 from getopt import getopt, GetoptError
@@ -54,7 +54,7 @@ def main(argv):
         return
     
     root = tk.Tk()
-    NotebookTest(root)
+    MainMenu(root)
     root.mainloop()
 
 if __name__ == '__main__':

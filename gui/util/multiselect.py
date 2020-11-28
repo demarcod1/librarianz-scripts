@@ -1,4 +1,3 @@
-from inspect import signature
 from gui.util.util import bind_button
 from tkinter import *
 from tkinter import ttk, messagebox
@@ -58,7 +57,7 @@ class Multiselect(ttk.Labelframe):
         # New item entry
         self.entry_text = StringVar()
         entry = ttk.Entry(self, textvariable=self.entry_text)
-        entry.grid(row=0, column=1, padx=5, pady=5, sticky=(W, S))
+        entry.grid(row=0, column=1, padx=10, pady=5, sticky=(W, E, S))
         self.entry_text.trace_add('write', self.entry_changed)
 
         # Add item entry
@@ -96,7 +95,7 @@ class Multiselect(ttk.Labelframe):
         
         # Clear/Delete selection button
         self.clear_sel = ttk.Button(self, text='Clear Selection', command=self.clear_selection)
-        self.clear_sel.grid(row=2, column=1, sticky=(E, W), padx=5, pady=5)
+        self.clear_sel.grid(row=2, column=1, sticky=(E, W), padx=10, pady=5)
         self.clear_sel.state(['disabled'])
         bind_button(self.clear_sel)
 

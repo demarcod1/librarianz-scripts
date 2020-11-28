@@ -59,7 +59,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Retrieve files
     folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
     if not folders or len(folders) != 1:
-        print(f'WARNING: Unable to find folder "{part}"')
+        print(f'ERROR: Unable to find folder "{part}"')
         return
     files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
     if not files or len(files) == 0:
@@ -121,7 +121,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                 continue
 
             # Read input file
-            input = PdfFileReader(open(file, 'rb'))
+            input = PdfFileReader(open("not a file", 'rb'))
             num_pages = input.getNumPages()
             page_num = f'{counter}'
 
@@ -130,7 +130,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                 input_page = input.getPage(i)
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
-        except:
+        except OSError:
             print(f'Error when parsing "{file}"')
         
         # Increment Counter
@@ -277,7 +277,8 @@ def validate_dir(path, verbose=False):
 def validate_part(part, options):
     path = os.path.join(options["folder-dir"], "parts", part)
     if not os.path.exists(path):
-        print(f'WARNING: Path to files for part "{part}" does not exist')
+        print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
+        return None
     
     # Validate titles
     title_map = process_files(sorted(glob.glob(f'{path}/*.pdf')))

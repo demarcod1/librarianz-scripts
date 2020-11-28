@@ -64,7 +64,7 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     parent_id = res["parent_id"]
     src = "curr" if parent_id == ids["curr"] else "old" if parent_id == ids["old"] else "archive" 
     if src == dest:
-        print(f'WARNING: Unable to move chart "{chart}" - chart already in destination!')
+        print(f'ERROR: Unable to move chart "{chart}" - chart already in destination!')
         return
     
     # Move chart folder to destination

@@ -6,17 +6,18 @@ RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]
 
 # Verify redvest location and create new class folder
 def verify_redvest(service, redvest_options):
-    redvest_id = util.get_folder_ids(service, name=redvest_options["parent-name"])[0]
-    folder_name = redvest_options["folder-name"]
-
     # Ensure redvest folder exists
-    if len(util.get_folder_ids(service, id=redvest_id)) == 0:
-        print('Specified Redvest folder not found Librarianz Drive, please check Google Drive')
+    parent_name = redvest_options['parent-name']
+    redvest_id = util.get_folder_ids(service, name=parent_name)[0]
+    if redvest_id == None:
+        print(f'ERROR: "{parent_name}" folder not found in Red Vest directory, please check Google Drive')
         return None, None
+
+    folder_name = redvest_options["folder-name"]
 
     # See if target folder already exists
     if len(util.get_folder_ids(service, name=folder_name, parent=redvest_id)) > 0:
-        print(f'Folder \"{folder_name}\" already exists!')
+        print(f'ERROR: Folder \"{folder_name}\" already exists!')
         print("(You may need to remove the folder from the Trash in the Librarianz Drive)")
         return None, None
 
@@ -104,7 +105,7 @@ def redvest_creator():
     # Only make individual section folders if field set to true
     alias_map = None
     section_ids = None
-    if redvest_options["individual-sections"] == "True":
+    if redvest_options["individual-sections"]:
         # Read parts
         parts_dict = util.parse_options("parts.json")
         if parts_dict == None: return 1

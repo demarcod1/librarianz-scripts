@@ -19,7 +19,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     # See if this file already exists
     for file in cache[chart]["files"]:
         if file.get("name") == file_name:
-            print(f'WARNING: File with name "{file_name}" already exists!')
+            print(f'ERROR: File with name "{file_name}" already exists!')
             return False
     
     # Add parts files to the Parts folder and create a shortcut
@@ -55,22 +55,22 @@ def populate_cache(service, curr_id, old_id, chart, cache, options):
     try:
         # Find this chart's folder id
         res = util.get_chart_id(service, chart, [curr_id, old_id])
-        if not res: raise Exception
+        if not res: raise RuntimeError
         chart_id = res.get("chart_id")
-        if chart_id == None: raise Exception
+        if chart_id == None: raise RuntimeError
         
         # Determine whether the chart is in the "current chartz" or "old chartz" folder
         is_current = curr_id == res.get("parent_id")
 
         # Find this chart's parts foler id
         parts_id = util.get_parts_folder(service, chart, chart_id)
-        if parts_id == None: raise Exception
+        if parts_id == None: raise RuntimeError
         
         # Populate cache with this chart's data
         cache[chart] = { "chart_id": chart_id, "is_current": is_current, "parts_id": parts_id, "files": [] }
         cache[chart]["files"] = util.get_drive_files(service, chart_id, options["supported-file-types"])
         cache[chart]["files"].extend(util.get_drive_files(service, parts_id, options["supported-file-types"]))
-    except:
+    except RuntimeError:
         cache[chart] = { "chart_id": None, "is_current": None, "parts_id": None, "files": []}
 
 # Update the file with the specified path, return whether the update was successful
@@ -86,7 +86,7 @@ def update_file(service, filename, alias_map, cache, options):
         return False
     files = cache.get(chart).get('files')
     if not files or len(files) == 0:
-        print(f'WARNING: No files found for "{chart}"')
+        print(f'WARNING: No files found for "{chart}" in the Digital Library')
         return False
 
     for file in files:

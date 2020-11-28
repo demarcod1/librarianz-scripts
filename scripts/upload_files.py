@@ -60,6 +60,6 @@ def upload_files():
         elif added == True:
             print(f'Successfully added "{file}"')
         elif updated == False:
-            print(f'WARNING: Unable to update "{file}"')
+            print(f'ERROR: Unable to update "{file}"')
     
     return 0

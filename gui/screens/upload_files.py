@@ -64,7 +64,6 @@ class UploadFilesScreen(ttk.Frame):
         run_script_button.grid(row=4, column=1, sticky=(S, E), padx=20, pady=10)
 
         # Allow resizing
-        self.grid(row=0, column=0, sticky=(N, E, S, W))
         for row in range(5):
             self.rowconfigure(row, weight="1")
         self.columnconfigure(0, weight="1")

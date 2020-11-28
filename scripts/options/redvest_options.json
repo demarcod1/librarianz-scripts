@@ -1,6 +1,12 @@
 {
-  "parent-name": "Red Vest Winter Break 2020",
-  "folder-name": "Thankgiving Week (11/23)",
-  "chartz": ["Welcome to Paradise", "White Punks on Dope", "Brooklyn", "Everybody's Everything", "Our House", "Bill Tell"],
-  "individual-sections": "True"
+    "parent-name": "Bad Folder Name",
+    "folder-name": "Test Folder 2",
+    "chartz": [
+        "16 Military Wives",
+        "All Right Now",
+        "Call Me",
+        "Nonexistent",
+        "Starlight Brigade"
+    ],
+    "individual-sections": false
 }
