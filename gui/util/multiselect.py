@@ -45,18 +45,17 @@ class Multiselect(ttk.Labelframe):
         self.tree['yscrollcommand'] = scrolly.set
         scrolly.grid(row=0, column=1, sticky=(N, S, E, W))
 
-        treeview_frame.grid(row=0, column=0, rowspan=3, padx=10, pady=5)
+        treeview_frame.columnconfigure(0, weight='1')
+        treeview_frame.rowconfigure(0, weight='1')
 
         # New item entry
         self.entry_text = StringVar()
         entry = ttk.Entry(self, textvariable=self.entry_text)
-        entry.grid(row=0, column=1, padx=10, pady=5, sticky=(W, E, S))
         self.entry_text.trace_add('write', self.entry_changed)
 
         # Add item entry
         add_text = kwargs.get("addtext") or 'Add Item'
         self.add_entry = ttk.Button(self, text=add_text, command=self.add_item_cmd)
-        self.add_entry.grid(row=0, column=2, sticky=(E, W, S), padx=10, pady=5)
         self.add_entry.state(["disabled"])
         bind_button(self.add_entry)
         entry.bind("<Return>", lambda e: self.add_entry.invoke())
@@ -65,6 +64,7 @@ class Multiselect(ttk.Labelframe):
         
         # Select destination radio buttons
         self.destination = None
+        select_dest_frame = None
         if len(self.right_col) > 0:
             select_dest_frame = ttk.Frame(self)
             self.destination = IntVar()
@@ -84,17 +84,14 @@ class Multiselect(ttk.Labelframe):
             for i in range(3):
                 select_dest_frame.columnconfigure(i, weight="1")
 
-            select_dest_frame.grid(row=1, column=1, columnspan=2, sticky=(N, E, W), padx=10, pady=5)
         
         # Delete selection/all buttons
         self.del_sel = ttk.Button(self, text='Delete Selection', command=self.delete_selection)
-        self.del_sel.grid(row=2, column=1, sticky=(N, E, W), padx=10, pady=5)
         self.del_sel.state(['disabled'])
         bind_button(self.del_sel)
 
         self.warn_before_deleting = kwargs.get('warn')
         self.del_all = ttk.Button(self, text='Delete All', command=self.delete_all)
-        self.del_all.grid(row=2, column=2, sticky=(N, E, W), padx=10, pady=5)
         self.del_all.state(['disabled'])
         bind_button(self.del_all)
 
@@ -105,10 +102,38 @@ class Multiselect(ttk.Labelframe):
             self.insert_data(names[i], loc)
         self.tree_sort(False)
 
-        # Resize rows, cols
-        for i in range(4):
-            self.rowconfigure(i, weight="1")
-            self.columnconfigure(i, weight="1")
+        # Grid the items/handle orientation
+        if kwargs.get('orient') == 'vertical':
+            sel_dest_enabled = select_dest_frame != None
+            
+            entry.grid(row=0, column=0, padx=10, pady=2, sticky=E)
+            self.add_entry.grid(row=0, column=1, padx=2, pady=5, sticky=W)
+            if sel_dest_enabled: select_dest_frame.grid(row=1, column=0, columnspan=2, sticky=N, padx=10, pady=5)
+
+            treeview_frame.grid(row=1 + sel_dest_enabled, column=0, columnspan=2, padx=10, pady=5, sticky=(N, S, E, W))
+
+            self.del_sel.grid(row=2 + sel_dest_enabled, column=0, sticky=W, padx=10, pady=5)
+            self.del_all.grid(row=2 + sel_dest_enabled, column=1, sticky=E, padx=10, pady=5)
+
+            # Resize rows/columns
+            self.columnconfigure(0, weight='1')
+            self.columnconfigure(1, weight='1')
+            for i in range(3 + sel_dest_enabled):
+                self.rowconfigure(i, weight='1')
+        else:
+            treeview_frame.grid(row=0, column=0, rowspan=3, padx=10, pady=5, sticky=(N, E, S, W))
+
+            entry.grid(row=0, column=1, padx=10, pady=5, sticky=(W, E, S))
+            self.add_entry.grid(row=0, column=2, sticky=(E, W, S), padx=10, pady=5)
+            if (select_dest_frame != None): select_dest_frame.grid(row=1, column=1, columnspan=2, sticky=(N, E, W), padx=10, pady=5)
+
+            self.del_sel.grid(row=2, column=1, sticky=(N, E, W), padx=10, pady=5)
+            self.del_all.grid(row=2, column=2, sticky=(N, E, W), padx=10, pady=5)
+
+            # Resize rows, cols
+            for i in range(3):
+                self.rowconfigure(i, weight="1")
+                self.columnconfigure(i, weight="1")
 
     # Get the chosen values (all items from the tree)
     def get_chosen_values(self, key1=None, key2=None):

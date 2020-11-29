@@ -15,7 +15,8 @@ class ValidateOptions(ttk.Frame):
                                     title='Select Parts for Generating Folders',
                                     header='Part Name',
                                     addText='Add Part',
-                                    warn='False',
+                                    warn=False,
+                                    orient='vertical',
                                     height=10)
         self.parts_selection.grid(row=0, column=0, sticky=(N, E, S, W), padx=20, pady=10)
 

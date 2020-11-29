@@ -21,6 +21,7 @@ class MoveChartzScreen(ttk.Frame):
                                         key2='to',
                                         header='Chart Name',
                                         addtext='Add Chart',
+                                        orient='vertical',
                                         height=10,
                                         archive=True)
         self.new_chartz.grid(row=0, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)

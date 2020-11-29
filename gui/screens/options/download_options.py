@@ -15,9 +15,10 @@ class DownloadOptions(ttk.Frame):
                                     title='Select Parts to Download',
                                     header='Part Name',
                                     addText='Add Part',
-                                    warn='False',
+                                    warn=False,
+                                    orient='vertical',
                                     height=10)
-        self.dl_selection.grid(row=0, column=0, sticky=(N, E, S, W), padx=20, pady=10)
+        self.dl_selection.grid(row=0, column=0, sticky=(N, S, E, W), padx=20, pady=10)
 
         # Allow resizing
         self.rowconfigure(0, weight="1")
