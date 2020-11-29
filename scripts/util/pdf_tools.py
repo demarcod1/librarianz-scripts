@@ -1,4 +1,6 @@
 import json, os, glob
+
+from PyPDF2.pdf import PageObject
 from . import util
 from PyPDF2 import PdfFileReader, PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
@@ -136,6 +138,12 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
             # Add all the pages to the list
             for i in range(num_pages):
                 input_page = input.getPage(i)
+
+                # Verify that it has the proper dimensions
+                if not validate_mediabox(input_page, options):
+                    print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
+                    continue
+
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
         except OSError:
@@ -296,6 +304,15 @@ def validate_part(part, options):
     validate_titles(title_map, options, "scripts/options/folder_creator_options.json", verbose=options["verbose"])
 
     return title_map
+
+# Validates that a page has the proper dimensions
+def validate_mediabox(page: PageObject, options):
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
+    mediabox = page.mediaBox
+
+    return mediabox.getWidth() == width and mediabox.getHeight() == height
+
+
 
 # Validate and update the lists of files in the options list
 def validate_titles(title_map, options, update_path=None, verbose=False):
