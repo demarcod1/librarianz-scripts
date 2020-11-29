@@ -22,10 +22,10 @@ class MainMenu:
         move_chartz_frame = MoveChartzScreen(n)
         redvest_creator_frame = RedvestCreatorScreen(n)
 
-        n.add(folder_creator_frame, text='Folder Creator', padding=5, underline=0)
-        n.add(move_chartz_frame, text='Move Chartz', padding=5, underline=0)
-        n.add(redvest_creator_frame, text='Redvest Creator', padding=5, underline=0)
-        n.add(upload_files_frame, text='Upload Files', padding=5, underline=0)
+        n.add(folder_creator_frame, text='Folder Creator', underline=0)
+        n.add(move_chartz_frame, text='Move Chartz', underline=0)
+        n.add(redvest_creator_frame, text='Redvest Creator', underline=0)
+        n.add(upload_files_frame, text='Upload Files', underline=0)
         
         n.enable_traversal()
         n.grid(row=0, column=0, sticky=(N, E, S, W))

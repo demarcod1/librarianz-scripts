@@ -15,7 +15,7 @@ class DownloadOptions(ttk.Frame):
                                     title='Select Parts to Download',
                                     header='Part Name',
                                     addText='Add Part',
-                                    warn=False,
+                                    warn='False',
                                     height=10)
         self.dl_selection.grid(row=0, column=0, sticky=(N, E, S, W), padx=20, pady=10)
 
@@ -23,5 +23,5 @@ class DownloadOptions(ttk.Frame):
         self.rowconfigure(0, weight="1")
         self.columnconfigure(0, weight="1")
     
-    def get_options(self):
+    def get_dl_options(self):
         return { 'download-parts': self.dl_selection.get_chosen_values() }

@@ -1,3 +1,5 @@
+from gui.screens.options.toc_options import TOCOptions
+from gui.screens.options.validate_options import ValidateOptions
 from gui.screens.options.download_options import DownloadOptions
 from gui.util.util import bind_button
 from tkinter import *
@@ -19,19 +21,19 @@ class OptionsParent(Toplevel):
         n = ttk.Notebook(self, width=600, height=450, padding=5)
 
         # Add each frame to the notebook
-        download = DownloadOptions(n, self.options)
-        verify = ttk.Frame(n, border=10)
-        toc = ttk.Frame(n, border=5)
-        enumeration = ttk.Frame(n, border=10)
-        dollies = ttk.Frame(n, border=5)
-        rules = ttk.Frame(n, border=10)
+        self.download = DownloadOptions(n, self.options)
+        self.verify = ValidateOptions(n, self.options)
+        self.toc = TOCOptions(n, self.options)
+        self.enumeration = ttk.Frame(n, border=10)
+        self.dollies = ttk.Frame(n, border=5)
+        self.rules = ttk.Frame(n, border=10)
 
-        n.add(download, text='Download', padding=5, underline=0)
-        n.add(verify, text='Review', padding=5, underline=0)
-        n.add(toc, text='Table of Contents', padding=5, underline=0)
-        n.add(enumeration, text='Enumeration', padding=5, underline=0)
-        n.add(dollies, text='Dollies', padding=5, underline=2)
-        n.add(rules, text='Custom Rules', padding=5, underline=0)
+        n.add(self.download, text='Download', underline=0)
+        n.add(self.verify, text='Review', underline=0)
+        n.add(self.toc, text='Table of Contents', underline=0)
+        n.add(self.enumeration, text='Enumeration', underline=0)
+        n.add(self.dollies, text='Dollies', underline=2)
+        n.add(self.rules, text='Custom Rules', underline=0)
 
         n.select(kwargs.get('tab') or 0)
 
@@ -56,7 +58,9 @@ class OptionsParent(Toplevel):
         self.destroy()
     
     def save_options(self):
-        print('Saving options')
+        print(self.download.get_dl_options())
+        print(self.verify.get_validate_options())
+        print(self.toc.get_toc_options())
         self.destroy_self()
     
 

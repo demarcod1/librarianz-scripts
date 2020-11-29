@@ -88,13 +88,13 @@ class Multiselect(ttk.Labelframe):
         
         # Delete selection/all buttons
         self.del_sel = ttk.Button(self, text='Delete Selection', command=self.delete_selection)
-        self.del_sel.grid(row=2, column=1, sticky=(E, W), padx=10, pady=5)
+        self.del_sel.grid(row=2, column=1, sticky=(N, E, W), padx=10, pady=5)
         self.del_sel.state(['disabled'])
         bind_button(self.del_sel)
 
         self.warn_before_deleting = kwargs.get('warn')
         self.del_all = ttk.Button(self, text='Delete All', command=self.delete_all)
-        self.del_all.grid(row=2, column=2, sticky=(E, W), padx=10, pady=5)
+        self.del_all.grid(row=2, column=2, sticky=(N, E, W), padx=10, pady=5)
         self.del_all.state(['disabled'])
         bind_button(self.del_all)
 

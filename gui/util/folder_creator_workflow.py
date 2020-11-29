@@ -1,3 +1,4 @@
+from gui.util.util import bind_button
 from tkinter import *
 from tkinter import ttk
 
@@ -17,10 +18,12 @@ class FolderCreatorWorkflow(ttk.Labelframe):
 
         # Add Settings button
         settings_button = ttk.Button(self, text='Settings', command=optionsCallback)
+        bind_button(settings_button)
         settings_button.grid(row=1, column=0, sticky=(E, W), padx=10, pady=5)
 
         # Add Run Script button
         script_button = ttk.Button(self, text=scriptButtonName, command=scriptCallback)
+        bind_button(script_button)
         script_button.grid(row=2, column=0, sticky=(E, W), padx=10, pady=5)
 
         # Make resizeable

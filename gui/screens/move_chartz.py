@@ -26,10 +26,10 @@ class MoveChartzScreen(ttk.Frame):
         self.new_chartz.grid(row=0, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 
         # Run script/Close buttons
-        run_script_button = ttk.Button(self, text='Move Chartz', command=self.run_script)
-        bind_button(run_script_button)
         close_button = ttk.Button(self, text='Close', command=lambda: parent.master.destroy())
         bind_button(close_button)
+        run_script_button = ttk.Button(self, text='Move Chartz', command=self.run_script)
+        bind_button(run_script_button)
 
         close_button.grid(row=1, column=0, sticky=(S, W), padx=20, pady=10)
         run_script_button.grid(row=1, column=1, sticky=(S, E), padx=20, pady=10)
