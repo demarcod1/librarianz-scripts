@@ -51,6 +51,7 @@ class UploadFilesScreen(ttk.Frame):
                                             title='Supported File Types',
                                             header='File Type',
                                             addtext='Add File Type',
+                                            warn=True,
                                             height=6)
         self.file_extensions.grid(row=3, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 

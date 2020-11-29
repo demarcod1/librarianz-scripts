@@ -14,7 +14,7 @@ class MainMenu:
         parent.minsize(600, 550)
 
         # Create notebook
-        n = ttk.Notebook(parent, width=650, height=600)
+        n = ttk.Notebook(parent, width=650, height=600, padding=5)
 
         # Add each frame to the notebook
         folder_creator_frame = FolderCreatorScreen(n)
@@ -22,10 +22,10 @@ class MainMenu:
         move_chartz_frame = MoveChartzScreen(n)
         redvest_creator_frame = RedvestCreatorScreen(n)
 
-        n.add(folder_creator_frame, text='Folder Creator')
-        n.add(move_chartz_frame, text='Move Chartz')
-        n.add(redvest_creator_frame, text='Redvest Creator')
-        n.add(upload_files_frame, text='Upload Files')
+        n.add(folder_creator_frame, text='Folder Creator', padding=5, underline=0)
+        n.add(move_chartz_frame, text='Move Chartz', padding=5, underline=0)
+        n.add(redvest_creator_frame, text='Redvest Creator', padding=5, underline=0)
+        n.add(upload_files_frame, text='Upload Files', padding=5, underline=0)
         
         n.enable_traversal()
         n.grid(row=0, column=0, sticky=(N, E, S, W))

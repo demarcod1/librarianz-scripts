@@ -1,3 +1,5 @@
+from gui.screens.options.options_parent import OptionsParent
+from gui.util.util import bind_button
 from scripts.folder_creator import folder_creator
 from scripts.validate_folder_files import validate_folder_files
 from scripts.download_parts import download_parts
@@ -46,7 +48,7 @@ class FolderCreatorScreen(ttk.Frame):
                                             description="Downloads files from the Digial Library onto your local machine at the target directory specified above",
                                             scriptButtonName="Download Files",
                                             scriptCallback=self.runDownloadScript,
-                                            optionsCallback=self.downloadOptions)
+                                            optionsCallback=lambda: self.open_options(0))
         dl_workflow.grid(row=0, column=0, sticky=(N, E, S, W), padx=0, pady=5)
 
         # Validate Folders Workflow
@@ -54,15 +56,15 @@ class FolderCreatorScreen(ttk.Frame):
                                                 description="Validates the folder structure at the target directory, and optionally outputs a sample table of contents",
                                                 scriptButtonName='Validate Folder',
                                                 scriptCallback=self.runValidateScript,
-                                                optionsCallback=self.validateOptions)
+                                                optionsCallback=lambda: self.open_options(1))
         validate_workflow.grid(row=0, column=1, sticky=(N, E, S, W), padx=20, pady=5)
 
         # Create Folders workflow
         create_folders = FolderCreatorWorkflow(parent=workflow_frame,
-                                                description="Writes the folders to the Output folder in the target directory\n\nThis takes about 2-3 mins to complete per part",
+                                                description="Writes the folders to the Output folder in the target directory\n\nThis takes about 3-5 mins to complete per part",
                                                 scriptButtonName='Generate Folders',
                                                 scriptCallback=self.runFolderCreatorScript,
-                                                optionsCallback=self.folderCreatorOptions)
+                                                optionsCallback=lambda: self.open_options(2))
         create_folders.grid(row=0, column=2, sticky=(N, E, S, W), padx=0, pady=5)
 
         # Make Workflow Frame resizeable
@@ -70,11 +72,16 @@ class FolderCreatorScreen(ttk.Frame):
         workflow_frame.rowconfigure(0, weight='1')
         for i in range(3): workflow_frame.columnconfigure(i, weight='1')
         
+        # Run script/Close buttons
+        close_button = ttk.Button(self, text='Close', command=lambda: parent.master.destroy())
+        bind_button(close_button)
+
+        close_button.grid(row=3, column=0, sticky=(S, W), padx=20, pady=10)
 
         # Make resizeable
-        for i in range(5):
+        for i in range(4):
             self.rowconfigure(i, weight='1')
-        self.columnconfigure(0, weight='1')
+        self.columnconfigure(1, weight='1')
     
     def write_options_and_withdraw(self):
         self.options['verbose'] = self.verbose.get()
@@ -85,23 +92,28 @@ class FolderCreatorScreen(ttk.Frame):
         self.master.master.withdraw()
 
     # Re-show main window
-    def callback(self, code):
+    def script_callback(self, code):
         self.master.master.deiconify()
         print(f"Thread Finished with code {code}")
 
+    def options_callback(self):
+        self.master.master.deiconify()
+
+    def open_options(self, tab):
+        self.withdraw_self()
+        OptionsParent(self, self.options, self.options_callback, tab=tab)
+    
+    def withdraw_self(self):
+        self.master.master.withdraw()
+
     def runDownloadScript(self):
         self.write_options_and_withdraw()
-        ScriptProgress(self, script=download_parts, callback=self.callback, title='Downloading Parts from Digital Library...', name='Parts Downloader', safe=True)
-    
-    def downloadOptions(self):
-        print("dl options")
+        ScriptProgress(self, script=download_parts, callback=self.script_callback, title='Downloading Parts from Digital Library...', name='Parts Downloader', safe=True)
+        
 
     def runValidateScript(self):
         self.write_options_and_withdraw()
-        ScriptProgress(self, script=validate_folder_files, callback=self.callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
-    
-    def validateOptions(self):
-        print("verify options")
+        ScriptProgress(self, script=validate_folder_files, callback=self.script_callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
     
     def runFolderCreatorScript(self):
         def folder_creator_wrapper():
@@ -109,8 +121,5 @@ class FolderCreatorScreen(ttk.Frame):
             print(f'To generate the folder faster, run "{"py" if platform.system() == "Windows" else "python3"} librarianz_scripts.py -s folder_creator"')
             folder_creator()
         
-        self.write_options_and_withdraw()
-        ScriptProgress(self, script=folder_creator_wrapper, callback=self.callback, title='Generating Folders...', name='Folder Creator', safe=True)
-    
-    def folderCreatorOptions(self):
-        print("folder creator options")
+        self.withdraw_self()
+        ScriptProgress(self, script=folder_creator_wrapper, callback=self.script_callback, title='Generating Folders...', name='Folder Creator', safe=True)

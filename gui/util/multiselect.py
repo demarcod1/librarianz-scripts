@@ -37,22 +37,15 @@ class Multiselect(ttk.Labelframe):
             self.tree.heading('#1', text=self.right_col[0])
             self.tree.column('#1', stretch=YES, width=80)
         self.tree.bind('<<TreeviewSelect>>', lambda e: self.tree_selection_changed())
+        self.tree.bind('<Control-a>', self.select_all)
+        self.bind('<Button-1>', self.clear_selection)
         self.tree.grid(row=0, column=0, stick=(N, E, S, W))
 
-        scrollx = ttk.Scrollbar(treeview_frame, orient='horizontal', command=self.tree.xview)
         scrolly = ttk.Scrollbar(treeview_frame, orient='vertical', command=self.tree.yview)
-        self.tree['xscrollcommand'] = scrollx.set
         self.tree['yscrollcommand'] = scrolly.set
-        scrollx.grid(row=1, column=0, sticky=(E, W, N, S))
         scrolly.grid(row=0, column=1, sticky=(N, S, E, W))
 
         treeview_frame.grid(row=0, column=0, rowspan=3, padx=10, pady=5)
-        
-        # Add items to treeview
-        for i in range(len(names)):
-            loc = locs[i] if i < len(locs) else None
-            self.insert_data(names[i], loc)
-        self.tree_sort(False)
 
         # New item entry
         self.entry_text = StringVar()
@@ -93,16 +86,24 @@ class Multiselect(ttk.Labelframe):
 
             select_dest_frame.grid(row=1, column=1, columnspan=2, sticky=(N, E, W), padx=10, pady=5)
         
-        # Clear/Delete selection button
-        self.clear_sel = ttk.Button(self, text='Clear Selection', command=self.clear_selection)
-        self.clear_sel.grid(row=2, column=1, sticky=(E, W), padx=10, pady=5)
-        self.clear_sel.state(['disabled'])
-        bind_button(self.clear_sel)
-
+        # Delete selection/all buttons
         self.del_sel = ttk.Button(self, text='Delete Selection', command=self.delete_selection)
-        self.del_sel.grid(row=2, column=2, sticky=(E, W), padx=10, pady=5)
+        self.del_sel.grid(row=2, column=1, sticky=(E, W), padx=10, pady=5)
         self.del_sel.state(['disabled'])
         bind_button(self.del_sel)
+
+        self.warn_before_deleting = kwargs.get('warn')
+        self.del_all = ttk.Button(self, text='Delete All', command=self.delete_all)
+        self.del_all.grid(row=2, column=2, sticky=(E, W), padx=10, pady=5)
+        self.del_all.state(['disabled'])
+        bind_button(self.del_all)
+
+                
+        # Add items to treeview
+        for i in range(len(names)):
+            loc = locs[i] if i < len(locs) else None
+            self.insert_data(names[i], loc)
+        self.tree_sort(False)
 
         # Resize rows, cols
         for i in range(4):
@@ -132,11 +133,9 @@ class Multiselect(ttk.Labelframe):
     # Trigger if the tree's selection changed
     def tree_selection_changed(self, *args):
         if len(self.tree.selection()):
-            self.clear_sel.state(['!disabled'])
-            self.del_sel.state(["!disabled"])
+            self.del_sel.state(['!disabled'])
         else:
-            self.clear_sel.state(['disabled'])
-            self.del_sel.state(["disabled"])
+            self.del_sel.state(['disabled'])
 
     # Trigger if the entry field changed
     def entry_changed(self, *args):
@@ -149,15 +148,26 @@ class Multiselect(ttk.Labelframe):
     def clear_selection(self, *args):
         for item in self.tree.selection():
             self.tree.selection_remove(item)
+        
+    # Selects all items in the tree
+    def select_all(self, *args):
+        for item in self.tree.get_children():
+            self.tree.selection_add(item)
+
+    # Deletes all tree elements
+    def delete_all(self, *args):
+        self.select_all()
+        self.delete_selection()
+        self.clear_selection()
 
     # Deletes the selected tree elements
     def delete_selection(self, *args):
         selection = self.tree.selection()
-        if messagebox.askokcancel(parent=self, title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning'):
+        if (not self.warn_before_deleting and (len(selection) < 3 or len(self.tree.get_children('')) >= 2 * len(selection))) or messagebox.askyesno(parent=self, title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning', default='no'):
             for item in selection:
                 self.tree.delete(item)
+            if not len(self.tree.get_children('')): self.del_all.state(['disabled'])
             self.del_sel.state(['disabled'])
-            self.clear_sel.state(['disabled'])
 
     # Adds an item to the tree, in sorted order
     def add_item_cmd(self, *args):
@@ -171,6 +181,7 @@ class Multiselect(ttk.Labelframe):
     def insert_data(self, item, loc=None, index="end"):
         values = [] if loc == None else ["Current"] if loc == 0 else ["Old"] if loc == 1 else ["Archive"]
         self.tree.insert('', index=index, text=item, values=values)
+        self.del_all.state(['!disabled'])
 
 
 
