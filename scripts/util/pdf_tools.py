@@ -84,7 +84,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
     
     # Print success
-    print(f'Finished downloading part files for "{part}"')
+    print(f'Successfully finished downloading part files for "{part}"')
 
 # Enforce ordering rules
 def enforceRules(list, rules, title_map):

@@ -59,4 +59,5 @@ def upload_files():
         elif updated == False:
             print(f'ERROR: Unable to update "{file}"')
     
+    print("Finished uploading files")
     return 0

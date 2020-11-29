@@ -76,11 +76,13 @@ class FolderCreatorScreen(ttk.Frame):
             self.rowconfigure(i, weight='1')
         self.columnconfigure(0, weight='1')
     
-    def write_options(self):
+    def write_options_and_withdraw(self):
         self.options['verbose'] = self.verbose.get()
         self.options['folder-dir'] = self.select_directory.get_path()
         self.options['folder-name'] = self.folder_name_entry.get_entry()
         write_options(self.options, "folder_creator_options.json")
+
+        self.master.master.withdraw()
 
     # Re-show main window
     def callback(self, code):
@@ -88,14 +90,14 @@ class FolderCreatorScreen(ttk.Frame):
         print(f"Thread Finished with code {code}")
 
     def runDownloadScript(self):
-        self.write_options()
+        self.write_options_and_withdraw()
         ScriptProgress(self, script=download_parts, callback=self.callback, title='Downloading Parts from Digital Library...', name='Parts Downloader', safe=True)
     
     def downloadOptions(self):
         print("dl options")
 
     def runValidateScript(self):
-        self.write_options()
+        self.write_options_and_withdraw()
         ScriptProgress(self, script=validate_folder_files, callback=self.callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
     
     def validateOptions(self):
@@ -107,7 +109,7 @@ class FolderCreatorScreen(ttk.Frame):
             print(f'To generate the folder faster, run "{"py" if platform.system() == "Windows" else "python3"} librarianz_scripts.py -s folder_creator"')
             folder_creator()
         
-        self.write_options()
+        self.write_options_and_withdraw()
         ScriptProgress(self, script=folder_creator_wrapper, callback=self.callback, title='Generating Folders...', name='Folder Creator', safe=True)
     
     def folderCreatorOptions(self):

@@ -111,5 +111,6 @@ def move_chartz():
     for chart_to_move in options["chartz"]:
         print(f'Moving chart {chart_to_move["name"]}...')
         move_chart(service, ids, sep_parts, chart_to_move, alias_map)
-    
+
+    print("Finished moving chartz")
     return 0

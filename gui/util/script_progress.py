@@ -70,7 +70,7 @@ class ScriptProgress(Toplevel):
                     return ('warning')
                 elif 'ERROR' in str:
                     return ('error')
-                elif 'uccess' in str or 'Finished downloading' in str:
+                elif 'uccess' in str:
                     return ('success')
                 else:
                     return ('none')
@@ -116,7 +116,7 @@ class ScriptProgress(Toplevel):
     # Logic for self-destruction
     def destroy_self(self):
         if self.active and hasattr(self, 'thread'):
-            if (self.safe_to_abort and messagebox.askokcancel(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script?', icon='warning')) or (not self.safe_to_abort and messagebox.askyesnocancel(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script? Doing so may corrupt the Digital Library shortcuts.', icon='error')):
+            if messagebox.askyesno(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script? {"Doing so may corrupt the Digital Library shortcuts." if not self.safe_to_abort else ""}', icon='warning' if self.safe_to_abort else 'error', default='no'):
                 self.thread.kill()
                 self.destroy_after_callback = True
         else: self.destroy()

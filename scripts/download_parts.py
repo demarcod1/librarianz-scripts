@@ -25,4 +25,5 @@ def download_parts():
         print(f'Downloading files for part "{part}"')
         pdf_tools.download_part_files(service, curr_parts_id, part, os.path.join(options["folder-dir"], "parts"), options["verbose"])
     
+    print("Finished downloading parts")
     return 0
