@@ -212,9 +212,9 @@ def get_folder_ids(service, id = None, name = None, parent = None):
     if (id != None):
         res = service.files().get(fileId=id, fields="id").execute()
         if res.get("id") and res["id"] == id: return [id]
-        return [None]
+        return None
     
-    if (name == None): return [None]
+    if (name == None): return None
 
     # Check folder by name + parent (optional) 
     qstring = f'name="{name}" and mimeType="application/vnd.google-apps.folder"'
@@ -225,7 +225,7 @@ def get_folder_ids(service, id = None, name = None, parent = None):
                                     fields='files(id)',
                                     includeItemsFromAllDrives=True,
                                     supportsAllDrives=True).execute()
-    return [ res.get("id") for res in results.get("files") or [{}] ]
+    return [ res.get("id") for res in results.get("files") ] if results.get("files") else None
 
 # Verify and return the digital library
 def get_digital_library(service):
@@ -235,7 +235,7 @@ def get_digital_library(service):
 
     # DigitalLibrary folder
     library_res = get_folder_ids(service, name="DigitalLibrary", parent="root")
-    if (not library_res or len(library_res) != 1):
+    if library_res == None or len(library_res) != 1:
         print('"DigitalLibrary" folder not found in root Drive directory, please check Google Drive')
         return None, None, None
     library_id = library_res[0]
@@ -285,20 +285,20 @@ def get_separated_folders(service, library_id):
     for folder_name, abbr in folder_names:
         # Look for folder within Digital Library
         ids = get_folder_ids(service, name=folder_name, parent=library_id)
-        if len(ids) != 1:
+        if not ids or len(ids) != 1:
             print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
             return None
         
         # Look for Current Chartz folder
         curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
-        if len(curr_ids) != 1:
+        if not curr_ids or len(curr_ids) != 1:
             print(f'ERROR: Unable to find folder "Current Chartz" within "{folder_name}"')
             return None
         separated_ids[f'{abbr}_curr'] = curr_ids[0]
         
         # Look for Old Chartz folder
         old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
-        if len(old_ids) != 1:
+        if not old_ids or len(old_ids) != 1:
             print(f'ERROR: Unable to find folder "Old Chartz" within "{folder_name}"')
             return None
         separated_ids[f'{abbr}_old'] = old_ids[0]

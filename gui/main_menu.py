@@ -1,3 +1,4 @@
+from gui.screens.folder_creator import FolderCreatorScreen
 from gui.screens.redvest_creator import RedvestCreatorScreen
 from gui.screens.move_chartz import MoveChartzScreen
 from gui.screens.upload_files import UploadFilesScreen
@@ -16,7 +17,7 @@ class MainMenu:
         n = ttk.Notebook(parent, width=650, height=600)
 
         # Add each frame to the notebook
-        folder_creator_frame = ttk.Frame(n, relief='solid')
+        folder_creator_frame = FolderCreatorScreen(n)
         upload_files_frame = UploadFilesScreen(n)
         move_chartz_frame = MoveChartzScreen(n)
         redvest_creator_frame = RedvestCreatorScreen(n)

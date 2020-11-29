@@ -16,7 +16,7 @@ class UploadFilesScreen(ttk.Frame):
         self.options = parse_options("upload_options.json")
 
         # Directory selection       
-        self.select_directory = SelectDirectory(self, path=self.options["resources-directory"])
+        self.select_directory = SelectDirectory(self, path=self.options["resources-directory"], title='Select Resources Folder')
         self.select_directory.grid(row=0, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 
         # Mode selection + title match checkbox

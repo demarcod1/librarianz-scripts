@@ -27,7 +27,7 @@ def folder_creator():
 
         # Cleanup temp files
         os.remove(toc_path)
-        os.remove(os.path.join(options["folder-dir"], "tmp", "page_num.pdf"))
+        #os.remove(os.path.join(options["folder-dir"], "tmp", "page_num.pdf"))
 
         # Write file
         file_path = os.path.join(options["folder-dir"], "Output")

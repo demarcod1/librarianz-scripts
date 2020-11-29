@@ -23,6 +23,7 @@ class SelectDirectory(ttk.Labelframe):
         bind_button(path_button)
 
         # Allow this to be resizeable
+        self.rowconfigure(0, weight='1')
         self.columnconfigure(0, weight="1", minsize=200)
         self.columnconfigure(1, weight="1", minsize=30)
    

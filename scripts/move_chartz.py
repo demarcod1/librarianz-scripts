@@ -18,7 +18,7 @@ def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
 def replace_shortcuts(service, ids, sep_parts, chart, chart_id, dst, alias_map):
     # Find "Shortcuts" folder
     res = util.get_folder_ids(service, name="Shortcuts", parent=chart_id)
-    if not res or len(res) != 1:
+    if res == None:
         print(f'WARNING: Unable to find "Shortcuts" folder within "{chart}"')
         return
     shortcut_id = res[0]
@@ -59,7 +59,7 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
 
     # Ensure we're not trying to move to the same place
     res = util.get_chart_id(service, chart, [ ids["curr"], ids["old"], ids["archive"] ])
-    if res == None: return
+    if res["chart_id"] == None: return
     chart_id = res["chart_id"]
     parent_id = res["parent_id"]
     src = "curr" if parent_id == ids["curr"] else "old" if parent_id == ids["old"] else "archive" 

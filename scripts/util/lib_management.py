@@ -26,7 +26,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     if part:
         file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, parts_id, mime_type=mimeType)
         sep_part_ids = util.get_folder_ids(service, name=part, parent=sep_sec_id)
-        if len(sep_part_ids) != 1:
+        if sep_part_ids == None:
             print(f'WARNING: Unable to create shortcut in Separated Section Parts for "{file_name}"')
         else: util.make_shortcut(service, file_name, file_id, sep_part_ids[0])
         return True
@@ -40,7 +40,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
 # Creates a new directory + parts folder for a new chart to be housed
 def create_chart_structure(service, chartz_id, chart_name):
     # Ensure this chart doesn't already exist!
-    if len(util.get_folder_ids(service, name=chart_name, parent=chartz_id)) > 0:
+    if util.get_folder_ids(service, name=chart_name, parent=chartz_id) != None:
         print(f'WARNING: Chart with name "{chart_name}" already exists, no new folder will be created')
         return None, None
     

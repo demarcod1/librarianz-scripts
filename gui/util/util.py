@@ -44,6 +44,7 @@ def spawn_thread(script, callback, scriptName='Script'):
     # Define target that the thread should run
     def target():
         try:
+            print(f"Starting {scriptName} script...")
             res = script()
             if res == None: res = 1
             callback(res)

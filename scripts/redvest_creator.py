@@ -8,15 +8,16 @@ RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]
 def verify_redvest(service, redvest_options):
     # Ensure redvest folder exists
     parent_name = redvest_options['parent-name']
-    redvest_id = util.get_folder_ids(service, name=parent_name)[0]
-    if redvest_id == None:
+    res = util.get_folder_ids(service, name=parent_name)
+    if res == None:
         print(f'ERROR: "{parent_name}" folder not found in Red Vest directory, please check Google Drive')
         return None, None
+    redvest_id = res[0]
 
     folder_name = redvest_options["folder-name"]
 
     # See if target folder already exists
-    if len(util.get_folder_ids(service, name=folder_name, parent=redvest_id)) > 0:
+    if util.get_folder_ids(service, name=folder_name, parent=redvest_id) != None:
         print(f'ERROR: Folder \"{folder_name}\" already exists!')
         print("(You may need to remove the folder from the Trash in the Librarianz Drive)")
         return None, None

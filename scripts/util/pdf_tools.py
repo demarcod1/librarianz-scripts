@@ -13,6 +13,9 @@ def add_page_num(page, text: str, options):
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
     path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
 
+    if not os.path.isfile(path):
+        with open(path, 'w') as f: pass
+
     # Draw text on canvas
     page_num = canvas.Canvas(path, pagesize=(width, height))
     page_num.setFont(font, size)
@@ -79,6 +82,9 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     for file in files:
         # print(file)
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
+    
+    # Print success
+    print(f'Finished downloading part files for "{part}"')
 
 # Enforce ordering rules
 def enforceRules(list, rules, title_map):
@@ -121,7 +127,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                 continue
 
             # Read input file
-            input = PdfFileReader(open("not a file", 'rb'))
+            input = PdfFileReader(open(file, 'rb'))
             num_pages = input.getNumPages()
             page_num = f'{counter}'
 

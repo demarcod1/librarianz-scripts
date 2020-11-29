@@ -3,9 +3,6 @@ from .util import lib_management
 
 # Main method
 def upload_files():
-    # A quick print statement to let the user know what script they're running
-    print("Starting Upload Files script...")
-
     # Build service
     service = util.build_service()
 

@@ -20,7 +20,6 @@ class ScriptProgress(Toplevel):
         self.attributes("-topmost", 1)
         self.title(title)
         self.resizable(FALSE, FALSE)
-        self.geometry(geometry or "475x300")
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)
 
         # Create label
@@ -35,7 +34,7 @@ class ScriptProgress(Toplevel):
         # Create text console area within dummy frame
         dummy_frame = ttk.Frame(self)
 
-        self.console = Text(dummy_frame, width=50, height=8, wrap='none')
+        self.console = Text(dummy_frame, width=70, height=12, wrap='none', font=('Courier', '9'))
         self.console["state"] = "disabled"
         self.console.grid(row=0, column=0, sticky=(N, E, S, W))
         self.console.tag_configure('warning', foreground='Orange')
@@ -47,10 +46,13 @@ class ScriptProgress(Toplevel):
         scrolly = ttk.Scrollbar(dummy_frame, orient='vertical', command=self.console.yview)
         self.console['xscrollcommand'] = scrollx.set
         self.console['yscrollcommand'] = scrolly.set
-        scrollx.grid(row=1, column=0, sticky=(E, W, N, S))
-        scrolly.grid(row=0, column=1, sticky=(N, S, E, W))
+        scrollx.grid(row=1, column=0, sticky=(E, W, N))
+        scrolly.grid(row=0, column=1, sticky=(N, S, W))
         
         dummy_frame.grid(row=2, column=0, padx=20, pady=2, sticky=(N, S, E, W))
+        for i in (0, 1):
+            dummy_frame.rowconfigure(i, weight='1')
+            dummy_frame.columnconfigure(i, weight='1')
 
         # Map stdout to this console
         class RedirectStdout(object):
@@ -68,7 +70,7 @@ class ScriptProgress(Toplevel):
                     return ('warning')
                 elif 'ERROR' in str:
                     return ('error')
-                elif 'uccess' in str:
+                elif 'uccess' in str or 'Finished writing' in str or 'Finished downloading' in str:
                     return ('success')
                 else:
                     return ('none')
@@ -77,7 +79,7 @@ class ScriptProgress(Toplevel):
 
         # Create abort/return button
         self.button_text = StringVar()
-        self.button_text.set(f'Abort {self.name} script')
+        self.button_text.set(f'Abort {self.name} Script')
         main_button = ttk.Button(self, textvariable=self.button_text, command=self.destroy_self)
         bind_button(main_button)
         main_button.grid(row=3, column=0, sticky=S, padx=20, pady=10)
