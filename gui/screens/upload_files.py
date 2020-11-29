@@ -85,5 +85,5 @@ class UploadFilesScreen(ttk.Frame):
             print(f"Thread Finished with code {code}")
         
 
-        ScriptProgress(self, script=upload_files, callback=callback, title="Uploading Files...", name="Upload Files")
+        ScriptProgress(self, script=upload_files, callback=callback, title="Uploading Files...", name="Upload Files", safe=self.options['mode'] == 0)
         self.master.master.withdraw()

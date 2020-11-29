@@ -8,6 +8,7 @@ from gui.util.select_directory import SelectDirectory
 from scripts.util.util import parse_options, write_options
 from tkinter import *
 from tkinter import ttk
+import platform
 
 class FolderCreatorScreen(ttk.Frame):
 
@@ -88,21 +89,26 @@ class FolderCreatorScreen(ttk.Frame):
 
     def runDownloadScript(self):
         self.write_options()
-        ScriptProgress(self, script=download_parts, callback=self.callback, title='Downloading Parts from Digital Library...', name='Parts Downloader')
+        ScriptProgress(self, script=download_parts, callback=self.callback, title='Downloading Parts from Digital Library...', name='Parts Downloader', safe=True)
     
     def downloadOptions(self):
         print("dl options")
 
     def runValidateScript(self):
         self.write_options()
-        ScriptProgress(self, script=validate_folder_files, callback=self.callback, title='Validating Target Directory...', name='Folder + File Validation')
+        ScriptProgress(self, script=validate_folder_files, callback=self.callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
     
     def validateOptions(self):
         print("verify options")
     
     def runFolderCreatorScript(self):
+        def folder_creator_wrapper():
+            print("WARNING: Running this script with the UI active takes significantly more time due to python threading limitations")
+            print(f'To generate the folder faster, run "{"py" if platform.system() == "Windows" else "python3"} librarianz_scripts.py -s folder_creator"')
+            folder_creator()
+        
         self.write_options()
-        ScriptProgress(self, script=folder_creator, callback=self.callback, title='Generating Folders...', name='Folder Creator')
+        ScriptProgress(self, script=folder_creator_wrapper, callback=self.callback, title='Generating Folders...', name='Folder Creator', safe=True)
     
     def folderCreatorOptions(self):
         print("folder creator options")

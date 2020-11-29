@@ -110,7 +110,7 @@ def enforceRules(list, rules, title_map):
 # Enumerates all the pdf documents, returning a list of pages
 # style: 0 = numbers, 1 = Letters, parts_map: will be modified to include mapping from counter -> file
 # write_pages: true if you wish to return a bunch of pages, false if you only want mappings
-def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pages=False):
+def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pages=False, verbose=False):
     pages = []
     if start == None:
         start = 1 if style == 0 else 'A'
@@ -120,6 +120,8 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
         try:         
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
+            if verbose and write_pages:
+                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -146,7 +148,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
 # Generates the song files for a folder, returning a list of pages
 # If write_pages is false, it will populate maps but not write any actual pages
-def generate_parts_pages(title_map, toc_maps, options, write_pages=False):
+def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbose=False):
     output = []
     lettered, numbered, special = categorize_parts(title_map, options)
 
@@ -155,14 +157,14 @@ def generate_parts_pages(title_map, toc_maps, options, write_pages=False):
         output.extend(to_pages(special["fingering_chart"][0]))
 
     # Lettered chartz
-    output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages))
+    output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages, verbose=verbose))
 
     # Numbered chartz
-    output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages))
+    output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages, verbose=verbose))
 
     # Teazers
     if len(special["teazers"]):
-        output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages))
+        output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages, verbose=verbose))
     
     return output
 

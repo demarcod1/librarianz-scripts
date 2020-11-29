@@ -120,5 +120,5 @@
         },
         "num-cols": 3
     },
-    "verbose": false
+    "verbose": true
 }

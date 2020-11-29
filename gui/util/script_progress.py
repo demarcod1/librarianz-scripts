@@ -1,3 +1,4 @@
+from tkinter.messagebox import askyesnocancel
 from gui.util.util import bind_button, spawn_thread
 from tkinter import *
 from tkinter import ttk, messagebox
@@ -8,16 +9,15 @@ class ScriptProgress(Toplevel):
         # Set variables
         self.script = script
         self.callback = callback
+        self.safe_to_abort = kwargs.get('safe') or False
         self.destroy_after_callback = False
         self.active = True
         self.name = kwargs.get("name") or "Script"
         title = kwargs.get("title") or "Script Progress"
-        geometry = kwargs.get("geometry")
         self.old_stdout = sys.stdout
 
         # Initialize window
         Toplevel.__init__(self, parent)
-        self.attributes("-topmost", 1)
         self.title(title)
         self.resizable(FALSE, FALSE)
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)
@@ -26,7 +26,7 @@ class ScriptProgress(Toplevel):
         self.label = ttk.Label(self, text=f'{self.name} script in progress...')
         self.label.grid(row=0, column=0, sticky=(N, S, E, W), padx=20, pady=2)
 
-        # Create progressbar 
+        # Create progressbar
         self.prog_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=200)
         self.prog_bar.start(25)
         self.prog_bar.grid(row=1, column=0, sticky=(N, E, W), padx=20, pady=2)
@@ -70,7 +70,7 @@ class ScriptProgress(Toplevel):
                     return ('warning')
                 elif 'ERROR' in str:
                     return ('error')
-                elif 'uccess' in str or 'Finished writing' in str or 'Finished downloading' in str:
+                elif 'uccess' in str or 'Finished downloading' in str:
                     return ('success')
                 else:
                     return ('none')
@@ -78,11 +78,16 @@ class ScriptProgress(Toplevel):
         sys.stdout = RedirectStdout(self.console)
 
         # Create abort/return button
-        self.button_text = StringVar()
-        self.button_text.set(f'Abort {self.name} Script')
-        main_button = ttk.Button(self, textvariable=self.button_text, command=self.destroy_self)
-        bind_button(main_button)
-        main_button.grid(row=3, column=0, sticky=S, padx=20, pady=10)
+        self.button_text = StringVar()       
+        self.main_button = ttk.Button(self, textvariable=self.button_text, command=self.destroy_self)
+        bind_button(self.main_button)
+        self.main_button.grid(row=3, column=0, sticky=S, padx=20, pady=10)
+
+        # Set button text
+        if not self.safe_to_abort:
+            self.button_text.set(f'Unsafe to Abort {self.name} Script')
+            self.main_button.state(['disabled'])
+        else: self.button_text.set(f'Abort {self.name} Script')
 
         # Allow resizing
         self.columnconfigure(0, weight="1")
@@ -94,6 +99,7 @@ class ScriptProgress(Toplevel):
         def inner_callback(code):
             self.deactivate()
             self.callback(code)
+            self.deiconify()
             if (self.destroy_after_callback): self.destroy()
 
         self.thread = spawn_thread(self.script, inner_callback, self.name)
@@ -104,12 +110,13 @@ class ScriptProgress(Toplevel):
         self.prog_bar.stop()
         self.active = False
         self.button_text.set("Return to Main Menu")
+        self.main_button.state(['!disabled'])
         self.label['text'] = f'Finished running {self.name} script'
     
     # Logic for self-destruction
     def destroy_self(self):
         if self.active and hasattr(self, 'thread'):
-            if messagebox.askokcancel(title='Running Script', message=f'Are you sure you wish to abort the {self.name} script?'):
+            if (self.safe_to_abort and messagebox.askokcancel(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script?', icon='warning')) or (not self.safe_to_abort and messagebox.askyesnocancel(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script? Doing so may corrupt the Digital Library shortcuts.', icon='error')):
                 self.thread.kill()
                 self.destroy_after_callback = True
         else: self.destroy()

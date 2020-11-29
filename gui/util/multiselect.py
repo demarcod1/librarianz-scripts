@@ -153,7 +153,7 @@ class Multiselect(ttk.Labelframe):
     # Deletes the selected tree elements
     def delete_selection(self, *args):
         selection = self.tree.selection()
-        if messagebox.askokcancel(title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning'):
+        if messagebox.askokcancel(parent=self, title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning'):
             for item in selection:
                 self.tree.delete(item)
             self.del_sel.state(['disabled'])
