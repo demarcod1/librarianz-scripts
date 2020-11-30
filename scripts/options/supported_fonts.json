@@ -1,0 +1,18 @@
+{
+    "default": [
+        "Times-Roman",
+        "Times-Bold",
+        "Times-Italic",
+        "Times-BoldItalic",
+        "Courier",
+        "Courier",
+        "Courier-Bold",
+        "Courier-Oblique",
+        "Helvetica",
+        "Helvetica-Bold",
+        "Helvetica-Oblique",
+        "Helvetica-BoldOblique",
+        "Symbol",
+        "ZapfDingbats"
+    ]
+}

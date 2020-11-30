@@ -1,5 +1,4 @@
-from sys import get_asyncgen_hooks
-import util.util as util
+from .util import util
 
 # Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
 def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
@@ -19,7 +18,7 @@ def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
 def replace_shortcuts(service, ids, sep_parts, chart, chart_id, dst, alias_map):
     # Find "Shortcuts" folder
     res = util.get_folder_ids(service, name="Shortcuts", parent=chart_id)
-    if not res or len(res) != 1:
+    if res == None:
         print(f'WARNING: Unable to find "Shortcuts" folder within "{chart}"')
         return
     shortcut_id = res[0]
@@ -52,7 +51,6 @@ def move_shortcuts(service, ids, sep_parts, chart, src, dst):
         for file in util.get_drive_files(service, sep_parts[src][part], [".pdf"], name=chart):
             util.move_file(service, file.get("id"), sep_parts[src][part], sep_parts[dst][part])
         
-
 # Moves the chart to new location
 def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     # Parse the destination
@@ -61,12 +59,12 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
 
     # Ensure we're not trying to move to the same place
     res = util.get_chart_id(service, chart, [ ids["curr"], ids["old"], ids["archive"] ])
-    if res == None: return
+    if res["chart_id"] == None: return
     chart_id = res["chart_id"]
     parent_id = res["parent_id"]
     src = "curr" if parent_id == ids["curr"] else "old" if parent_id == ids["old"] else "archive" 
     if src == dest:
-        print(f'WARNING: Unable to move chart "{chart}" - chart already in destination!')
+        print(f'ERROR: Unable to move chart "{chart}" - chart already in destination!')
         return
     
     # Move chart folder to destination
@@ -83,21 +81,27 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     dirname = "Current Chartz" if dest == "curr" else "Old Chartz" if dest == "old" else "Archive/Chart Data"
     print(f'Successfully moved chart "{chart}" to "{dirname}"')
 
-
-
-def main():
+# Main method
+def move_chartz():
     # Build service
     service = util.build_service()
 
     # Read options
     alias_map = util.make_alias_map(util.parse_options("parts.json"))
     options = util.parse_options("move_chartz_options.json")
+    if options == None: return
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, curr_id, old_id = util.get_digital_library(service)
+    if library_id == None: return 1
+
     archive_id = util.get_chart_data_archive(service, library_id)
+    if archive_id == None: return 1
+
     ids = util.get_separated_folders(service, library_id)
+    if ids == None: return 1
+    
     ids.update({ "curr": curr_id, "old": old_id, "archive": archive_id })
     sep_parts = {
         age: { folder["name"]: folder["id"] for folder in util.get_drive_files(service, ids[f"sec_{age}"], files_only=False) }
@@ -108,5 +112,5 @@ def main():
         print(f'Moving chart {chart_to_move["name"]}...')
         move_chart(service, ids, sep_parts, chart_to_move, alias_map)
 
-if __name__ == '__main__':
-    main()
+    print("Finished moving chartz")
+    return 0

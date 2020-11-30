@@ -1,4 +1,4 @@
-import util.util as util
+from . import util
 import os
 
 # Adds a file to the library, also adding shortcuts to separated sib files/section parts if needed
@@ -19,14 +19,14 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     # See if this file already exists
     for file in cache[chart]["files"]:
         if file.get("name") == file_name:
-            print(f'WARNING: File with name "{file_name}" already exists!')
+            print(f'ERROR: File with name "{file_name}" already exists!')
             return False
     
     # Add parts files to the Parts folder and create a shortcut
     if part:
         file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, parts_id, mime_type=mimeType)
         sep_part_ids = util.get_folder_ids(service, name=part, parent=sep_sec_id)
-        if len(sep_part_ids) != 1:
+        if sep_part_ids == None:
             print(f'WARNING: Unable to create shortcut in Separated Section Parts for "{file_name}"')
         else: util.make_shortcut(service, file_name, file_id, sep_part_ids[0])
         return True
@@ -40,7 +40,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
 # Creates a new directory + parts folder for a new chart to be housed
 def create_chart_structure(service, chartz_id, chart_name):
     # Ensure this chart doesn't already exist!
-    if len(util.get_folder_ids(service, name=chart_name, parent=chartz_id)) > 0:
+    if util.get_folder_ids(service, name=chart_name, parent=chartz_id) != None:
         print(f'WARNING: Chart with name "{chart_name}" already exists, no new folder will be created')
         return None, None
     
@@ -55,22 +55,22 @@ def populate_cache(service, curr_id, old_id, chart, cache, options):
     try:
         # Find this chart's folder id
         res = util.get_chart_id(service, chart, [curr_id, old_id])
-        if not res: raise Exception
+        if not res: raise RuntimeError
         chart_id = res.get("chart_id")
-        if chart_id == None: raise Exception
+        if chart_id == None: raise RuntimeError
         
         # Determine whether the chart is in the "current chartz" or "old chartz" folder
         is_current = curr_id == res.get("parent_id")
 
         # Find this chart's parts foler id
         parts_id = util.get_parts_folder(service, chart, chart_id)
-        if parts_id == None: raise Exception
+        if parts_id == None: raise RuntimeError
         
         # Populate cache with this chart's data
         cache[chart] = { "chart_id": chart_id, "is_current": is_current, "parts_id": parts_id, "files": [] }
         cache[chart]["files"] = util.get_drive_files(service, chart_id, options["supported-file-types"])
         cache[chart]["files"].extend(util.get_drive_files(service, parts_id, options["supported-file-types"]))
-    except:
+    except RuntimeError:
         cache[chart] = { "chart_id": None, "is_current": None, "parts_id": None, "files": []}
 
 # Update the file with the specified path, return whether the update was successful
@@ -86,7 +86,7 @@ def update_file(service, filename, alias_map, cache, options):
         return False
     files = cache.get(chart).get('files')
     if not files or len(files) == 0:
-        print(f'WARNING: No files found for "{chart}"')
+        print(f'WARNING: No files found for "{chart}" in the Digital Library')
         return False
 
     for file in files:

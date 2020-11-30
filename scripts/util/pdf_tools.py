@@ -1,6 +1,8 @@
 import json, os, glob
-import util.util as util
-from PyPDF2 import PdfFileReader, PdfFileMerger
+
+from PyPDF2.pdf import PageObject, PdfFileWriter, PdfFileReader
+from . import util
+from PyPDF2 import PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -13,18 +15,26 @@ def add_page_num(page, text: str, options):
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
     path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
 
+    if not os.path.isfile(path):
+        with open(path, 'w') as f: pass
+
     # Draw text on canvas
     page_num = canvas.Canvas(path, pagesize=(width, height))
     page_num.setFont(font, size)
     page_num.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
-    page_num.showPage()
     page_num.save()
 
     # Add page number to existing page
-    page_num = PdfFileReader(open(path, 'rb')).getPage(0)
-    page.mergePage(page_num)
-    os.remove(path)
-    return page
+    with open(path, 'rb') as f:
+        page_num_pdf = PdfFileReader(f).getPage(0)       
+        page_num_pdf.mergePage(page)
+
+        # For some reason the text doesn't appear properly if we don't write first
+        tmp_out = PdfFileWriter()
+        tmp_out.addPage(page_num_pdf)
+        with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
+            tmp_out.write(f)
+    return page_num_pdf
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
 def categorize_parts(title_map, options):
@@ -59,7 +69,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Retrieve files
     folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
     if not folders or len(folders) != 1:
-        print(f'WARNING: Unable to find folder "{part}"')
+        print(f'ERROR: Unable to find folder "{part}"')
         return
     files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
     if not files or len(files) == 0:
@@ -69,11 +79,19 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Validate target directory
     path = os.path.join(dir, part)
     validate_dir(path, verbose)
+
+    # Delete all existing files in that directory
+    to_delete = glob.glob(f'{path}/*')
+    for f in to_delete:
+        os.remove(f)
     
     # Download files
     for file in files:
         # print(file)
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
+    
+    # Print success
+    print(f'Successfully finished downloading part files for "{part}"')
 
 # Enforce ordering rules
 def enforceRules(list, rules, title_map):
@@ -99,7 +117,7 @@ def enforceRules(list, rules, title_map):
 # Enumerates all the pdf documents, returning a list of pages
 # style: 0 = numbers, 1 = Letters, parts_map: will be modified to include mapping from counter -> file
 # write_pages: true if you wish to return a bunch of pages, false if you only want mappings
-def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pages=False):
+def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pages=False, verbose=False):
     pages = []
     if start == None:
         start = 1 if style == 0 else 'A'
@@ -109,6 +127,8 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
         try:         
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
+            if verbose and write_pages:
+                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -123,9 +143,15 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
             # Add all the pages to the list
             for i in range(num_pages):
                 input_page = input.getPage(i)
+
+                # Verify that it has the proper dimensions
+                if not validate_mediabox(input_page, options):
+                    print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
+                    continue
+
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
-        except:
+        except OSError:
             print(f'Error when parsing "{file}"')
         
         # Increment Counter
@@ -135,7 +161,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
 # Generates the song files for a folder, returning a list of pages
 # If write_pages is false, it will populate maps but not write any actual pages
-def generate_parts_pages(title_map, toc_maps, options, write_pages=False):
+def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbose=False):
     output = []
     lettered, numbered, special = categorize_parts(title_map, options)
 
@@ -144,14 +170,14 @@ def generate_parts_pages(title_map, toc_maps, options, write_pages=False):
         output.extend(to_pages(special["fingering_chart"][0]))
 
     # Lettered chartz
-    output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages))
+    output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages, verbose=verbose))
 
     # Numbered chartz
-    output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages))
+    output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages, verbose=verbose))
 
     # Teazers
     if len(special["teazers"]):
-        output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages))
+        output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages, verbose=verbose))
     
     return output
 
@@ -272,16 +298,26 @@ def validate_dir(path, verbose=False):
 def validate_part(part, options):
     path = os.path.join(options["folder-dir"], "parts", part)
     if not os.path.exists(path):
-        print(f'WARNING: Path to files for part "{part}" does not exist')
+        print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
+        return None
     
     # Validate titles
     title_map = process_files(sorted(glob.glob(f'{path}/*.pdf')))
     if len(title_map.keys()) == 0:
         print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
-    validate_titles(title_map, options, "options/folder_creator_options.json", verbose=options["verbose"])
+    validate_titles(title_map, options, "scripts/options/folder_creator_options.json", verbose=options["verbose"])
 
     return title_map
+
+# Validates that a page has the proper dimensions
+def validate_mediabox(page: PageObject, options):
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
+    mediabox = page.mediaBox
+
+    return mediabox.getWidth() == width and mediabox.getHeight() == height
+
+
 
 # Validate and update the lists of files in the options list
 def validate_titles(title_map, options, update_path=None, verbose=False):
