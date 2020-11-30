@@ -7,11 +7,8 @@ class DownloadOptions(ttk.Frame):
     def __init__(self, parent, options, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
 
-        # Retrieve options
-        self.options = options
-
         # Parts to download selection
-        self.dl_selection = Multiselect(self, input=self.options['download-parts'],
+        self.dl_selection = Multiselect(self, input=options['download-parts'],
                                     title='Select Parts to Download',
                                     header='Part Name',
                                     addText='Add Part',

@@ -20,7 +20,7 @@ class MoveChartzScreen(ttk.Frame):
                                         key1='name', 
                                         key2='to',
                                         header='Chart Name',
-                                        addtext='Add Chart',
+                                        addText='Add Chart',
                                         orient='vertical',
                                         height=10,
                                         archive=True)

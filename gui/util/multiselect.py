@@ -54,7 +54,7 @@ class Multiselect(ttk.Labelframe):
         self.entry_text.trace_add('write', self.entry_changed)
 
         # Add item entry
-        add_text = kwargs.get("addtext") or 'Add Item'
+        add_text = kwargs.get("addText") or 'Add Item'
         self.add_entry = ttk.Button(self, text=add_text, command=self.add_item_cmd)
         self.add_entry.state(["disabled"])
         bind_button(self.add_entry)

@@ -7,11 +7,8 @@ class ValidateOptions(ttk.Frame):
     def __init__(self, parent, options, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
 
-        # Retrieve options
-        self.options = options
-
         # Parts to generate folders
-        self.parts_selection = Multiselect(self, input=self.options['folder-parts'],
+        self.parts_selection = Multiselect(self, input=options['folder-parts'],
                                     title='Select Parts for Generating Folders',
                                     header='Part Name',
                                     addText='Add Part',

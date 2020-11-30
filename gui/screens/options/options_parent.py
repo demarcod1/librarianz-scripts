@@ -1,3 +1,7 @@
+from scripts.util.util import write_options
+from gui.screens.options.pages_options import PagesOptions
+from gui.screens.options.dollie_options import DollieOptions
+from gui.screens.options.chartz_options import ChartzOptions
 from gui.screens.options.toc_options import TOCOptions
 from gui.screens.options.validate_options import ValidateOptions
 from gui.screens.options.download_options import DownloadOptions
@@ -9,13 +13,13 @@ class OptionsParent(Toplevel):
 
     def __init__(self, parent, options, callback, *args, **kwargs):
         Toplevel.__init__(self, parent)
-        self.options = options
+        self.options: Dict = options
         self.callback = callback
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)
 
         # Set title
         self.title("Folder Creator Options")
-        self.minsize(600, 450)
+        self.minsize(600, 525)
 
         # Create notebook
         n = ttk.Notebook(self, width=600, height=450, padding=5)
@@ -23,17 +27,19 @@ class OptionsParent(Toplevel):
         # Add each frame to the notebook
         self.download = DownloadOptions(n, self.options)
         self.verify = ValidateOptions(n, self.options)
+        self.pages = PagesOptions(n, self.options)
         self.toc = TOCOptions(n, self.options)
-        self.enumeration = ttk.Frame(n, border=10)
-        self.dollies = ttk.Frame(n, border=5)
+        self.chartz = ChartzOptions(n, self.options)
+        self.dollies = DollieOptions(n, self.options)
         self.rules = ttk.Frame(n, border=10)
 
         n.add(self.download, text='Download', underline=0)
         n.add(self.verify, text='Review', underline=0)
-        n.add(self.toc, text='Table of Contents', underline=0)
-        n.add(self.enumeration, text='Enumeration', underline=0)
+        n.add(self.chartz, text='Chartz', underline=0)
         n.add(self.dollies, text='Dollies', underline=2)
-        n.add(self.rules, text='Custom Rules', underline=0)
+        n.add(self.toc, text='Table of Contents', underline=0)
+        n.add(self.pages, text='Pages', underline=0)
+        n.add(self.rules, text='Custom Rules', underline=0)   
 
         n.select(kwargs.get('tab') or 0)
 
@@ -58,9 +64,19 @@ class OptionsParent(Toplevel):
         self.destroy()
     
     def save_options(self):
-        print(self.download.get_dl_options())
-        print(self.verify.get_validate_options())
-        print(self.toc.get_toc_options())
+        val_options = self.verify.get_validate_options()
+        toc_options = self.toc.get_toc_options()
+        toc_options.update({'generate-on-validation': val_options[1]})
+
+        self.options.update(val_options[0])
+        self.options.update({ 'toc': toc_options })
+        self.options.update(self.download.get_dl_options())
+        self.options.update(self.chartz.get_chart_options())
+        self.options.update(self.dollies.get_dollie_options())
+        self.options.update(self.pages.get_page_options())
+        
+        write_options(self.options, "folder_creator_options.json")
+
         self.destroy_self()
     
 

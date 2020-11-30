@@ -1,12 +1,12 @@
 {
     "dollie-songs": [
+        "16 Military Wives",
+        "A-Punk",
         "All Right Now",
         "All Right Now (Victory Mix)",
+        "All of the Lights",
         "Bill Tell",
         "Come Join the Band",
-        "16 Military Wives",
-        "All of the Lights",
-        "A-Punk",
         "Down To The Nightclub",
         "Drunken Lullabies",
         "Everybody's Everything",
@@ -43,14 +43,14 @@
         "Zoot Suit Riot"
     ],
     "download-parts": [
-        "Picz",
-        "Clarz",
         "Altoz",
-        "Tenrz",
-        "Trumpz",
-        "Mellz",
         "Bonz",
-        "Toobz"
+        "Clarz",
+        "Mellz",
+        "Picz",
+        "Tenrz",
+        "Toobz",
+        "Trumpz"
     ],
     "enforce-order": [
         [
@@ -102,23 +102,23 @@
         ]
     },
     "toc": {
-        "entry": {
-            "font-normal": "Helvetica",
-            "font-dollie": "Helvetica-Bold",
-            "size": 10
-        },
-        "generate-on-validation": true,
         "title": {
             "label": "Table of Contents",
             "font": "Times-Roman",
             "size": 26
+        },
+        "entry": {
+            "font-dollie": "Helvetica-Bold",
+            "font-normal": "Helvetica",
+            "size": 10
         },
         "footer": {
             "label": "Folder Created by Dominic \"Frodo\" DeMarco",
             "font": "Courier-Bold",
             "size": 8
         },
-        "num-cols": 3
+        "num-cols": 3,
+        "generate-on-validation": true
     },
-    "verbose": false
+    "verbose": true
 }

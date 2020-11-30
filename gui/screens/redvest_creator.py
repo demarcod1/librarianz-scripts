@@ -27,7 +27,7 @@ class RedvestCreatorScreen(ttk.Frame):
         self.select_chartz = Multiselect(self, input=self.options['chartz'],
                                         title='Select Chartz for Redvest',
                                         header='Chart Name',
-                                        addtext='Add Chart',
+                                        addText='Add Chart',
                                         height=7)
         self.select_chartz.grid(row=2, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 

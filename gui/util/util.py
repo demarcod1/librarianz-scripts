@@ -59,3 +59,14 @@ def spawn_thread(script, callback, scriptName='Script'):
     thread = thread_with_trace(target=target, daemon=True)
     thread.start()
     return thread
+
+# Validate that a spinbox entry is a number
+def validate_numerical_entry(is_float=False):
+    def validator(newval):
+        if len(newval) == 0: return True
+        try:
+            float(newval) if is_float else int(newval)
+            return True
+        except ValueError:
+            return False
+    return validator

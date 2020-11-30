@@ -11,6 +11,7 @@ def folder_creator():
     # Table of contents + page number path
     toc_path = os.path.join(options["folder-dir"], "tmp", "toc.pdf")
     page_num_path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
+    page_num_overlap_path = os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf")
 
     for part in options["folder-parts"]:
         # Validate part files
@@ -36,7 +37,7 @@ def folder_creator():
         print(f'Successfully wrote {part} folder to "{file_path}"')
 
     # Cleanup temp files
-    for path in (toc_path, page_num_path):
+    for path in (toc_path, page_num_path, page_num_path):
         if os.path.isfile(path):
             os.remove(path)
     

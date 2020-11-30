@@ -1,8 +1,8 @@
 import json, os, glob
 
-from PyPDF2.pdf import PageObject
+from PyPDF2.pdf import PageObject, PdfFileWriter, PdfFileReader
 from . import util
-from PyPDF2 import PdfFileReader, PdfFileMerger
+from PyPDF2 import PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -22,14 +22,19 @@ def add_page_num(page, text: str, options):
     page_num = canvas.Canvas(path, pagesize=(width, height))
     page_num.setFont(font, size)
     page_num.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
-    page_num.showPage()
     page_num.save()
 
     # Add page number to existing page
     with open(path, 'rb') as f:
-        page_num = PdfFileReader(f).getPage(0)
-        page.mergePage(page_num)
-    return page
+        page_num_pdf = PdfFileReader(f).getPage(0)       
+        page_num_pdf.mergePage(page)
+
+        # For some reason the text doesn't appear properly if we don't write first
+        tmp_out = PdfFileWriter()
+        tmp_out.addPage(page_num_pdf)
+        with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
+            tmp_out.write(f)
+    return page_num_pdf
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
 def categorize_parts(title_map, options):

@@ -42,7 +42,7 @@ class UploadFilesScreen(ttk.Frame):
                                         key1='name', 
                                         key2='to',
                                         header='Chart Name',
-                                        addtext='Add New Chart',
+                                        addText='Add New Chart',
                                         height=3)
         self.new_chartz.grid(row=2, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 
@@ -50,7 +50,7 @@ class UploadFilesScreen(ttk.Frame):
         self.file_extensions = Multiselect(self, input=self.options["supported-file-types"],
                                             title='Supported File Types',
                                             header='File Type',
-                                            addtext='Add File Type',
+                                            addText='Add File Type',
                                             warn=True,
                                             height=6)
         self.file_extensions.grid(row=3, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
