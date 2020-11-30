@@ -18,7 +18,7 @@ class MainMenu:
         parent.minsize(600, 550)
         
         # Search for application data directory
-        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', '0.1.1')
+        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', '0.1.2')
         res_options = parse_options("res_paths.json", from_=data_dir)
         res_options['res-path'] = data_dir
         make_application_data(data_dir)

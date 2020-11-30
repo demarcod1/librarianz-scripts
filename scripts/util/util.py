@@ -79,10 +79,12 @@ def get_resource_path(path='res/options/res_paths.json'):
 # Gets the path to the specified location within the resources directory
 def get_full_path(partial_path):
     res_path = get_resource_path()
-    if res_path == '' or res_path == '.':
+    if (res_path == '' or res_path == '.'):
         return resourcePath(partial_path)
-    else:
+    elif hasattr(sys, '_MEIPASS'):
         return os.path.join(res_path, partial_path)
+    else:
+        return partial_path
 
 # Write to options json file
 def write_options(options, filename, path = "res/options/"):
