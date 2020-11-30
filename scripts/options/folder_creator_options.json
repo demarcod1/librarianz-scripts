@@ -1,0 +1,124 @@
+{
+    "dollie-songs": [
+        "16 Military Wives",
+        "A-Punk",
+        "All Right Now",
+        "All Right Now (Victory Mix)",
+        "All of the Lights",
+        "Bill Tell",
+        "Come Join the Band",
+        "Down To The Nightclub",
+        "Drunken Lullabies",
+        "Everybody's Everything",
+        "Five Fifteen",
+        "Flashlight",
+        "Hard to Handle",
+        "Hell",
+        "Holiday",
+        "Honky Tonk",
+        "I Wish",
+        "Life in the Fast Lane",
+        "Little Secrets",
+        "Livin' in the USA",
+        "Lucretia",
+        "Na Na Na",
+        "On My Way",
+        "Our House",
+        "Radar Love",
+        "Reptilia",
+        "Rough Gem",
+        "Rubberband Man",
+        "Ruby Soho",
+        "Short Skirt, Long Jacket",
+        "Steam",
+        "Stuff Like That",
+        "Tighten Up",
+        "Welcome to Paradise",
+        "Welcome to the Black Parade",
+        "What is Hip",
+        "Whisper Your Name",
+        "White Punks on Dope",
+        "Yellow River",
+        "You're Gonna Go Far Kid",
+        "Zoot Suit Riot"
+    ],
+    "download-parts": [
+        "Altoz",
+        "Bonz",
+        "Clarz",
+        "Mellz",
+        "Picz",
+        "Tenrz",
+        "Toobz",
+        "Trumpz"
+    ],
+    "enforce-order": [
+        [
+            "Foreplay",
+            "Knights Of Cydonia"
+        ],
+        [
+            "All Right Now",
+            "All Right Now (Victory Mix)"
+        ]
+    ],
+    "enumerate-pages": true,
+    "fingering-chart": {
+        "include": true,
+        "titles": [
+            "fingering chart"
+        ]
+    },
+    "folder-dir": "..\\test_folder",
+    "folder-name": "November 2020 Folder",
+    "folder-parts": [
+        "Picz"
+    ],
+    "lettered-chartz": [
+        "All Right Now",
+        "All Right Now (Victory Mix)",
+        "Avengerz",
+        "Bill Tell",
+        "Come Join the Band",
+        "Dies Irae",
+        "Hail, Stanford, Hail",
+        "Swingtown",
+        "The Star Spangled Banner",
+        "Throne Room Fanfare"
+    ],
+    "page-size": {
+        "width": 7.5,
+        "height": 5.5
+    },
+    "page-num-font": {
+        "name": "Helvetica-Bold",
+        "size": 18
+    },
+    "teazers": {
+        "include": true,
+        "titles": [
+            "Fall 2019 Teazers",
+            "Gay Bar"
+        ]
+    },
+    "toc": {
+        "title": {
+            "label": "Table of Contents",
+            "font": "Times-Roman",
+            "size": 26
+        },
+        "entry": {
+            "font-dollie": "Helvetica-Bold",
+            "font-normal": "Helvetica",
+            "size": 10
+        },
+        "footer": {
+            "label": "Folder Created by Dominic \"Frodo\" DeMarco",
+            "font": "Courier-Bold",
+            "size": 8
+        },
+        "num-cols": 3,
+        "generate-on-validation": true
+    },
+    "verbose": true
+}
