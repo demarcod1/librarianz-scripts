@@ -1,4 +1,4 @@
-from gui.screens.options.options_parent import OptionsParent
+from gui.options_parent import OptionsParent
 from gui.util.util import bind_button
 from scripts.folder_creator import folder_creator
 from scripts.validate_folder_files import validate_folder_files

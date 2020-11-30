@@ -34,7 +34,7 @@ class ScriptProgress(Toplevel):
         # Create text console area within dummy frame
         dummy_frame = ttk.Frame(self)
 
-        self.console = Text(dummy_frame, width=70, height=12, wrap='none', font=('Courier', '9'))
+        self.console = Text(dummy_frame, width=70, height=12, wrap='none', font='TkFixedFont')
         self.console["state"] = "disabled"
         self.console.grid(row=0, column=0, sticky=(N, E, S, W))
         self.console.tag_configure('warning', foreground='Orange')

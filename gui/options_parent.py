@@ -1,3 +1,4 @@
+from gui.screens.options.rules_options import RulesOptions
 from scripts.util.util import write_options
 from gui.screens.options.pages_options import PagesOptions
 from gui.screens.options.dollie_options import DollieOptions
@@ -31,7 +32,7 @@ class OptionsParent(Toplevel):
         self.toc = TOCOptions(n, self.options)
         self.chartz = ChartzOptions(n, self.options)
         self.dollies = DollieOptions(n, self.options)
-        self.rules = ttk.Frame(n, border=10)
+        self.rules = RulesOptions(n, self.options)
 
         n.add(self.download, text='Download', underline=0)
         n.add(self.verify, text='Review', underline=0)
@@ -39,7 +40,7 @@ class OptionsParent(Toplevel):
         n.add(self.dollies, text='Dollies', underline=2)
         n.add(self.toc, text='Table of Contents', underline=0)
         n.add(self.pages, text='Pages', underline=0)
-        n.add(self.rules, text='Custom Rules', underline=0)   
+        n.add(self.rules, text='Custom Rules', underline=1)   
 
         n.select(kwargs.get('tab') or 0)
 
@@ -74,6 +75,7 @@ class OptionsParent(Toplevel):
         self.options.update(self.chartz.get_chart_options())
         self.options.update(self.dollies.get_dollie_options())
         self.options.update(self.pages.get_page_options())
+        self.options.update(self.rules.get_rule_options())
         
         write_options(self.options, "folder_creator_options.json")
 
