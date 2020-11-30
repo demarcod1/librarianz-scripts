@@ -1,3 +1,4 @@
+import os
 from gui.screens.folder_creator import FolderCreatorScreen
 from gui.screens.redvest_creator import RedvestCreatorScreen
 from gui.screens.move_chartz import MoveChartzScreen
@@ -11,6 +12,7 @@ class MainMenu:
 
         # Set title
         parent.title("Digital Library Manager")
+        parent.iconphoto(True, PhotoImage(file=os.path.join('res', 'icons', 'embo.png')))
         parent.minsize(600, 550)
 
         # Create notebook

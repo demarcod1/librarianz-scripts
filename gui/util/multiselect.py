@@ -182,13 +182,13 @@ class Multiselect(ttk.Labelframe):
     # Deletes all tree elements
     def delete_all(self, *args):
         self.select_all()
-        self.delete_selection()
+        self.delete_selection(all=True)
         self.clear_selection()
 
     # Deletes the selected tree elements
-    def delete_selection(self, *args):
+    def delete_selection(self, all=False, *args):
         selection = self.tree.selection()
-        if (not self.warn_before_deleting and (len(selection) < 3 or len(self.tree.get_children('')) >= 2 * len(selection))) or messagebox.askyesno(parent=self, title='Delete Selection', message='Are you sure you want to remove the selected entries?', icon='warning', default='no'):
+        if (not self.warn_before_deleting and (len(selection) < 3 or len(self.tree.get_children('')) >= 2 * len(selection))) or messagebox.askyesno(parent=self, title=f'Delete {"All" if all else "Selection"}', message=f'Are you sure you want to remove {"all the" if all else "the selected"} entries?', icon='warning', default='no'):
             for item in selection:
                 self.tree.delete(item)
             if not len(self.tree.get_children('')): self.del_all.state(['disabled'])
