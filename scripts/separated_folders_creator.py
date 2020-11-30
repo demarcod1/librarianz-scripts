@@ -204,7 +204,7 @@ def build_shortcuts(service, curr_chart_in, old_chart_in, curr_sec_out, old_sec_
 
 # Main method
 def separated_folders_creator():
-    print("currently disabled")
+    print("This script has been disabled")
     return 1
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.

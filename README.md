@@ -20,16 +20,20 @@ The scripts included in this folder are to be edited and used at your own risk. 
 1. Log in to librarian@lsjumb.com online
 1. Follow the instructions [here](https://developers.google.com/drive/api/v3/quickstart/python#step_1_turn_on_the) after clicking the "Enable the Drive API" button.
 1. When prompted, download the "credentials.json" file and move it into your working directory (likely called librarianz-scripts).
-2. Open a terminal window and navigate to the working directory. If you are on windows, the following steps might work better in WSL or Ubuntu.
-3. Run `pip3 install -r requirements.txt` in terminal.
-4. Run `python3 login.py` in terminal.
+2. Open a terminal window and navigate to the working directory.
+3. Run `pip3 install -r requirements.txt` in terminal (or `py -m pip install -r requirements.txt` if on Windows).
+4. Run `python3 librarianz_scripts.py -s login` in terminal (or `py .\librarianz_scripts.py -s login` if on Windows).
 5. Follow the link in the Terminal and authorize the program for the webmaster account.
 
 After you run the login script, you will not need to run it again. If the tokens are somehow invalidated, any script you run will prompt you with a link in the Terminal, which corresponds to the final step.
 
 </details>
 
+# Using the GUI
+Run `python3 librarianz_scripts.py` (or `py .\librarianz_scripts.py` on Windows) to open the GUI, where you can access the scripts and configure the options without having to manually edit any `.json` files.
+
 # Scripts
+Click on the `Show/Hide Details` tabs for detailed information and notes about each script and documentation of their configuration `.json` files.
 
 ## Folder Creator Script
 This script generates pdf folders for the specified parts
@@ -39,8 +43,8 @@ This script generates pdf folders for the specified parts
    
 ### To genereate folders
 
-1. Edit the `options/folder_creator_options.json` file. More details about this file can be found [here](#understanding-folder_creator_optionsjson)
-2. Run `python3 folder_creator.py` in the terminal
+1. Edit the `scripts/options/folder_creator_options.json` file. More details about this file can be found [here](#understanding-folder_creator_optionsjson)
+2. Run `python3 librarianz_script -s folder_creator` in the terminal
 
 #### Notes
 
@@ -59,8 +63,8 @@ This script intelligently uploads files from a specified location on your machin
 
 ### To upload files to the Digital Library
 
-1. Edit the `options/upload_options.json` file as needed
-2. Run `python3 upload_files.py` in the terminal
+1. Edit the `scripts/options/upload_options.json` file as needed
+2. Run `python3 librarianz_script -s upload_files` in the terminal
 
 #### Configuring `upload_options.json`
 * `mode` can be one of the following:
@@ -87,8 +91,8 @@ This script downloads the part files form the Digital Library and stores them on
    
 ### To download the part files
 
-1. Edit the `options/folder_creator_options.json` file to specify the destination of the downloaded items and the parts to download.
-2. Run `python3 download_parts.py`
+1. Edit the `scripts/options/folder_creator_options.json` file to specify the destination of the downloaded items and the parts to download.
+2. Run `python3 librarianz_script -s download_parts`
 
 #### Configuring `folder_creator_options.json`
 This config file has a large number of options, which are fully detailed [here](#understanding-folder_creator_optionsjson). However, you only need to worry about 2 options for the downloading step:
@@ -111,8 +115,8 @@ This script moves chartz to/from the Current Chartz, Old Chartz, and Archive dir
 
 ### To move a chart to a different location
 
-1. Edit the `options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
-2. Run `python3 move_chartz.py` in the terminal
+1. Edit the `scripts/options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
+2. Run `python3 librarianz_script -s move_chartz` in the terminal
 
 #### Configuring `move_chartz_options.json`
 
@@ -140,7 +144,7 @@ This script creates a folder containing the parts and audio/video files for a se
 ### To create Red Vest Folders
 
 1. Edit the redvest.json file to contain the name of the new folder you wish to add along with the list of chartz that will be rehearsed.
-2. Run `python3 redvest_creator.py` in the terminal.
+2. Run `python3 librarianz_script -s redvest_creator` in the terminal.
 
 #### Notes
 1. If you wish to have the new folders appear in a new location, you will need to change the `parent-name` field reflect the name of the directory in which to place the new redvest folder.
@@ -156,8 +160,8 @@ This script performs error-checking on your config file for the [Folder Creator 
    
 ### To validate the files for the folder creator
 
-1. Edit the `options/folder_creator_options.json` file to specify the destination of folder files and whether or not to generate table of contents files.
-2. Run `python3 validate_folder_files.py`
+1. Edit the `scripts/options/folder_creator_options.json` file to specify the destination of folder files and whether or not to generate table of contents files.
+2. Run `python3 librarianz_script -s validate_folder_files`
 
 #### Configuring `folder_creator_options.json`
 This config file has a large number of options, which are fully detailed [here](#understanding-folder_creator_optionsjson). However, you only need to worry about 2 options for the downloading step:
@@ -168,6 +172,8 @@ This config file has a large number of options, which are fully detailed [here](
 </details>
 
 ## Seperated Folders Script
+This script has been disabled and will not execute.
+
 This script (re)creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you wish to completely remake the Digital Library. Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library.
 
 <details>
@@ -175,14 +181,14 @@ This script (re)creates `Separated Section Parts` and `Seperated Sibelius Files`
 
 ### To separate the folders and safely reconstruct the Live Digital Library
 1. Make sure that the existing Separated Section Folders are no longer contained in the `[LIVE] DigitalLibrary` directory. You will likely see shortcuts to `Current Chartz` and `Old Chartz` folders within the `LSJUMB Digital Chartz` folder inside the live directory. These shortcuts will be broken when you run this script, and should be deleted.
-2. Run `python3 separated_folders_creator.py` in the Terminal
+2. Run `python3 librarianz_script -s separated_folders_creator` in the Terminal
 3. After checking to ensure all is in order, manually re-add the `Current Charts` and `Old Chartz` folders to the `LSJUMB Digital Chartz` folder within the live directory. This should be the same location as the shortcuts you deleted earlier.
 
 #### Warning
 You will need to take the Digital Library offline when running this script. The average runtime is 10-20 mins, so expect 15-25 mins of Digital Library downtime.
 
 #### Note
-Configure which sections go to which output folders in `options\parts.json`. The format of this file is a series of key-value pairs in the format `OUTPUT_NAME: [INSTRUMENT NAMES]`. For instance, the pair `"CPG": ["Clarz", "Picz"]` would send all pieces with `"Clarz"` or `"Picz"` in the name to the folder `"CPG"` (inside the main `Separated Section Parts` output folder). In other words, if you want all songs labelled `SONGNAME - Clarz` and `SONGNAME - Picz` to go to the `CPG` folder, the above example would accomplish this.
+Configure which sections go to which output folders in `scripts/options/parts.json`. The format of this file is a series of key-value pairs in the format `OUTPUT_NAME: [INSTRUMENT NAMES]`. For instance, the pair `"CPG": ["Clarz", "Picz"]` would send all pieces with `"Clarz"` or `"Picz"` in the name to the folder `"CPG"` (inside the main `Separated Section Parts` output folder). In other words, if you want all songs labelled `SONGNAME - Clarz` and `SONGNAME - Picz` to go to the `CPG` folder, the above example would accomplish this.
 
 </details>
 
