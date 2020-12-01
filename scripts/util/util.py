@@ -1,9 +1,17 @@
-import os, io, sys, json, pickle, re, mimetypes
+import os, io, sys, json, pickle, re, mimetypes, shutil
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+
+# Custom Exception for when credentials fail to load
+class CredentialsError(Exception):
+    pass
+
+# Returns whether or not the script is running in an exe/frozen file
+def is_frozen():
+    return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
 
 # Builds the drive service
 def build_service():
@@ -20,25 +28,67 @@ def fetch_credentials():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    res_paths = parse_options('res_paths.json')
+    token_path = resourcePath(os.path.join(res_paths['res-path'], 'res/token.pickle'))
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds_path = res_paths['creds-path']
+            try:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    resourcePath(creds_path), SCOPES)
+                creds = flow.run_local_server(port=0)
+            except (UnicodeDecodeError, ValueError, OSError):
+                res_paths['creds-path'] = ''
+                write_options(res_paths, 'res_paths.json')
+                raise CredentialsError(f'ERROR: Credentials file "{os.path.basename(creds_path)}" invalid. Please restart the application.')
+
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open(resourcePath(token_path), 'wb') as token:
             pickle.dump(creds, token)
     return creds
 
+# Path to resources
+def resourcePath(rel_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if is_frozen():
+        return os.path.join(getattr(sys, '_MEIPASS', ''), rel_path)
+    return rel_path
+
+# Make Application Data files
+def make_application_data(data_dir):
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+        src = resourcePath("./res")
+        shutil.copytree(src, os.path.join(data_dir, 'res'))
+
+        # Remove token.pickle file
+        pickle = os.path.join(data_dir, 'res/token.pickle')
+        if os.path.isfile(pickle):
+            os.remove(pickle)
+
+
+# Gets the path to the specified location within the resources directory
+def get_full_path(partial_path):
+    with open(resourcePath('res/options/res_paths.json')) as f:
+        res_path = json.load(f)['res-path']
+
+    if (res_path == '' or res_path == '.'):
+        return resourcePath(partial_path)
+    elif is_frozen():
+        return os.path.join(res_path, partial_path)
+    else:
+        return partial_path
+
 # Write to options json file
-def write_options(options, filename, path = "scripts/options/"):
-    full_path = os.path.join(path, filename)
+def write_options(options, filename, path = "res/options/"):
+    full_path = os.path.join(get_full_path(path), filename)
+    
     try:
         with open(full_path, 'w') as f:
             json.dump(options, f, indent=4)
@@ -46,8 +96,12 @@ def write_options(options, filename, path = "scripts/options/"):
         print(f'ERROR: could not write to file "{full_path}"')
 
 # Parse json options file
-def parse_options(filename, path = "scripts/options/"):
-    full_path = os.path.join(path, filename)
+def parse_options(filename, path = "res/options/", from_=None):
+    if not from_ or not os.path.isdir(from_):
+        full_path = os.path.join(get_full_path(path), filename)
+    else:
+        full_path = os.path.join(from_, path, filename)
+    
     try:
         with open(full_path) as f:
             return json.load(f)

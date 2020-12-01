@@ -1,19 +1,30 @@
 import os
+from scripts.util.util import make_application_data, parse_options, resourcePath, write_options
 from gui.screens.folder_creator import FolderCreatorScreen
 from gui.screens.redvest_creator import RedvestCreatorScreen
 from gui.screens.move_chartz import MoveChartzScreen
 from gui.screens.upload_files import UploadFilesScreen
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, filedialog
+from appdirs import user_data_dir
 
 class MainMenu:
 
-    def __init__(self, parent):
+    def __init__(self, parent, data_dir):
 
         # Set title
         parent.title("Digital Library Manager")
-        parent.iconphoto(True, PhotoImage(file=os.path.join('res', 'icons', 'embo.png')))
+        parent.iconphoto(True, PhotoImage(file=resourcePath(os.path.join('res', 'icons', 'embo.png'))))
         parent.minsize(600, 550)
+
+        # Prompt user to specify credentials path
+        res_options = parse_options("res_paths.json", from_=data_dir)
+        creds_path = res_options['creds-path']
+        if not os.path.exists(creds_path) or not os.path.isfile(creds_path):
+            new_path = filedialog.askopenfilename(title='Select Credentials File', filetypes=[('Credentials JSON File','*.json')])
+            if new_path != None:
+                res_options['creds-path'] = new_path
+                write_options(res_options, "res_paths.json")
 
         # Create notebook
         n = ttk.Notebook(parent, width=650, height=600, padding=5)

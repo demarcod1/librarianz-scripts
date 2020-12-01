@@ -122,5 +122,5 @@ def redvest_creator():
     for chart in redvest_options["chartz"]:
         write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids, alias_map)
     
-    print(f'Succesfully created new folder "{redvest_options["folder-name"]}"!')
+    print(f'Successfully created new folder "{redvest_options["folder-name"]}"!')
     return 0

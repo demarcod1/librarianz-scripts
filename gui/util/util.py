@@ -1,3 +1,4 @@
+from scripts.util.util import CredentialsError
 import threading
 from tkinter import *
 from tkinter import ttk
@@ -51,6 +52,9 @@ def spawn_thread(script, callback, scriptName='Script'):
         except SystemExit:
             print(f'ERROR: {scriptName} was terminated by the user')
             callback(2)
+        except CredentialsError as e:
+            print(e)
+            callback(3)
         except Exception as e:
             print(f'ERROR: {scriptName} crashed during execution')
             print("Error Trace:", e)
