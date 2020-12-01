@@ -307,7 +307,7 @@ def validate_part(part, options):
     if len(title_map.keys()) == 0:
         print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
-    validate_titles(title_map, options, resourcePath("scripts/options/folder_creator_options.json"), verbose=options["verbose"])
+    validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"])
 
     return title_map
 
