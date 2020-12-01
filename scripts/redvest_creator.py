@@ -108,7 +108,7 @@ def redvest_creator():
     section_ids = None
     if redvest_options["individual-sections"]:
         # Read parts
-        parts_dict = util.parse_options("parts.json")
+        parts_dict = util.parse_options("parts.json")['parts']
         if parts_dict == None: return 1
         
         # Make individual section folders

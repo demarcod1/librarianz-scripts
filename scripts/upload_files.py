@@ -7,7 +7,7 @@ def upload_files():
     service = util.build_service()
 
     # Read options
-    alias_map = util.make_alias_map(util.parse_options("parts.json"))
+    alias_map = util.make_alias_map(util.parse_options("parts.json")['parts'])
     options = util.parse_options("upload_options.json")
     if options == None: return 1
 

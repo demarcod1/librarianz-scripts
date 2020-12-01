@@ -43,7 +43,7 @@ This script generates pdf folders for the specified parts
    
 ### To genereate folders
 
-1. Edit the `scripts/options/folder_creator_options.json` file. More details about this file can be found [here](#understanding-folder_creator_optionsjson)
+1. Edit the `res/options/folder_creator_options.json` file. More details about this file can be found [here](#understanding-folder_creator_optionsjson)
 2. Run `python3 librarianz_script -s folder_creator` in the terminal
 
 #### Notes
@@ -63,7 +63,7 @@ This script intelligently uploads files from a specified location on your machin
 
 ### To upload files to the Digital Library
 
-1. Edit the `scripts/options/upload_options.json` file as needed
+1. Edit the `res/options/upload_options.json` file as needed
 2. Run `python3 librarianz_script -s upload_files` in the terminal
 
 #### Configuring `upload_options.json`
@@ -91,7 +91,7 @@ This script downloads the part files form the Digital Library and stores them on
    
 ### To download the part files
 
-1. Edit the `scripts/options/folder_creator_options.json` file to specify the destination of the downloaded items and the parts to download.
+1. Edit the `res/options/folder_creator_options.json` file to specify the destination of the downloaded items and the parts to download.
 2. Run `python3 librarianz_script -s download_parts`
 
 #### Configuring `folder_creator_options.json`
@@ -115,7 +115,7 @@ This script moves chartz to/from the Current Chartz, Old Chartz, and Archive dir
 
 ### To move a chart to a different location
 
-1. Edit the `scripts/options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
+1. Edit the `res/options/move_chartz_options.json` file to specify which chartz you wish to move, and where you wish to move them
 2. Run `python3 librarianz_script -s move_chartz` in the terminal
 
 #### Configuring `move_chartz_options.json`
@@ -160,7 +160,7 @@ This script performs error-checking on your config file for the [Folder Creator 
    
 ### To validate the files for the folder creator
 
-1. Edit the `scripts/options/folder_creator_options.json` file to specify the destination of folder files and whether or not to generate table of contents files.
+1. Edit the `res/options/folder_creator_options.json` file to specify the destination of folder files and whether or not to generate table of contents files.
 2. Run `python3 librarianz_script -s validate_folder_files`
 
 #### Configuring `folder_creator_options.json`
@@ -171,24 +171,27 @@ This config file has a large number of options, which are fully detailed [here](
    
 </details>
 
-## Seperated Folders Script
-This script has been disabled and will not execute.
-
-This script (re)creates `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files. Only run this script if you wish to completely remake the Digital Library. Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library.
+## Remake Shortcuts Script
+This script repopulates the `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files.  Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library, so you should only need to run this script if you are adding/deleting/renaming a part.
 
 <details>
    <summary>Show/Hide Details</summary>
 
-### To separate the folders and safely reconstruct the Live Digital Library
-1. Make sure that the existing Separated Section Folders are no longer contained in the `[LIVE] DigitalLibrary` directory. You will likely see shortcuts to `Current Chartz` and `Old Chartz` folders within the `LSJUMB Digital Chartz` folder inside the live directory. These shortcuts will be broken when you run this script, and should be deleted.
-2. Run `python3 librarianz_script -s separated_folders_creator` in the Terminal
-3. After checking to ensure all is in order, manually re-add the `Current Charts` and `Old Chartz` folders to the `LSJUMB Digital Chartz` folder within the live directory. This should be the same location as the shortcuts you deleted earlier.
+### To remake the shortcuts and safely reconstruct the Live Digital Library
+1. Edit the `res/options/parts.json` file to configure the part information
+2. Run `python3 librarianz_script -s remake_shortcuts` in the Terminal
 
-#### Warning
-You will need to take the Digital Library offline when running this script. The average runtime is 10-20 mins, so expect 15-25 mins of Digital Library downtime.
+#### Configuring `parts.json`
 
-#### Note
-Configure which sections go to which output folders in `scripts/options/parts.json`. The format of this file is a series of key-value pairs in the format `OUTPUT_NAME: [INSTRUMENT NAMES]`. For instance, the pair `"CPG": ["Clarz", "Picz"]` would send all pieces with `"Clarz"` or `"Picz"` in the name to the folder `"CPG"` (inside the main `Separated Section Parts` output folder). In other words, if you want all songs labelled `SONGNAME - Clarz` and `SONGNAME - Picz` to go to the `CPG` folder, the above example would accomplish this.
+* `parts` - a dictionary between part names and aliases
+   * `PART_NAME` - an array of aliases that should resolve to `PART_NAME`. For example, if an entry is `"Toobz": ["Toobz", "Tööbz]`, then any pdf file whose alias is either `Toobz` or `Tööbz` (`All Right Now - Tööbz`, for example) will be placed into the `Toobz` part folder. An alias corresponding to multiple parts is not currently supported
+* `exclude` - an array of part names that should not be added to the Live Digital Library. For example, since we do not want any user to access the Full Score pdfs of our music, we would add the `Full Scores` part to this list. 
+
+#### Notes
+1. This script has a running time of 15-20 minutes when run through the command line (and up to double this time when run on the GUI)
+2. While this script is designed to smoothly update the Live Digital Library, active users will be disrupted as the old shortcuts are removed
+3. After this script finishes executing, double-check that all users can access the `Separated Section Parts` folders/shortcuts
+
 
 </details>
 

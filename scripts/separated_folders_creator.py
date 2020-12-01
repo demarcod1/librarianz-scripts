@@ -212,7 +212,7 @@ def separated_folders_creator():
     creds = fetch_credentials()
     service = build('drive', 'v3', credentials=creds)
 
-    parts_dict = parse_options("parts.json")
+    parts_dict = parse_options("parts.json")['parts']
     if parts_dict == None: return 1
 
     # Verify all needed folders exist and retrieve their ids
