@@ -294,30 +294,22 @@ def get_digital_library(service):
 
     # DigitalLibrary folder
     library_res = get_folder_ids(service, name="DigitalLibrary", parent="root")
-    if library_res == None or len(library_res) != 1:
-        print('"DigitalLibrary" folder not found in root Drive directory, please check Google Drive')
-        return None, None, None
+    if not has_unique_folder(library_res, "DigitalLibrary", "My Drive"): return None, None, None
     library_id = library_res[0]
 
     # Digitized Chart Data folder
     full_dig_res = get_folder_ids(service, name="LSJUMB Full Digitized Chart Data", parent=library_id)
-    if (not full_dig_res or len(full_dig_res) != 1):
-        print('"LSJUMB Full Digitized Chart Data" folder not found in "DigitalLibrary" directory, please check Google Drive')
-        return None, None, None
+    if not has_unique_folder(full_dig_res, "LSJUMB Full Digitized Chart Data", "DigitalLibrary"): return None, None, None
     full_dig_id = full_dig_res[0]
 
     # Current Chartz folder
     current_res = get_folder_ids(service, name="Current Chartz", parent=full_dig_id)
-    if (not current_res or len(current_res) != 1):
-        print('"Current Chartz" folder not found in "LSJUMB Full Digitized Chart Data" directory, please check Google Drive')
-        return None, None, None
+    if not has_unique_folder(current_res, "Current Chartz", "LSJUMB Full Digitized Chart Data"): return None, None, None
     current_id = current_res[0]
 
     # Old Chartz folder
     past_res = get_folder_ids(service, name="Old Chartz", parent=full_dig_id)
-    if (not past_res or len(past_res) != 1):
-        print('"Old Chartz" folder not found in "LSJUMB Full Digitized Chart Data" directory, please check Google Drive')
-        return None, None, None
+    if not has_unique_folder(past_res, "Old Chartz", "LSJUMB Full Digitized Chart Data"): return None, None, None
     past_id = past_res[0]
 
     return library_id, current_id, past_id
@@ -326,16 +318,12 @@ def get_digital_library(service):
 def get_chart_data_archive(service, library_id):
     # Archive folder
     archive_res = get_folder_ids(service, name="Archive", parent=library_id)
-    if (not archive_res or len(archive_res) != 1):
-        print('"Archive" folder not found in "DigitalLibrary" directory, please check Google Drive')
-        return None
+    if not has_unique_folder(archive_res, "Archive", "Digital Library"): return None
     archive_id = archive_res[0]
 
     # Chart Data folder
     chart_data_res = get_folder_ids(service, name="Chart Data", parent=archive_id)
-    if (not chart_data_res or len(chart_data_res) != 1):
-        print('"Chart Data" folder not found in "Archive" directory, please check Google Drive')
-        return None
+    if not has_unique_folder(chart_data_res, "Chart Data", "Archive"): return None
     return chart_data_res[0]
 
 # Get seperated section or separated sibelius parts folders
@@ -345,24 +333,17 @@ def get_separated_folders(service, library_id):
     for folder_name, abbr in folder_names:
         # Look for folder within Digital Library
         ids = get_folder_ids(service, name=folder_name, parent=library_id)
-        if not ids or len(ids) != 1:
-            print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
-            return None
-        
+        if not has_unique_folder(ids, folder_name, "Digital Library"): return None       
         separated_ids[abbr] = ids[0]
 
         # Look for Current Chartz folder
         curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
-        if not curr_ids or len(curr_ids) != 1:
-            print(f'ERROR: Unable to find folder "Current Chartz" within "{folder_name}"')
-            return None
+        if not has_unique_folder(curr_ids, "Current Chartz", folder_name): return None
         separated_ids[f'{abbr}_curr'] = curr_ids[0]
         
         # Look for Old Chartz folder
         old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
-        if not old_ids or len(old_ids) != 1:
-            print(f'ERROR: Unable to find folder "Old Chartz" within "{folder_name}"')
-            return None
+        if not has_unique_folder(old_ids, "Old Chartz", folder_name): return None
         separated_ids[f'{abbr}_old'] = old_ids[0]
     
     return separated_ids
@@ -400,3 +381,15 @@ def get_dir_files(dir, file_types):
     except OSError:
         print(f'ERROR: No supported files found in directory "{dir}"')
         sys.exit()
+
+# A helper function that outputs some useful error messages
+def has_unique_folder(res, target, parent):
+    if res == None or len(res) == 0:
+        print(f'ERROR: "{target}" folder not found in "{parent}" directory, please check Google Drive')
+        return False
+    elif len(res) > 1:
+        print(f'ERROR: Multiple instances of "{target}" folder found in "{parent}" directory, please check Google Drive')
+        print(f'Double-check the Trash section of Google Drive, as it still belongs to the "{parent}" folder')
+        return False
+    else:
+        return True
