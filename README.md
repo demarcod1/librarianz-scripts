@@ -181,7 +181,7 @@ This script repopulates the `Separated Section Parts` and `Seperated Sibelius Fi
 1. Edit the `res/options/parts.json` file to configure the part information
 2. Run `python3 librarianz_script -s remake_shortcuts` in the Terminal
 
-### Configuring `parts.json`
+#### Configuring `parts.json`
 
 * `parts` - a dictionary between part names and aliases
    * `PART_NAME` - an array of aliases that should resolve to `PART_NAME`. For example, if an entry is `"Toobz": ["Toobz", "Tööbz]`, then any pdf file whose alias is either `Toobz` or `Tööbz` (`All Right Now - Tööbz`, for example) will be placed into the `Toobz` part folder. An alias corresponding to multiple parts is not currently supported
