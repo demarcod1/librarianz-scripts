@@ -177,7 +177,7 @@ This script repopulates the `Separated Section Parts` and `Seperated Sibelius Fi
 <details>
    <summary>Show/Hide Details</summary>
 
-### To separate the folders and safely reconstruct the Live Digital Library
+### To remake the shortcuts and safely reconstruct the Live Digital Library
 1. Edit the `res/options/parts.json` file to configure the part information
 2. Run `python3 librarianz_script -s remake_shortcuts` in the Terminal
 
