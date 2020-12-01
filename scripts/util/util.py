@@ -163,13 +163,18 @@ def get_parts_folder(service, chart, chart_id):
 
 # Creates a folder
 def make_folder(service, name, parent):
+
     file_metadata = {
         'name': name,
         'mimeType': 'application/vnd.google-apps.folder',
         'parents': [parent]
     }
-    response = service.files().create(body=file_metadata, fields='id').execute()
-    return response.get('id')
+    try:
+        response = service.files().create(body=file_metadata, fields='id').execute()
+        return response.get('id')
+    except HttpError:
+        print(f'ERROR: Unable to create folder "{name}"')
+        return None
 
 # Moves a file (or folder)
 def move_file(service, file_id, old_parent, new_parent):
@@ -344,6 +349,8 @@ def get_separated_folders(service, library_id):
             print(f'ERROR: Unable to find folder "{folder_name}" within Digital Library')
             return None
         
+        separated_ids[abbr] = ids[0]
+
         # Look for Current Chartz folder
         curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
         if not curr_ids or len(curr_ids) != 1:
@@ -361,10 +368,11 @@ def get_separated_folders(service, library_id):
     return separated_ids
 
 # Search folder for specific files/folders
-def get_drive_files(service, id, file_types=None, files_only=True, name=None, is_shortcut=False):
+def get_drive_files(service, id, file_types=None, files_only=True, folders_only=False, name=None, is_shortcut=False):
     output = []
     q = f'"{id}" in parents'
     if files_only: q += ' and not mimeType = "application/vnd.google-apps.folder"'
+    if folders_only: q += ' and mimeType = "application/vnd.google-apps.folder"'
     if name: q += f' and name contains "{name}"'
 
     fields = f'files(id, name{", shortcutDetails" if is_shortcut else ""})'

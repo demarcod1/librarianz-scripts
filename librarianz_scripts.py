@@ -10,6 +10,7 @@ from scripts.folder_creator import folder_creator
 from scripts.login import login
 from scripts.move_chartz import move_chartz
 from scripts.redvest_creator import redvest_creator
+from scripts.remake_shortcuts import remake_shortcuts
 from scripts.separated_folders_creator import separated_folders_creator
 from scripts.upload_files import upload_files
 from scripts.validate_folder_files import validate_folder_files
@@ -20,6 +21,7 @@ SCRIPT_DICT = {
     "folder_creator": folder_creator,
     "move_chartz": move_chartz,
     "redvest_creator": redvest_creator,
+    "remake_shortcuts": remake_shortcuts,
     "separated_folders_creator": separated_folders_creator,
     "upload_files": upload_files,
     "validate_folder_files": validate_folder_files
