@@ -172,7 +172,7 @@ This config file has a large number of options, which are fully detailed [here](
 </details>
 
 ## Remake Shortcuts Script
-This script repopulates the `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files.  Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library.
+This script repopulates the `Separated Section Parts` and `Seperated Sibelius Files` folders that organize all the charts on a per-instrument basis and creates a folder exclusively with Sibeilus files.  Other scripts, such as `upload_files` and `move_chartz` will automatically update the live Digital Library, so you should only need to run this script if you are adding/deleting/renaming a part.
 
 <details>
    <summary>Show/Hide Details</summary>
