@@ -41,7 +41,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
     # Find the sibelius file
     res = util.get_drive_files(service, id, ['.sib'])
     if not res or len(res) == 0:
-        print(f'WARNING: Could not find single Sibelius file for chart "{chartname}"')
+        print(f'WARNING: Could not find Sibelius file for chart "{chartname}"')
     else:
         if len(res) > 1:
             print(f'WARNING: Multiple Sibelius files found for chart "{chartname}". The first one seen will be used in the shortcut.')

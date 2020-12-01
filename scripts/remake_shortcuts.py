@@ -56,5 +56,6 @@ def remake_shortcuts():
         ])
     
     print("Successfully remade shortcuts - changes are live!")
+    print('Make sure that the "Current Chartz" and "Old Chartz" folders within the "Separated Sibelius Files" directory are shared with anyone who has the link')
     return 0
 
