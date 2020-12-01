@@ -24,11 +24,11 @@ def remake_shortcuts():
     sep_ids = util.get_separated_folders(service, library_id)
     if sep_ids == None: return 1
 
-    print("Creating Separated Section Parts and Sibelius Files folders...")
-    new_folders = rm.new_sep_structure(service, sep_ids['sec'], sep_ids['sib'], parts_dict)
-
     print("Retrieving chart data...")
     all_chartz = rm.get_all_chart_folders(service, curr_id, old_id)
+
+    print("Creating Separated Section Parts and Sibelius Files folders...")
+    new_folders = rm.new_sep_structure(service, sep_ids['sec'], sep_ids['sib'], parts_dict)
 
     # Write shortcuts
     for age in all_chartz:

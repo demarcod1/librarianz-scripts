@@ -1,4 +1,4 @@
-from gui.screens.options.util.custom_text import CustomText
+from gui.util.custom_text import CustomText
 from tkinter import *
 from tkinter import ttk
 

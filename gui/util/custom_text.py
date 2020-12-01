@@ -13,9 +13,13 @@ class CustomText(Text):
 
     def _proxy(self, command, *args):
         cmd = (self._orig, command) + args
-        result = self.tk.call(cmd)
+        try:
+            result = self.tk.call(cmd)
+        except TclError:
+            return None
 
         if command in ("insert", "delete", "replace"):
             self.event_generate("<<TextModified>>")
+        
 
         return result

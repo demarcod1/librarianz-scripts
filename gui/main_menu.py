@@ -1,3 +1,4 @@
+from gui.screens.remake_shortcuts import RemakeShortcutsScreen
 import os
 from scripts.util.util import make_application_data, parse_options, resourcePath, write_options
 from gui.screens.folder_creator import FolderCreatorScreen
@@ -34,10 +35,12 @@ class MainMenu:
         upload_files_frame = UploadFilesScreen(n)
         move_chartz_frame = MoveChartzScreen(n)
         redvest_creator_frame = RedvestCreatorScreen(n)
+        remake_shortcuts_frame = RemakeShortcutsScreen(n)
 
         n.add(folder_creator_frame, text='Folder Creator', underline=0)
         n.add(move_chartz_frame, text='Move Chartz', underline=0)
         n.add(redvest_creator_frame, text='Redvest Creator', underline=0)
+        n.add(remake_shortcuts_frame, text='Remake Shortcuts', underline=7)
         n.add(upload_files_frame, text='Upload Files', underline=0)
         
         n.enable_traversal()
