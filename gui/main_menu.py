@@ -10,22 +10,15 @@ from appdirs import user_data_dir
 
 class MainMenu:
 
-    def __init__(self, parent):
+    def __init__(self, parent, data_dir):
 
         # Set title
         parent.title("Digital Library Manager")
         parent.iconphoto(True, PhotoImage(file=resourcePath(os.path.join('res', 'icons', 'embo.png'))))
         parent.minsize(600, 550)
-        
-        # Search for application data directory
-        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', '0.1.2')
-        res_options = parse_options("res_paths.json", from_=data_dir)
-        res_options['res-path'] = data_dir
-        make_application_data(data_dir)
-        write_options(res_options, "res_paths.json")
-        write_options(res_options, "res_paths.json")
 
         # Prompt user to specify credentials path
+        res_options = parse_options("res_paths.json", from_=data_dir)
         creds_path = res_options['creds-path']
         if not os.path.exists(creds_path) or not os.path.isfile(creds_path):
             new_path = filedialog.askopenfilename(title='Select Credentials File', filetypes=[('Credentials JSON File','*.json')])

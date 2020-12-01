@@ -1,3 +1,5 @@
+from scripts.util.util import is_frozen, make_application_data, parse_options, write_options
+from appdirs import user_data_dir
 from gui.main_menu import MainMenu
 import sys
 import tkinter as tk
@@ -53,8 +55,20 @@ def main(argv):
         script()
         return
     
+         
+    # Search for application data directory
+    data_dir=None
+    if is_frozen():
+        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', '0.1.3')
+        res_options = parse_options("res_paths.json", from_=data_dir)
+        res_options['res-path'] = data_dir
+        make_application_data(data_dir)
+        write_options(res_options, "res_paths.json")
+        write_options(res_options, "res_paths.json")
+
+    # Run Main Application
     root = tk.Tk()
-    MainMenu(root)
+    MainMenu(root, data_dir)
     root.mainloop()
 
 if __name__ == '__main__':

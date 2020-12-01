@@ -1,4 +1,4 @@
 {
-    "creds-path": "",
+    "creds-path": "credentials.json",
     "res-path": ""
 }

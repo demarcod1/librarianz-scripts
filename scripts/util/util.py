@@ -9,6 +9,10 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 class CredentialsError(Exception):
     pass
 
+# Returns whether or not the script is running in an exe/frozen file
+def is_frozen():
+    return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
+
 # Builds the drive service
 def build_service():
     return build('drive', 'v3', credentials=fetch_credentials())
@@ -39,7 +43,7 @@ def fetch_credentials():
                 flow = InstalledAppFlow.from_client_secrets_file(
                     resourcePath(creds_path), SCOPES)
                 creds = flow.run_local_server(port=0)
-            except (UnicodeDecodeError, ValueError):
+            except (UnicodeDecodeError, ValueError, OSError):
                 res_paths['creds-path'] = ''
                 write_options(res_paths, 'res_paths.json')
                 raise CredentialsError(f'ERROR: Credentials file "{os.path.basename(creds_path)}" invalid. Please restart the application.')
@@ -50,18 +54,17 @@ def fetch_credentials():
     return creds
 
 # Path to resources
-def resourcePath(rel_path, rel_res=False):
+def resourcePath(rel_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
-    # Source: https://stackoverflow.com/questions/7674790/bundling-data-files-with-pyinstaller-onefile?noredirect=1&lq=1
-    base_path = getattr(sys, '_MEIPASS', "." if rel_res else os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..'))
-
-    return os.path.join(base_path, rel_path)
+    if is_frozen():
+        return os.path.join(getattr(sys, '_MEIPASS', ''), rel_path)
+    return rel_path
 
 # Make Application Data files
 def make_application_data(data_dir):
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
-        src = resourcePath("./res", rel_res=True)
+        src = resourcePath("./res")
         shutil.copytree(src, os.path.join(data_dir, 'res'))
 
         # Remove token.pickle file
@@ -70,18 +73,14 @@ def make_application_data(data_dir):
             os.remove(pickle)
 
 
-# Gets the path to resource files
-def get_resource_path(path='res/options/res_paths.json'):
-    full_path = resourcePath(path)
-    with open(full_path) as f:
-        return json.load(f)['res-path']
-
 # Gets the path to the specified location within the resources directory
 def get_full_path(partial_path):
-    res_path = get_resource_path()
+    with open(resourcePath('res/options/res_paths.json')) as f:
+        res_path = json.load(f)['res-path']
+
     if (res_path == '' or res_path == '.'):
         return resourcePath(partial_path)
-    elif hasattr(sys, '_MEIPASS'):
+    elif is_frozen():
         return os.path.join(res_path, partial_path)
     else:
         return partial_path
