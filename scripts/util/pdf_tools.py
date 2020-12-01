@@ -318,8 +318,6 @@ def validate_mediabox(page: PageObject, options):
 
     return mediabox.getWidth() == width and mediabox.getHeight() == height
 
-
-
 # Validate and update the lists of files in the options list
 def validate_titles(title_map, options, update_path=None, verbose=False):
     titles = title_map.keys()

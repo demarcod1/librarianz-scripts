@@ -87,7 +87,7 @@ def move_chartz():
     service = util.build_service()
 
     # Read options
-    alias_map = util.make_alias_map(util.parse_options("parts.json"))
+    alias_map = util.make_alias_map(util.parse_options("parts.json")['parts'])
     options = util.parse_options("move_chartz_options.json")
     if options == None: return
 

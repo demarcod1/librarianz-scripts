@@ -317,6 +317,7 @@ def get_digital_library(service):
 
     return library_id, current_id, past_id
 
+# Get the chart data archive
 def get_chart_data_archive(service, library_id):
     # Archive folder
     archive_res = get_folder_ids(service, name="Archive", parent=library_id)
@@ -386,7 +387,7 @@ def get_drive_files(service, id, file_types=None, files_only=True, name=None, is
 def get_dir_files(dir, file_types):
     try:
         files = [ file for file in os.listdir(dir) if file[-4:] in file_types ]
-        if len(files) == 0: raise Exception
+        if len(files) == 0: raise OSError
         return files
     except OSError:
         print(f'ERROR: No supported files found in directory "{dir}"')

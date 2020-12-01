@@ -1,14 +1,20 @@
 {
-  "Altoz": ["Altoz"],
-  "Bonz": ["Bonz"],
-  "Clarz": ["Clarz"],
-  "Glockz": ["Glockz"],
-  "Mellz": ["Mellz"],
-  "Picz": ["Picz"],
-  "Flutez": ["Flutez"],
-  "Full Scores": ["Full Score"],
-  "Tenrz": ["Tenrz"],
-  "Toobz": ["Toobz", "Tööbz"],
-  "Trumpz": ["Trumpz","Trumpets", "Trumpz (2 & 3)", "Trumpz (Alternate)", "Trumpz_1"],
-  "ABF": ["Axis", "Snare", "Drum Set", "Percussion", "Snare Drum", "Marching, Tenor Drums"]
+  "parts": {
+    "Altoz": ["Altoz"],
+    "Bonz": ["Bonz"],
+    "Clarz": ["Clarz"],
+    "Glockz": ["Glockz"],
+    "Mellz": ["Mellz"],
+    "Picz": ["Picz"],
+    "Flutez": ["Flutez"],
+    "Full Scores": ["Full Score"],
+    "Tenrz": ["Tenrz"],
+    "Toobz": ["Toobz", "Tööbz"],
+    "Trumpz": ["Trumpz","Trumpets", "Trumpz (2 & 3)", "Trumpz (Alternate)", "Trumpz_1"],
+    "ABF": ["Axis", "Snare", "Drum Set", "Percussion", "Snare Drum", "Marching, Tenor Drums"]
+  },
+  "exclude": [
+    "Full Scores",
+    "Flutez"
+  ]
 }
