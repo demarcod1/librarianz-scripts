@@ -1,4 +1,7 @@
+import io
 import json, os, glob
+from struct import pack
+from typing import List
 from scripts.util.util import resourcePath
 
 from PyPDF2.pdf import PageObject, PdfFileWriter, PdfFileReader
@@ -10,31 +13,24 @@ from reportlab.lib.units import inch
 from reportlab.lib.styles import ParagraphStyle
 
 # Adds the page number (or any arbitrary text) to the chart pdf file
+# Source: https://stackoverflow.com/questions/1180115/add-text-to-existing-pdf-using-python
 def add_page_num(page, text: str, options):
     # Get page num information
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
-    path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
-
-    if not os.path.isfile(path):
-        with open(path, 'w') as f: pass
+    packet = io.BytesIO()
 
     # Draw text on canvas
-    page_num = canvas.Canvas(path, pagesize=(width, height))
+    page_num = canvas.Canvas(packet, pagesize=(width, height))
     page_num.setFont(font, size)
     page_num.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
     page_num.save()
 
     # Add page number to existing page
-    with open(path, 'rb') as f:
-        page_num_pdf = PdfFileReader(f).getPage(0)       
-        page_num_pdf.mergePage(page)
+    packet.seek(0)
+    page_num_pdf = PdfFileReader(packet).getPage(0)       
+    page_num_pdf.mergePage(page)
 
-        # For some reason the text doesn't appear properly if we don't write first
-        tmp_out = PdfFileWriter()
-        tmp_out.addPage(page_num_pdf)
-        with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
-            tmp_out.write(f)
     return page_num_pdf
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
@@ -64,6 +60,22 @@ def categorize_parts(title_map, options):
         enforceRules(list, options["enforce-order"], title_map)
 
     return lettered, numbered, special
+
+# Creates a temporary file of just page numbers
+def create_page_number_file(page_num_list, options, filename='page_nums.pdf'):
+    # Get page num information
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
+    font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
+    path = os.path.join(options["folder-dir"], "tmp", filename)
+
+    # Set up canvas
+    page_num_canvas = canvas.Canvas(path, pagesize=(width, height))
+
+    for text in page_num_list:
+        page_num_canvas.setFont(font, size)
+        page_num_canvas.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
+        page_num_canvas.showPage()
+    page_num_canvas.save()
 
 # Downloads all the files from a Separated Section Parts folder
 def download_part_files(service, curr_parts_id, part, dir, verbose=False):
@@ -129,7 +141,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
             if verbose and write_pages:
-                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
+                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}\n')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -150,8 +162,10 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                     print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
                     continue
 
+                # Calculate this page number
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
+
         except OSError:
             print(f'Error when parsing "{file}"')
         
@@ -262,6 +276,24 @@ def generate_toc_styles(options):
                             alignment=0)
 
     return style_normal, style_dollie
+
+def merge_page_nums(pages: List[PageObject], options, filename='page_nums.pdf'):
+    output = []
+    path = os.path.join(options["folder-dir"], "tmp", filename)
+    with open(path, 'rb') as f:
+        page_num_pdf = PdfFileReader(f)
+        for i, page in enumerate(pages):
+            target: PageObject = page_num_pdf.getPage(i)
+            target.mergePage(page)
+            # For some reason the text doesn't appear properly if we don't write first
+            print("Writing extra output file because this is somehow necessary")
+            tmp_out = PdfFileWriter()
+            tmp_out.addPage(target)
+            with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
+                pass#tmp_out.write(f)
+            output.append(target)
+
+    return output
 
 # This merges files of the same chart together and outputs a map from chartname -> filename
 def process_files(files):

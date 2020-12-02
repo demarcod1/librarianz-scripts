@@ -72,7 +72,8 @@
     "folder-dir": "..\\test_folder",
     "folder-name": "November 2020 Folder",
     "folder-parts": [
-        "Picz"
+        "Altoz",
+        "Bonz"
     ],
     "lettered-chartz": [
         "All Right Now",
@@ -120,5 +121,5 @@
         "num-cols": 3,
         "generate-on-validation": true
     },
-    "verbose": true
+    "verbose": false
 }

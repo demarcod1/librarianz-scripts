@@ -61,7 +61,7 @@ class FolderCreatorScreen(ttk.Frame):
 
         # Create Folders workflow
         create_folders = FolderCreatorWorkflow(parent=workflow_frame,
-                                                description="Writes the folders to the Output folder in the target directory\n\nThis takes about 3-5 mins to complete per part",
+                                                description="Writes the folders to the Output folder in the target directory\n\nThis takes about 2-5 minutes",
                                                 scriptButtonName='Generate Folders',
                                                 scriptCallback=self.runFolderCreatorScript,
                                                 optionsCallback=lambda: self.open_options(2))
@@ -116,10 +116,5 @@ class FolderCreatorScreen(ttk.Frame):
         ScriptProgress(self, script=validate_folder_files, callback=self.script_callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
     
     def runFolderCreatorScript(self):
-        def folder_creator_wrapper():
-            print("WARNING: Running this script with the UI active takes significantly more time due to python threading limitations")
-            print(f'To generate the folder faster, run "{"py" if platform.system() == "Windows" else "python3"} librarianz_scripts.py -s folder_creator"')
-            folder_creator()
-        
-        self.withdraw_self()
-        ScriptProgress(self, script=folder_creator_wrapper, callback=self.script_callback, title='Generating Folders...', name='Folder Creator', safe=True)
+        self.write_options_and_withdraw()
+        ScriptProgress(self, script=folder_creator, callback=self.script_callback, title='Generating Folders...', name='Folder Creator', safe=True)
