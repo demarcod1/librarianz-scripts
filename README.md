@@ -195,8 +195,51 @@ This script repopulates the `Separated Section Parts` and `Seperated Sibelius Fi
 
 </details>
 
+# Digital Library Google Drive Structure
+These scripts assumes the Librarianz Google Drive is structured according to the directory tree below.
+
+<details>
+   <summary>Show/Hide Directory Structure</summary>
+
+## Librarianz Drive Structure
+```
+My Drive
++-- DigitalLibrary
+|   +-- [LIVE] DigitalLibrary
+|   |   +-- LSJUMB Digital Chartz
+|   +-- Archive
+|   |   +-- Chart Data
+|   +-- LSJUMB Full Digitized Chart Data
+|   |   +-- Current Chartz
+|   |   +-- Old Chartz
+|   +-- Separated Section Parts
+|   |   +-- Current Charts
+|   |   +-- Old Chartz
+|   +-- Separated Sibelius Files
+|       +-- Current Chartz
+|       +-- Old Chartz
++-- Red Vest   
+```
+
+## Chart Folders Structure
+```
+Chart Name
++-- Parts
+|   +-- Chart Name - Altoz.pdf
+|   +-- etc.
++-- Chart Name.sib
++-- etc
+```
+
+### Notes
+1. The directories shown in the tree are a subset of the Librarianz Drive. They are the minimum requirements needed to the scripts to execute properly
+2. This program does not support a different directory structure
+3. Within the `LSJUMB Full Digitized Chart Data/Current Chartz` or `Old Chartz` folders are the individual Chart folders. If you use the [Upload Files Script](#upload-files-script) to create a new chart folder, you do not need to worry about manually creating chart folders.
+
+</details>
+
 # Understanding `folder_creator_options.json`
-This configuration file for the folder creator is relatively complex. The fields and their meanings are detailed here
+This configuration file for the folder creator is relatively complex. The fields and their meanings are detailed below.
 
 <details>
    <summary>Show/Hide Details</summary>
