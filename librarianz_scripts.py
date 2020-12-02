@@ -15,6 +15,8 @@ from scripts.separated_folders_creator import separated_folders_creator
 from scripts.upload_files import upload_files
 from scripts.validate_folder_files import validate_folder_files
 
+VERSION = '0.1.3'
+
 SCRIPT_DICT = {
     "download_parts": download_parts,
     "login" : login,
@@ -61,10 +63,11 @@ def main(argv):
     # Search for application data directory
     data_dir=None
     if is_frozen():
-        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', '0.1.3')
+        data_dir = user_data_dir('LSJUMB Librarianz Scripts', 'LSJUMB', VERSION)
         res_options = parse_options("res_paths.json", from_=data_dir)
         res_options['res-path'] = data_dir
-        make_application_data(data_dir)
+        make_application_data(data_dir, VERSION != res_options.get('version'))
+        res_options['version'] = VERSION
         write_options(res_options, "res_paths.json")
         write_options(res_options, "res_paths.json")
 

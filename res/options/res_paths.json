@@ -1,4 +1,5 @@
 {
     "creds-path": "credentials.json",
-    "res-path": ""
+    "res-path": "",
+    "version": "0.1.2"
 }
