@@ -61,17 +61,20 @@ def resourcePath(rel_path):
     return rel_path
 
 # Make Application Data files
-def make_application_data(data_dir):
-    if not os.path.exists(data_dir):
+def make_application_data(data_dir, recopy=False):
+    path_exists = os.path.exists(data_dir)
+    if path_exists and not recopy: return
+
+    if not path_exists:
         os.makedirs(data_dir)
-        src = resourcePath("./res")
-        shutil.copytree(src, os.path.join(data_dir, 'res'))
+    
+    src = resourcePath("./res")
+    shutil.copytree(src, os.path.join(data_dir, 'res'), dirs_exist_ok=True)
 
-        # Remove token.pickle file
-        pickle = os.path.join(data_dir, 'res/token.pickle')
-        if os.path.isfile(pickle):
-            os.remove(pickle)
-
+    # Remove token.pickle file
+    pickle = os.path.join(data_dir, 'res/token.pickle')
+    if os.path.isfile(pickle):
+        os.remove(pickle)
 
 # Gets the path to the specified location within the resources directory
 def get_full_path(partial_path):
@@ -111,8 +114,8 @@ def parse_options(filename, path = "res/options/", from_=None):
 
 # Parse title of a file into [chartname, partname (if applicable), mimeType]
 def parse_file(filename, alias_map=None):
-    # pdf part format
-    match = re.search('(.*) - (.*).pdf', filename)
+    # title - part format
+    match = re.search('(.*) - (.*).(.*)', filename)
     if match:
         return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
     
