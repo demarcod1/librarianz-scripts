@@ -1,4 +1,4 @@
-from scripts.util.thread_events import reset_stop_script, stop_scripts
+from scripts.util.thread_events import reset_stop_script, stop_scripts, thread_print
 from gui.util.util import bind_button, spawn_thread
 from tkinter import *
 from tkinter import ttk, messagebox
@@ -118,8 +118,7 @@ class ScriptProgress(Toplevel):
     def destroy_self(self):
         if self.active and hasattr(self, 'thread'):
             if messagebox.askyesno(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script? {"Doing so may corrupt the Digital Library shortcuts." if not self.safe_to_abort else ""}', icon='warning' if self.safe_to_abort else 'error', default='no'):
-                print(f'Aborting {self.name} Script...')
-                #self.thread.kill()
+                print(f'\nAborting {self.name} Script...')
                 stop_scripts()
                 self.destroy_after_callback = True
         else: self.destroy()

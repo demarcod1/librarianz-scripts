@@ -1,7 +1,6 @@
 import io
 import json, os, glob
-from scripts.util.thread_events import check_stop_script
-from struct import pack
+from scripts.util.thread_events import check_stop_script, thread_print
 from typing import List
 from scripts.util.util import resourcePath
 
@@ -83,11 +82,11 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Retrieve files
     folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
     if not folders or len(folders) != 1:
-        print(f'ERROR: Unable to find folder "{part}"')
+        thread_print(f'ERROR: Unable to find folder "{part}"')
         return
     files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
     if not files or len(files) == 0:
-        print(f'WARNING: Could not find any part files for "{part}"')
+        thread_print(f'WARNING: Could not find any part files for "{part}"')
         return
     
     # Validate target directory
@@ -106,7 +105,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
     
     # Print success
-    print(f'Successfully finished downloading part files for "{part}"')
+    thread_print(f'Successfully finished downloading part files for "{part}"')
 
 # Enforce ordering rules
 def enforceRules(list, rules, title_map):
@@ -144,7 +143,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
             if verbose and write_pages:
-                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
+                thread_print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -162,7 +161,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
                 # Verify that it has the proper dimensions
                 if not validate_mediabox(input_page, options):
-                    print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
+                    thread_print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
                     continue
 
                 # Calculate this page number
@@ -170,7 +169,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
 
         except OSError:
-            print(f'Error when parsing "{file}"')
+            thread_print(f'Error when parsing "{file}"')
         
         # Increment Counter
         counter = (counter + 1) if style == 0 else (chr(ord(counter) + 1))
@@ -240,7 +239,7 @@ def generate_toc(toc_maps, options, file, verbose=False):
     # write the document to disk
     check_stop_script()
     toc.build([table], onFirstPage=onFirstPage)
-    if verbose: print(f'Successfully created table of contents file at "{file}"')
+    if verbose: thread_print(f'Successfully created table of contents file at "{file}"')
 
 # Generates the data in the proper form
 def generate_toc_data(toc_maps, options, styles):
@@ -295,7 +294,7 @@ def merge_page_nums(pages: List[PageObject], options, filename='page_nums.pdf'):
             target: PageObject = page_num_pdf.getPage(i)
             target.mergePage(page)
             # For some reason the text doesn't appear properly if we don't write first
-            print("Writing extra output file because this is somehow necessary")
+            thread_print("Writing extra output file because this is somehow necessary")
             tmp_out = PdfFileWriter()
             tmp_out.addPage(target)
             with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
@@ -318,8 +317,10 @@ def process_files(files):
 
         # we need to merge pdfs into 1
         merger = PdfFileMerger()
-        merger.append(PdfFileReader(open(title_map[title], "rb")))
-        merger.append(PdfFileReader(open(file, "rb")))
+        with open(title_map[title], "rb") as f:
+            merger.append(PdfFileReader(f))
+        with open(file, "rb") as f:
+            merger.append(PdfFileReader(f))
         merger.write(title_map[title])
         os.remove(file)
 
@@ -334,19 +335,19 @@ def to_pages(file):
 def validate_dir(path, verbose=False):
     if not os.path.exists(path):
         os.makedirs(path)
-        if verbose: print(f'DEBUG: Making directory "{path}"')
+        if verbose: thread_print(f'DEBUG: Making directory "{path}"')
 
 # Validates that a part's files are properly formatted
 def validate_part(part, options):
     path = os.path.join(options["folder-dir"], "parts", part)
     if not os.path.exists(path):
-        print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
+        thread_print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
         return None
     
     # Validate titles
     title_map = process_files(sorted(glob.glob(f'{path}/*.pdf')))
     if len(title_map.keys()) == 0:
-        print(f'WARNING: No files found for part "{part}", folder will not be generated')
+        thread_print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
     validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"], part=part)
 
@@ -368,7 +369,7 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
         song_lower = song.lower()
         for title in titles:
             if song_lower == title.lower():
-                if verbose: print(f'DEBUG: Found match for song "{song}": "{title}".')
+                if verbose: thread_print(f'DEBUG: Found match for song "{song}": "{title}".')
                 return title
 
     # Go through all the file lists and make repairs if necessary
@@ -377,14 +378,14 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
             if update_path:
                 match = find_match(song)
                 if match: options["dollie-songs"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found in for {part}.')
+                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found in for {part}.')
     
     for i, song in enumerate(options["lettered-chartz"]):
         if not song in titles:            
             if update_path:
                 match = find_match(song)
                 if match: options["lettered-chartz"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found for part {part}.')
+                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found for part {part}.')
     
     for i, rule in enumerate(options["enforce-order"]):
         for j, song in enumerate(rule):
@@ -392,7 +393,7 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
                 if update_path:
                     match = find_match(song)
                     if match: options["enforce-order"][i][j] = match
-                    elif verbose: print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
+                    elif verbose: thread_print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
     
     if update_path:
         with open(update_path, 'w') as f:
