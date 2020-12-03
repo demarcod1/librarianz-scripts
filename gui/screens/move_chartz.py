@@ -51,5 +51,5 @@ class MoveChartzScreen(ttk.Frame):
             print(f"Thread Finished with code {code}")
         
 
-        ScriptProgress(self, script=move_chartz, callback=callback, title="Moving Chartz...", name="Move Chartz")
+        ScriptProgress(self, script=move_chartz, callback=callback, title="Moving Chartz", name="Move Chartz")
         self.master.master.withdraw()

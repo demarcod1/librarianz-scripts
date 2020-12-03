@@ -108,13 +108,13 @@ class FolderCreatorScreen(ttk.Frame):
 
     def runDownloadScript(self):
         self.write_options_and_withdraw()
-        ScriptProgress(self, script=download_parts, callback=self.script_callback, title='Downloading Parts from Digital Library...', name='Parts Downloader', safe=True)
+        ScriptProgress(self, script=download_parts, callback=self.script_callback, title='Downloading Parts from Digital Library', name='Parts Downloader', safe=True)
         
 
     def runValidateScript(self):
         self.write_options_and_withdraw()
-        ScriptProgress(self, script=validate_folder_files, callback=self.script_callback, title='Validating Target Directory...', name='Folder + File Validation', safe=True)
+        ScriptProgress(self, script=validate_folder_files, callback=self.script_callback, title='Validating Target Directory', name='Folder + File Validation', safe=True)
     
     def runFolderCreatorScript(self):
         self.write_options_and_withdraw()
-        ScriptProgress(self, script=folder_creator, callback=self.script_callback, title='Generating Folders...', name='Folder Creator', safe=True)
+        ScriptProgress(self, script=folder_creator, callback=self.script_callback, title='Generating Folders', name='Folder Creator', safe=True)
