@@ -25,7 +25,7 @@ class SelectDirectory(ttk.Labelframe):
         # Allow this to be resizeable
         self.rowconfigure(0, weight='1')
         self.columnconfigure(0, weight="1", minsize=200)
-        self.columnconfigure(1, weight="1", minsize=30)
+        self.columnconfigure(1, weight="0", minsize=30)
    
     def choose_folder(self, *args):
         dirname = filedialog.askdirectory(initialdir=self.path, title=self.title)
