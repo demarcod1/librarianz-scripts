@@ -11,7 +11,7 @@ class FolderCreatorWorkflow(ttk.Labelframe):
         ttk.Labelframe.__init__(self, parent, text=title, relief=relief)
 
         # Add Description label
-        desc_label = Text(self, wrap='word', font='TkTextFont', height=kwargs.get('height') or 5)
+        desc_label = Text(self, wrap='word', font='TkTextFont', height=kwargs.get('height') or 4)
         desc_label.insert("1.0", description)
         desc_label['state'] = 'disabled'
         desc_label.grid(row=0, column=0, sticky=(N, S), padx=10, pady=5)

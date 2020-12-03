@@ -92,7 +92,7 @@ class RemakeShortcutsScreen(ttk.Frame):
             print(f"Thread Finished with code {code}")
         
 
-        ScriptProgress(self, script=remake_shortcuts, callback=callback, title="Remaking Shortcuts (This may take 20-40 mins)...", name="Remake Shortcuts", safe=True)
+        ScriptProgress(self, script=remake_shortcuts, callback=callback, title="Remaking Shortcuts (This may take 20-40 mins)", name="Remake Shortcuts", safe=True)
         self.master.master.withdraw()
     
     # Populates the text area with the rules

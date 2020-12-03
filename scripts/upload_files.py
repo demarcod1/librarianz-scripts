@@ -1,3 +1,4 @@
+from scripts.util.thread_events import check_stop_script, stop_scripts
 from .util import util
 from .util import lib_management
 
@@ -10,17 +11,21 @@ def upload_files():
     alias_map = util.make_alias_map(util.parse_options("parts.json")['parts'])
     options = util.parse_options("upload_options.json")
     if options == None: return 1
+    check_stop_script()
 
     # Get list of files that need to be uploaded
     files = util.get_dir_files(options["resources-directory"], options["supported-file-types"])
+    check_stop_script()
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
     library_id, curr_id, old_id = util.get_digital_library(service)
     if library_id == None: return 1
+    check_stop_script()
     
     separated_ids = util.get_separated_folders(service, library_id)
     if separated_ids == None: return 1
+    check_stop_script()
 
     # Cache will store folder + parts folder ids and a list of files
     cache = {}
@@ -31,6 +36,7 @@ def upload_files():
     # Create new folders (if in proper mode)
     if mode != 0:
         for chart_info in options["new-chartz"]:
+            check_stop_script()
             is_curr = chart_info["to"] == 0
             chart_id, parts_id = lib_management.create_chart_structure(service, curr_id if is_curr else old_id, chart_info["name"])
             if chart_id:
@@ -38,6 +44,9 @@ def upload_files():
     
     # Operate on files
     for file in files:
+        # Check to see if we should exit
+        check_stop_script()
+
         # Populate cache
         lib_management.populate_cache(service, curr_id, old_id, util.parse_file(file, alias_map)[0], cache, options)
         updated = None

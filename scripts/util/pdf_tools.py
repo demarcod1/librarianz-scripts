@@ -1,4 +1,7 @@
+import io
 import json, os, glob
+from scripts.util.thread_events import check_stop_script, thread_print
+from typing import List
 from scripts.util.util import resourcePath
 
 from PyPDF2.pdf import PageObject, PdfFileWriter, PdfFileReader
@@ -10,31 +13,24 @@ from reportlab.lib.units import inch
 from reportlab.lib.styles import ParagraphStyle
 
 # Adds the page number (or any arbitrary text) to the chart pdf file
+# Source: https://stackoverflow.com/questions/1180115/add-text-to-existing-pdf-using-python
 def add_page_num(page, text: str, options):
     # Get page num information
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
-    path = os.path.join(options["folder-dir"], "tmp", "page_num.pdf")
-
-    if not os.path.isfile(path):
-        with open(path, 'w') as f: pass
+    packet = io.BytesIO()
 
     # Draw text on canvas
-    page_num = canvas.Canvas(path, pagesize=(width, height))
+    page_num = canvas.Canvas(packet, pagesize=(width, height))
     page_num.setFont(font, size)
     page_num.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
     page_num.save()
 
     # Add page number to existing page
-    with open(path, 'rb') as f:
-        page_num_pdf = PdfFileReader(f).getPage(0)       
-        page_num_pdf.mergePage(page)
+    packet.seek(0)
+    page_num_pdf = PdfFileReader(packet).getPage(0)       
+    page_num_pdf.mergePage(page)
 
-        # For some reason the text doesn't appear properly if we don't write first
-        tmp_out = PdfFileWriter()
-        tmp_out.addPage(page_num_pdf)
-        with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
-            tmp_out.write(f)
     return page_num_pdf
 
 # Splits the raw list of parts files into lists of Lettered, Numbered, fingering chart
@@ -65,19 +61,36 @@ def categorize_parts(title_map, options):
 
     return lettered, numbered, special
 
+# Creates a temporary file of just page numbers
+def create_page_number_file(page_num_list, options, filename='page_nums.pdf'):
+    # Get page num information
+    width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
+    font, size = (options["page-num-font"]["name"], options["page-num-font"]["size"])
+    path = os.path.join(options["folder-dir"], "tmp", filename)
+
+    # Set up canvas
+    page_num_canvas = canvas.Canvas(path, pagesize=(width, height))
+
+    for text in page_num_list:
+        page_num_canvas.setFont(font, size)
+        page_num_canvas.drawCentredString(1.5 * inch, height - (.02 * size * inch), text)
+        page_num_canvas.showPage()
+    page_num_canvas.save()
+
 # Downloads all the files from a Separated Section Parts folder
 def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     # Retrieve files
     folders = util.get_drive_files(service, curr_parts_id, files_only=False, name=part)
     if not folders or len(folders) != 1:
-        print(f'ERROR: Unable to find folder "{part}"')
+        thread_print(f'ERROR: Unable to find folder "{part}"')
         return
     files = util.get_drive_files(service, folders[0].get("id"), file_types=[".pdf"], is_shortcut=True)
     if not files or len(files) == 0:
-        print(f'WARNING: Could not find any part files for "{part}"')
+        thread_print(f'WARNING: Could not find any part files for "{part}"')
         return
     
     # Validate target directory
+    check_stop_script()
     path = os.path.join(dir, part)
     validate_dir(path, verbose)
 
@@ -88,11 +101,11 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     
     # Download files
     for file in files:
-        # print(file)
+        check_stop_script()
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
     
     # Print success
-    print(f'Successfully finished downloading part files for "{part}"')
+    thread_print(f'Successfully finished downloading part files for "{part}"')
 
 # Enforce ordering rules
 def enforceRules(list, rules, title_map):
@@ -125,11 +138,10 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
     counter = start
 
     for file in files:
+        check_stop_script()
         try:         
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
-            if verbose and write_pages:
-                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -147,13 +159,15 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
                 # Verify that it has the proper dimensions
                 if not validate_mediabox(input_page, options):
-                    print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
+                    thread_print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
                     continue
 
+                # Calculate this page number
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
+
         except OSError:
-            print(f'Error when parsing "{file}"')
+            thread_print(f'Error when parsing "{file}"')
         
         # Increment Counter
         counter = (counter + 1) if style == 0 else (chr(ord(counter) + 1))
@@ -162,22 +176,30 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
 # Generates the song files for a folder, returning a list of pages
 # If write_pages is false, it will populate maps but not write any actual pages
-def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbose=False):
+def generate_parts_pages(title_map, toc_maps, options, part, write_pages=False, verbose=False):
     output = []
     lettered, numbered, special = categorize_parts(title_map, options)
 
     # Fingering chart
     if write_pages and len(special["fingering_chart"]):
+        if verbose:
+            thread_print(f'Writing fingering chart to {part} folder')
         output.extend(to_pages(special["fingering_chart"][0]))
 
     # Lettered chartz
+    if verbose:
+        thread_print(f'Writing lettered chartz to {part} folder')
     output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages, verbose=verbose))
 
     # Numbered chartz
+    if verbose:
+        thread_print(f'Writing numbered chartz to {part} folder')
     output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages, verbose=verbose))
 
     # Teazers
     if len(special["teazers"]):
+        if verbose:
+            thread_print(f'Writing teazers to {part} folder')
         output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages, verbose=verbose))
     
     return output
@@ -185,16 +207,20 @@ def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbos
 # Generates the table of contents file
 def generate_toc(toc_maps, options, file, verbose=False):
     # Get page num information
+    check_stop_script()
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     path = os.path.dirname(file)
     validate_dir(path, verbose)
+    check_stop_script()
     
     # Generate toc doc and data
     toc = SimpleDocTemplate(file, pagesize=(width, height),
                             leftMargin=inch * .5, rightMargin=inch * .5,
                             topMargin=.75 * inch, bottomMargin=inch*.25)
+    check_stop_script()
     styles = generate_toc_styles(options)
     data = generate_toc_data(toc_maps, options, styles)
+    check_stop_script()
 
     # Construct table
     table = Table(data)
@@ -217,8 +243,9 @@ def generate_toc(toc_maps, options, file, verbose=False):
         canvas.restoreState()
 
     # write the document to disk
+    check_stop_script()
     toc.build([table], onFirstPage=onFirstPage)
-    if verbose: print(f'Successfully created table of contents file at "{file}"')
+    if verbose: thread_print(f'Successfully created table of contents file at "{file}"')
 
 # Generates the data in the proper form
 def generate_toc_data(toc_maps, options, styles):
@@ -234,6 +261,7 @@ def generate_toc_data(toc_maps, options, styles):
     if len(raw_list) > 0: del raw_list[-1]
 
     # Refactor the data into table format
+    check_stop_script()
     data = []
     num_cols = options["toc"]["num-cols"]
     num_rows = -(len(raw_list) // -num_cols)
@@ -263,6 +291,24 @@ def generate_toc_styles(options):
 
     return style_normal, style_dollie
 
+def merge_page_nums(pages: List[PageObject], options, filename='page_nums.pdf'):
+    output = []
+    path = os.path.join(options["folder-dir"], "tmp", filename)
+    with open(path, 'rb') as f:
+        page_num_pdf = PdfFileReader(f)
+        for i, page in enumerate(pages):
+            target: PageObject = page_num_pdf.getPage(i)
+            target.mergePage(page)
+            # For some reason the text doesn't appear properly if we don't write first
+            thread_print("Writing extra output file because this is somehow necessary")
+            tmp_out = PdfFileWriter()
+            tmp_out.addPage(target)
+            with open(os.path.join(options["folder-dir"], "tmp", "page_num_overlap.pdf"), 'wb') as f:
+                pass#tmp_out.write(f)
+            output.append(target)
+
+    return output
+
 # This merges files of the same chart together and outputs a map from chartname -> filename
 def process_files(files):
     title_map = {}
@@ -277,8 +323,10 @@ def process_files(files):
 
         # we need to merge pdfs into 1
         merger = PdfFileMerger()
-        merger.append(PdfFileReader(open(title_map[title], "rb")))
-        merger.append(PdfFileReader(open(file, "rb")))
+        with open(title_map[title], "rb") as f:
+            merger.append(PdfFileReader(f))
+        with open(file, "rb") as f:
+            merger.append(PdfFileReader(f))
         merger.write(title_map[title])
         os.remove(file)
 
@@ -293,21 +341,21 @@ def to_pages(file):
 def validate_dir(path, verbose=False):
     if not os.path.exists(path):
         os.makedirs(path)
-        if verbose: print(f'DEBUG: Making directory "{path}"')
+        if verbose: thread_print(f'DEBUG: Making directory "{path}"')
 
 # Validates that a part's files are properly formatted
 def validate_part(part, options):
     path = os.path.join(options["folder-dir"], "parts", part)
     if not os.path.exists(path):
-        print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
+        thread_print(f'ERROR: Path to files for part "{part}" does not exist, folder will not be generated')
         return None
     
     # Validate titles
     title_map = process_files(sorted(glob.glob(f'{path}/*.pdf')))
     if len(title_map.keys()) == 0:
-        print(f'WARNING: No files found for part "{part}", folder will not be generated')
+        thread_print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
-    validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"])
+    validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"], part=part)
 
     return title_map
 
@@ -319,7 +367,7 @@ def validate_mediabox(page: PageObject, options):
     return mediabox.getWidth() == width and mediabox.getHeight() == height
 
 # Validate and update the lists of files in the options list
-def validate_titles(title_map, options, update_path=None, verbose=False):
+def validate_titles(title_map, options, update_path=None, verbose=False, part=None):
     titles = title_map.keys()
     
     # Helper method to find case-insensitive match
@@ -327,7 +375,7 @@ def validate_titles(title_map, options, update_path=None, verbose=False):
         song_lower = song.lower()
         for title in titles:
             if song_lower == title.lower():
-                if verbose: print(f'DEBUG: Found match for song "{song}": "{title}".')
+                if verbose: thread_print(f'DEBUG: Found match for song "{song}": "{title}".')
                 return title
 
     # Go through all the file lists and make repairs if necessary
@@ -336,14 +384,14 @@ def validate_titles(title_map, options, update_path=None, verbose=False):
             if update_path:
                 match = find_match(song)
                 if match: options["dollie-songs"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found.')
+                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found in for {part}.')
     
     for i, song in enumerate(options["lettered-chartz"]):
         if not song in titles:            
             if update_path:
                 match = find_match(song)
                 if match: options["lettered-chartz"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found.')
+                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found for part {part}.')
     
     for i, rule in enumerate(options["enforce-order"]):
         for j, song in enumerate(rule):
@@ -351,7 +399,7 @@ def validate_titles(title_map, options, update_path=None, verbose=False):
                 if update_path:
                     match = find_match(song)
                     if match: options["enforce-order"][i][j] = match
-                    elif verbose: print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
+                    elif verbose: thread_print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
     
     if update_path:
         with open(update_path, 'w') as f:

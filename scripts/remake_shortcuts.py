@@ -1,3 +1,4 @@
+from scripts.util.thread_events import check_stop_script
 import scripts.util.util as util
 import scripts.util.remake_utils as rm
 
@@ -9,6 +10,7 @@ def remake_shortcuts():
     service = util.build_service()
 
     # Read options
+    check_stop_script()
     parts = util.parse_options("parts.json")
     parts_dict = parts['parts']
     alias_map = util.make_alias_map(parts_dict)
@@ -37,6 +39,7 @@ def remake_shortcuts():
             rm.write_shortcuts(service, chartname, id, age, new_folders, alias_map)
 
     # Add non-excluded files to the Live library
+    check_stop_script()
     print("Adding shortcuts to Live Digital Library...")
     new_live_curr_id, new_live_old_id = rm.add_live_part_folders(service, live_id)
     if not new_live_curr_id or not new_live_old_id: return 1
@@ -45,6 +48,7 @@ def remake_shortcuts():
         rm.add_live_part_shortcuts(service, parent, age, new_folders, parts['exclude'])
     
     # Deleting old shortcut container folders
+    check_stop_script()
     print("Removing old Separated Parts/Sibelius folders...")
     rm.delete_files(service, [
         prev_live_curr_id,

@@ -29,7 +29,7 @@
         "Rough Gem",
         "Rubberband Man",
         "Ruby Soho",
-        "Short Skirt, Long Jacket",
+        "Short Skirt Long Jacket",
         "Steam",
         "Stuff Like That",
         "Tighten Up",
@@ -43,6 +43,7 @@
         "Zoot Suit Riot"
     ],
     "download-parts": [
+        "ABF",
         "Altoz",
         "Bonz",
         "Clarz",
@@ -72,7 +73,13 @@
     "folder-dir": "..\\test_folder",
     "folder-name": "November 2020 Folder",
     "folder-parts": [
-        "Picz"
+        "Altoz",
+        "Clarz",
+        "Mellz",
+        "Picz",
+        "Tenrz",
+        "Toobz",
+        "Trumpz"
     ],
     "lettered-chartz": [
         "All Right Now",

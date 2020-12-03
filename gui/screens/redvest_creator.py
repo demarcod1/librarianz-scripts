@@ -71,5 +71,5 @@ class RedvestCreatorScreen(ttk.Frame):
             print(f"Thread Finished with code {code}")
         
 
-        ScriptProgress(self, script=redvest_creator, callback=callback, title="Creating Redvest Folder...", name="Redvest Creator")
+        ScriptProgress(self, script=redvest_creator, callback=callback, title="Creating Redvest Folder", name="Redvest Creator")
         self.master.master.withdraw()

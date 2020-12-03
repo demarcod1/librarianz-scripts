@@ -1,4 +1,5 @@
 from os import name
+from scripts.util.thread_events import check_stop_script
 from typing import Dict
 import  scripts.util.util as util
 
@@ -29,6 +30,7 @@ def get_all_chart_folders(service, curr_id, old_id):
 
     # Get every chart folder per age group
     for parent, age in [(curr_id, 'curr'), (old_id, 'old')]:
+        check_stop_script()
         output[age] = {}
         res = util.get_drive_files(service, parent, files_only=False, folders_only=True)
         for item in res:
@@ -39,6 +41,7 @@ def get_all_chart_folders(service, curr_id, old_id):
 # Writes a chart's shortcut out to the new separated folders
 def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
     # Find the sibelius file
+    check_stop_script()
     res = util.get_drive_files(service, id, ['.sib'])
     if not res or len(res) == 0:
         print(f'WARNING: Could not find Sibelius file for chart "{chartname}"')
@@ -48,6 +51,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
         util.make_shortcut(service, res[0].get('name'), res[0].get('id'), new_folders[f'sep_sib_{age}'])
     
     # Find the chart's Parts folder
+    check_stop_script()
     parts_id = util.get_parts_folder(service, chartname, id)
     if not parts_id: return
 
@@ -59,6 +63,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
     
     for partfile in res:
         # Ensure part exists in the system
+        check_stop_script()
         partfile_name = partfile.get('name')
         _, part, _ = util.parse_file(partfile_name, alias_map)
         if part == None:
@@ -71,6 +76,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
 # Gets the id of the 'LSJUMB Digital Chartz'
 def get_lsjumb_digital_chartz_id(service, library_id):
     # Find "[LIVE] DigitalLibrary" folder
+    check_stop_script()
     res = util.get_folder_ids(service, name="[LIVE] DigitalLibrary", parent=library_id)
     if not res or len(res) != 1:
         print('ERROR: Unable to find "[LIVE] DigitalLibrary" directory in "DigitalLibrary"')
@@ -106,6 +112,7 @@ def get_curr_old_live_ids(service, live_id):
 # Adds the relevant parts shortcuts to the live digital library
 def add_live_part_shortcuts(service, live_id, age, new_folders, exclude):
     for part in new_folders[age]:
+        check_stop_script()
         if part in exclude:
             print(f'WARNING: Part "{part}" will be excluded from the Live Digital Library')
             continue
