@@ -24,17 +24,17 @@ class ScriptProgress(Toplevel):
 
         # Create label
         self.label = ttk.Label(self, text=f'{self.name} script in progress...')
-        self.label.grid(row=0, column=0, sticky=(N, S, E, W), padx=20, pady=2)
+        self.label.grid(row=0, column=0, sticky=(N, S, E, W), padx=20, pady=10)
 
         # Create progressbar
         self.prog_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=200)
         self.prog_bar.start(25)
-        self.prog_bar.grid(row=1, column=0, sticky=(N, E, W), padx=20, pady=2)
+        self.prog_bar.grid(row=0, column=1, sticky=(N, E, W), padx=20, pady=10)
 
         # Create text console area within dummy frame
         dummy_frame = ttk.Frame(self)
 
-        self.console = Text(dummy_frame, width=70, height=12, wrap='none', font='TkFixedFont')
+        self.console = Text(dummy_frame, width=70, height=15, wrap='none', font='TkFixedFont')
         self.console["state"] = "disabled"
         self.console.grid(row=0, column=0, sticky=(N, E, S, W))
         self.console.tag_configure('warning', foreground='Orange')
@@ -49,10 +49,9 @@ class ScriptProgress(Toplevel):
         scrollx.grid(row=1, column=0, sticky=(E, W, N))
         scrolly.grid(row=0, column=1, sticky=(N, S, W))
         
-        dummy_frame.grid(row=2, column=0, padx=20, pady=2, sticky=(N, S, E, W))
-        for i in (0, 1):
-            dummy_frame.rowconfigure(i, weight='1')
-            dummy_frame.columnconfigure(i, weight='1')
+        dummy_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=2, sticky=(N, S, E, W))
+        dummy_frame.rowconfigure(0, weight='1')
+        dummy_frame.columnconfigure(0, weight='1')
 
         # Map stdout to this console
         class RedirectStdout(object):
@@ -81,7 +80,7 @@ class ScriptProgress(Toplevel):
         self.button_text = StringVar()       
         self.main_button = ttk.Button(self, textvariable=self.button_text, command=self.destroy_self)
         bind_button(self.main_button)
-        self.main_button.grid(row=3, column=0, sticky=S, padx=20, pady=10)
+        self.main_button.grid(row=3, column=0, columnspan=2, sticky=S, padx=20, pady=10)
 
         # Set button text
         if not self.safe_to_abort:
@@ -92,8 +91,9 @@ class ScriptProgress(Toplevel):
         # Allow resizing
         self.columnconfigure(0, weight="1")
         self.columnconfigure(1, weight="1")
-        for row in range(4):
-            self.rowconfigure(row, weight="1")
+        self.rowconfigure(0, weight="1")
+        self.rowconfigure(1, weight="1")
+        self.rowconfigure(2, weight="1")
         
         # Start thread
         def inner_callback(code):
@@ -118,7 +118,7 @@ class ScriptProgress(Toplevel):
     def destroy_self(self):
         if self.active and hasattr(self, 'thread'):
             if messagebox.askyesno(parent=self, title='Abort Script', message=f'Are you sure you wish to abort the {self.name} script? {"Doing so may corrupt the Digital Library shortcuts." if not self.safe_to_abort else ""}', icon='warning' if self.safe_to_abort else 'error', default='no'):
-                print(f'\nAborting {self.name} Script...')
+                print(f'Aborting {self.name} Script...')
                 stop_scripts()
                 self.destroy_after_callback = True
         else: self.destroy()
