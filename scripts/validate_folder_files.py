@@ -9,7 +9,7 @@ def validate_toc(part, title_map, options):
     file = os.path.join(options["folder-dir"], "Output", f'Table of Contents - {part}.pdf')
 
     # Generate the table of contents
-    pdf_tools.generate_parts_pages(title_map, toc_maps, options, write_pages=False)
+    pdf_tools.generate_parts_pages(title_map, toc_maps, options, part, write_pages=False)
     pdf_tools.generate_toc(toc_maps, options, file, verbose=True)
 
 # Main method

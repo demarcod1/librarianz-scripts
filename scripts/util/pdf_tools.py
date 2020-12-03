@@ -142,8 +142,6 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
         try:         
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
-            if verbose and write_pages:
-                thread_print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -178,22 +176,30 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
 # Generates the song files for a folder, returning a list of pages
 # If write_pages is false, it will populate maps but not write any actual pages
-def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbose=False):
+def generate_parts_pages(title_map, toc_maps, options, part, write_pages=False, verbose=False):
     output = []
     lettered, numbered, special = categorize_parts(title_map, options)
 
     # Fingering chart
     if write_pages and len(special["fingering_chart"]):
+        if verbose:
+            thread_print(f'Writing fingering chart to {part} folder')
         output.extend(to_pages(special["fingering_chart"][0]))
 
     # Lettered chartz
+    if verbose:
+        thread_print(f'Writing lettered chartz to {part} folder')
     output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages, verbose=verbose))
 
     # Numbered chartz
+    if verbose:
+        thread_print(f'Writing numbered chartz to {part} folder')
     output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages, verbose=verbose))
 
     # Teazers
     if len(special["teazers"]):
+        if verbose:
+            thread_print(f'Writing teazers to {part} folder')
         output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages, verbose=verbose))
     
     return output

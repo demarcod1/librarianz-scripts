@@ -20,7 +20,7 @@ def create_part_folder(part, options):
     # Write pages
     output = PdfFileWriter()
     toc_maps = [ {}, {}, {} ]
-    for page in pdf_tools.generate_parts_pages(title_map, toc_maps, options, write_pages=True, verbose=options['verbose']):
+    for page in pdf_tools.generate_parts_pages(title_map, toc_maps, options, part, write_pages=True, verbose=options['verbose']):
         output.addPage(page)
     
     # Add table of contents (toc)
@@ -50,7 +50,7 @@ def folder_creator(max_workers = 10):
     with concurrent.futures.ThreadPoolExecutor(max_workers) as threadPool:
         futures = {threadPool.submit(create_part_folder, part, options): part for part in options['folder-parts']}
         for future in concurrent.futures.as_completed(futures):
-            thread_print('Thread completed')
+            pass
         
 
  
