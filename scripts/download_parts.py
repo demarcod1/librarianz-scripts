@@ -1,3 +1,4 @@
+from scripts.util.thread_events import check_stop_script
 from .util import util
 from .util import pdf_tools
 import os
@@ -22,6 +23,7 @@ def download_parts():
     if curr_parts_id == None: return 1
 
     for part in options["download-parts"]:
+        check_stop_script()
         print(f'Downloading files for part "{part}"')
         pdf_tools.download_part_files(service, curr_parts_id, part, os.path.join(options["folder-dir"], "parts"), options["verbose"])
     

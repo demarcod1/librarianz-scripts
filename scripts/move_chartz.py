@@ -1,3 +1,4 @@
+from scripts.util.thread_events import check_stop_script
 from .util import util
 
 # Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
@@ -58,6 +59,7 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     dest = "curr" if chart_to_move["to"] == 0 else "old" if chart_to_move["to"] == 1 else "archive"
 
     # Ensure we're not trying to move to the same place
+    check_stop_script()
     res = util.get_chart_id(service, chart, [ ids["curr"], ids["old"], ids["archive"] ])
     if res["chart_id"] == None: return
     chart_id = res["chart_id"]
@@ -68,6 +70,7 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
         return
     
     # Move chart folder to destination
+    check_stop_script()
     util.move_file(service, chart_id, parent_id, ids[dest])
 
     # Handle shortcuts

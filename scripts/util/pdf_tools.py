@@ -1,5 +1,6 @@
 import io
 import json, os, glob
+from scripts.util.thread_events import check_stop_script
 from struct import pack
 from typing import List
 from scripts.util.util import resourcePath
@@ -90,6 +91,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
         return
     
     # Validate target directory
+    check_stop_script()
     path = os.path.join(dir, part)
     validate_dir(path, verbose)
 
@@ -100,7 +102,7 @@ def download_part_files(service, curr_parts_id, part, dir, verbose=False):
     
     # Download files
     for file in files:
-        # print(file)
+        check_stop_script()
         util.download_file(service, file["shortcutDetails"]["targetId"], path, file.get("name"), verbose)
     
     # Print success
@@ -137,11 +139,12 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
     counter = start
 
     for file in files:
+        check_stop_script()
         try:         
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
             if verbose and write_pages:
-                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}\n')
+                print(f'DEBUG: Enumerating {counter}: {os.path.basename(file)[:-4]}')
 
             # Exit iteration if we don't wish to assemble pages
             if not write_pages:
@@ -199,16 +202,20 @@ def generate_parts_pages(title_map, toc_maps, options, write_pages=False, verbos
 # Generates the table of contents file
 def generate_toc(toc_maps, options, file, verbose=False):
     # Get page num information
+    check_stop_script()
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
     path = os.path.dirname(file)
     validate_dir(path, verbose)
+    check_stop_script()
     
     # Generate toc doc and data
     toc = SimpleDocTemplate(file, pagesize=(width, height),
                             leftMargin=inch * .5, rightMargin=inch * .5,
                             topMargin=.75 * inch, bottomMargin=inch*.25)
+    check_stop_script()
     styles = generate_toc_styles(options)
     data = generate_toc_data(toc_maps, options, styles)
+    check_stop_script()
 
     # Construct table
     table = Table(data)
@@ -231,6 +238,7 @@ def generate_toc(toc_maps, options, file, verbose=False):
         canvas.restoreState()
 
     # write the document to disk
+    check_stop_script()
     toc.build([table], onFirstPage=onFirstPage)
     if verbose: print(f'Successfully created table of contents file at "{file}"')
 
@@ -248,6 +256,7 @@ def generate_toc_data(toc_maps, options, styles):
     if len(raw_list) > 0: del raw_list[-1]
 
     # Refactor the data into table format
+    check_stop_script()
     data = []
     num_cols = options["toc"]["num-cols"]
     num_rows = -(len(raw_list) // -num_cols)
@@ -339,7 +348,7 @@ def validate_part(part, options):
     if len(title_map.keys()) == 0:
         print(f'WARNING: No files found for part "{part}", folder will not be generated')
         return None
-    validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"])
+    validate_titles(title_map, options, resourcePath("res/options/folder_creator_options.json"), verbose=options["verbose"], part=part)
 
     return title_map
 
@@ -351,7 +360,7 @@ def validate_mediabox(page: PageObject, options):
     return mediabox.getWidth() == width and mediabox.getHeight() == height
 
 # Validate and update the lists of files in the options list
-def validate_titles(title_map, options, update_path=None, verbose=False):
+def validate_titles(title_map, options, update_path=None, verbose=False, part=None):
     titles = title_map.keys()
     
     # Helper method to find case-insensitive match
@@ -368,14 +377,14 @@ def validate_titles(title_map, options, update_path=None, verbose=False):
             if update_path:
                 match = find_match(song)
                 if match: options["dollie-songs"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found.')
+                elif verbose: print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found in for {part}.')
     
     for i, song in enumerate(options["lettered-chartz"]):
         if not song in titles:            
             if update_path:
                 match = find_match(song)
                 if match: options["lettered-chartz"][i] = match
-                elif verbose: print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found.')
+                elif verbose: print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found for part {part}.')
     
     for i, rule in enumerate(options["enforce-order"]):
         for j, song in enumerate(rule):

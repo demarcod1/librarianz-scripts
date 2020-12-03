@@ -1,6 +1,7 @@
 import os
-from .util.util import parse_options
-from .util import pdf_tools
+from scripts.util.util import parse_options
+import scripts.util.pdf_tools as pdf_tools
+from scripts.util.thread_events import check_stop_script
 
 # Creates a mock table of contents to ensure everything works as expected
 def validate_toc(part, title_map, options):
@@ -16,7 +17,9 @@ def validate_folder_files():
     options = parse_options("folder_creator_options.json")
     if options == None: return 1
 
-    for part in options["folder-parts"]:        
+    for part in options["folder-parts"]:
+        check_stop_script()
+
         # Validate part files
         title_map = pdf_tools.validate_part(part, options)
         if not title_map: continue

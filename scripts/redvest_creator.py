@@ -1,3 +1,4 @@
+from scripts.util.thread_events import check_stop_script
 from .util import util
 import sys
 
@@ -7,6 +8,7 @@ RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]
 # Verify redvest location and create new class folder
 def verify_redvest(service, redvest_options):
     # Ensure redvest folder exists
+    check_stop_script()
     parent_name = redvest_options['parent-name']
     res = util.get_folder_ids(service, name=parent_name)
     if res == None:
@@ -52,6 +54,7 @@ def add_parts_shortcut(service, chart, chart_id, new_folder_id, section_ids=None
 def add_individual_parts(service, parts_id, section_ids, alias_map):
     # Get and process parts
     for item in util.get_drive_files(service, parts_id, [".pdf"]):
+        check_stop_script()
         alias = item.get('name').split('-')[-1].strip()[:-4]
         part = alias_map.get(alias)
 
@@ -75,15 +78,18 @@ def add_resources(service, chart, chart_id, new_resources_id):
         print(f'WARNING: Resource files not found for "{chart}"')
 
 def write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
+    check_stop_script()
     print(f"Writing chart \"{chart}\"...")
 
     chart_id = util.get_chart_id(service, chart, [current_chartz_id]).get("chart_id")
     if (chart_id == None): return
 
     # add shortcut to parts folder
+    check_stop_script()
     add_parts_shortcut(service, chart, chart_id, new_folder_id, section_ids, alias_map)
 
     # add audio/video content to 'Resources' folder
+    check_stop_script()
     add_resources(service, chart, chart_id, new_resources_id)
 
 # Main method
@@ -106,6 +112,7 @@ def redvest_creator():
     # Only make individual section folders if field set to true
     alias_map = None
     section_ids = None
+    check_stop_script()
     if redvest_options["individual-sections"]:
         # Read parts
         parts_dict = util.parse_options("parts.json")['parts']

@@ -1,4 +1,5 @@
 import os, io, sys, json, pickle, re, mimetypes, shutil
+from scripts.util.thread_events import check_stop_script
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -15,6 +16,7 @@ def is_frozen():
 
 # Builds the drive service
 def build_service():
+    check_stop_script()
     return build('drive', 'v3', credentials=fetch_credentials())
 
 # Fetches the user's credentials, assume credential files are in root directory
@@ -293,6 +295,7 @@ def get_folder_ids(service, id = None, name = None, parent = None):
 def get_digital_library(service):
     """Verify that the DigitalLibrary folder and subfolders are in the correct locations.
     """
+    check_stop_script()
     library_id, full_dig_id, current_id, past_id = None, None, None, None
 
     # DigitalLibrary folder
@@ -320,6 +323,7 @@ def get_digital_library(service):
 # Get the chart data archive
 def get_chart_data_archive(service, library_id):
     # Archive folder
+    check_stop_script()
     archive_res = get_folder_ids(service, name="Archive", parent=library_id)
     if not has_unique_folder(archive_res, "Archive", "Digital Library"): return None
     archive_id = archive_res[0]
@@ -331,6 +335,7 @@ def get_chart_data_archive(service, library_id):
 
 # Get seperated section or separated sibelius parts folders
 def get_separated_folders(service, library_id):
+    check_stop_script()
     separated_ids = {}
     folder_names = [("Separated Sibelius Files", "sib"), ("Separated Section Parts", "sec")]
     for folder_name, abbr in folder_names:

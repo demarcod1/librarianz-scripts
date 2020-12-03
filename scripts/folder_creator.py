@@ -1,5 +1,5 @@
-from queue import Queue
-import threading, queue
+from scripts.util.thread_events import check_stop_script
+import threading, concurrent.futures
 from typing import List
 from .util.util import parse_options
 from .util import pdf_tools
@@ -12,9 +12,10 @@ def create_part_folder(part, options):
     toc_path = os.path.join(options["folder-dir"], "tmp", f"toc-{part}.pdf")
 
     # Validate part files
-    print(f'Writing {part} folder...\n')
+    print(f'Writing {part} folder...')
     title_map = pdf_tools.validate_part(part, options)
     if not title_map: return 1
+    check_stop_script()
 
     # Write pages
     output = PdfFileWriter()
@@ -28,6 +29,7 @@ def create_part_folder(part, options):
     output.insertPage(pdf_tools.to_pages(toc_path)[0], 0)
 
     # Write file
+    check_stop_script()
     file_path = os.path.join(options["folder-dir"], "Output")
     pdf_tools.validate_dir(file_path, options["verbose"])
     with open(os.path.join(file_path,  f'{options["folder-name"]} - {part}.pdf'), 'wb') as f:
@@ -41,20 +43,16 @@ def create_part_folder(part, options):
     return 0
 
 # Main  method
-def folder_creator():
-    queue = Queue()
-
+def folder_creator(max_workers = 5):
     options = parse_options("folder_creator_options.json")
     if options == None: return 1
 
-    threads: List[threading.Thread] = []
-    for part in options["folder-parts"]:
-        new_thread = threading.Thread(target=create_part_folder, daemon=True, args=(part, options))
-        threads.append(new_thread)
-        new_thread.start()
-    
-    for thread in threads:
-        thread.join()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as threadPool:
+        futures = {threadPool.submit(create_part_folder, part, options): part for part in options['folder-parts']}
+        for future in concurrent.futures.as_completed(futures):
+            print('Thread completed')
+        
+
  
     print("Finished generating folders")
     
