@@ -15,7 +15,7 @@ from scripts.separated_folders_creator import separated_folders_creator
 from scripts.upload_files import upload_files
 from scripts.validate_folder_files import validate_folder_files
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 SCRIPT_DICT = {
     "download_parts": download_parts,

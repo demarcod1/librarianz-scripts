@@ -1,6 +1,6 @@
 from scripts.util.thread_events import check_stop_script, stop_scripts
-from .util import util
-from .util import lib_management
+from scripts.util import util
+from scripts.util import lib_management
 
 # Main method
 def upload_files():
