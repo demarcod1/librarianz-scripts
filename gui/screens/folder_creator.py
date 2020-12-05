@@ -10,7 +10,6 @@ from gui.util.select_directory import SelectDirectory
 from scripts.util.util import parse_options, write_options
 from tkinter import *
 from tkinter import ttk
-import platform
 
 class FolderCreatorScreen(ttk.Frame):
 

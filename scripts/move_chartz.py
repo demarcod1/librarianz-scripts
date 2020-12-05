@@ -1,5 +1,5 @@
 from scripts.util.thread_events import check_stop_script
-from .util import util
+from scripts.util import util
 
 # Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
 def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):

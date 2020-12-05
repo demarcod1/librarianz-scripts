@@ -1,5 +1,5 @@
-from .login import fetch_credentials
-from .util.util import get_digital_library, parse_options
+from scripts.login import fetch_credentials
+from scripts.util.util import get_digital_library, parse_options
 from googleapiclient.discovery import build
 
 def delete_existing_directory(service, library_id):

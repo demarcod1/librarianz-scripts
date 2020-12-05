@@ -1,6 +1,5 @@
 from scripts.util.thread_events import check_stop_script
-from .util import util
-import sys
+from scripts.util import util
 
 # List of acceptable resources
 RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]

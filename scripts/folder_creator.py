@@ -1,8 +1,7 @@
 from scripts.util.thread_events import check_stop_script, thread_print
-import threading, concurrent.futures
-from typing import List
-from .util.util import parse_options
-from .util import pdf_tools
+import concurrent.futures
+from scripts.util.util import parse_options
+from scripts.util import pdf_tools
 from PyPDF2 import PdfFileWriter
 import os
 

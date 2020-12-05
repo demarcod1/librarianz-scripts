@@ -1,13 +1,12 @@
 from gui.screens.remake_shortcuts import RemakeShortcutsScreen
 import os
-from scripts.util.util import make_application_data, parse_options, resourcePath, write_options
+from scripts.util.util import parse_options, resourcePath, write_options
 from gui.screens.folder_creator import FolderCreatorScreen
 from gui.screens.redvest_creator import RedvestCreatorScreen
 from gui.screens.move_chartz import MoveChartzScreen
 from gui.screens.upload_files import UploadFilesScreen
 from tkinter import *
 from tkinter import ttk, filedialog
-from appdirs import user_data_dir
 
 class MainMenu:
 

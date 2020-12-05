@@ -1,6 +1,6 @@
 from scripts.util.thread_events import check_stop_script
-from .util import util
-from .util import pdf_tools
+from scripts.util import util
+from scripts.util import pdf_tools
 import os
 
 # Main method

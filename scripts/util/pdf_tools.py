@@ -5,7 +5,7 @@ from typing import List
 from scripts.util.util import resourcePath
 
 from PyPDF2.pdf import PageObject, PdfFileWriter, PdfFileReader
-from . import util
+from scripts.util import util
 from PyPDF2 import PdfFileMerger
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.pdfgen import canvas
