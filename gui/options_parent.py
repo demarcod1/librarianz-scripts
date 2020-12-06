@@ -22,10 +22,14 @@ class OptionsParent(Toplevel):
         self.title("Folder Creator Options")
         self.lift()
         self.focus_force()
+        self.attributes('-notify', 1)
         self.minsize(600, 525)
 
+        # Create mainframe
+        mainframe = ttk.Frame(self)
+
         # Create notebook
-        n = ttk.Notebook(self, width=600, height=450, padding=5)
+        n = ttk.Notebook(mainframe, width=600, height=450, padding=5)
 
         # Add each frame to the notebook
         self.download = DownloadOptions(n, self.options)
@@ -50,15 +54,18 @@ class OptionsParent(Toplevel):
         n.grid(row=0, column=0, columnspan=2, sticky=(N, E, S, W))
 
         # Add save and cancel buttons
-        cancel_button = ttk.Button(self, text='Cancel', command=self.destroy_self)
+        cancel_button = ttk.Button(mainframe, text='Cancel', command=self.destroy_self)
         bind_button(cancel_button)
-        save_button = ttk.Button(self, text='Save Settings', command=self.save_options)
+        save_button = ttk.Button(mainframe, text='Save Settings', command=self.save_options)
         bind_button(save_button)
 
         cancel_button.grid(row=1, column=0, sticky=(S, W), padx=25, pady=15)
         save_button.grid(row=1, column=1, sticky=(S, E), padx=25, pady=15)
 
         # Allow resizing
+        mainframe.columnconfigure(0, weight='1')
+        mainframe.rowconfigure(0, weight='1')
+        mainframe.grid(row=0, column=0, sticky=(N, E, S, W))
         self.columnconfigure(0, weight='1')
         self.rowconfigure(0, weight='1')
     

@@ -16,10 +16,10 @@ class RulesOptions(ttk.Frame):
         # Add text input area
         dummy_frame = ttk.Frame(rules_frame)
 
-        self.rules_text = CustomText(dummy_frame, width=70, height=15, wrap='none', font=('TkDefaultFont', '10'))
+        self.rules_text = CustomText(dummy_frame, width=70, height=15, wrap='none', font=('TkDefaultFont'))
         self.rules_text.grid(row=0, column=0, sticky=(N, E, S, W))
-        self.rules_text.tag_configure('delimeter-good', font=('Courier', '10', 'bold'), foreground='green')
-        self.rules_text.tag_configure('delimeter-bad', font=('Courier', '10', 'bold'), foreground='red')
+        self.rules_text.tag_configure('delimeter-good', font=('TkFixedFont'), foreground='green')
+        self.rules_text.tag_configure('delimeter-bad', font=('TkFixedFont'), foreground='red')
         self.rules_text.bind('<<TextModified>>', self.tag_delimeter)
 
         scrollx = ttk.Scrollbar(dummy_frame, orient='horizontal', command=self.rules_text.xview)

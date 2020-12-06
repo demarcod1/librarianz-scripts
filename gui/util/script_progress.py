@@ -21,21 +21,27 @@ class ScriptProgress(Toplevel):
         Toplevel.__init__(self, parent)
         self.lift()
         self.focus_force()
+        self.attributes('-notify', 1)
         self.title(title)
         self.resizable(FALSE, FALSE)
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)
 
+        # Create mainframe
+        mainframe = ttk.Frame(self)
+        self.rowconfigure(0, weight='1')
+        self.columnconfigure(0, weight='1')
+
         # Create label
-        self.label = ttk.Label(self, text=f'{self.name} script in progress...')
+        self.label = ttk.Label(mainframe, text=f'{self.name} script in progress...')
         self.label.grid(row=0, column=0, sticky=(N, S, E, W), padx=20, pady=10)
 
         # Create progressbar
-        self.prog_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=200)
+        self.prog_bar = ttk.Progressbar(mainframe, orient='horizontal', mode='indeterminate', length=200)
         self.prog_bar.start(25)
         self.prog_bar.grid(row=0, column=1, sticky=(N, E, W), padx=20, pady=10)
 
         # Create text console area within dummy frame
-        dummy_frame = ttk.Frame(self)
+        dummy_frame = ttk.Frame(mainframe)
 
         self.console = Text(dummy_frame, width=70, height=15, wrap='none', font='TkFixedFont')
         self.console["state"] = "disabled"
@@ -81,7 +87,7 @@ class ScriptProgress(Toplevel):
 
         # Create abort/return button
         self.button_text = StringVar()       
-        self.main_button = ttk.Button(self, textvariable=self.button_text, command=self.destroy_self)
+        self.main_button = ttk.Button(mainframe, textvariable=self.button_text, command=self.destroy_self)
         bind_button(self.main_button)
         self.main_button.grid(row=3, column=0, columnspan=2, sticky=S, padx=20, pady=10)
 
@@ -92,11 +98,12 @@ class ScriptProgress(Toplevel):
         else: self.button_text.set(f'Abort {self.name} Script')
 
         # Allow resizing
-        self.columnconfigure(0, weight="1")
-        self.columnconfigure(1, weight="1")
-        self.rowconfigure(0, weight="1")
-        self.rowconfigure(1, weight="1")
-        self.rowconfigure(2, weight="1")
+        mainframe.columnconfigure(0, weight="1")
+        mainframe.columnconfigure(1, weight="1")
+        mainframe.rowconfigure(0, weight="1")
+        mainframe.rowconfigure(1, weight="1")
+        mainframe.rowconfigure(2, weight="1")
+        mainframe.grid(row=0, column=0, sticky=(N, E, S, W))
         
         # Start thread
         def inner_callback(code):

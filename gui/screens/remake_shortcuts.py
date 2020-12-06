@@ -23,12 +23,12 @@ class RemakeShortcutsScreen(ttk.Frame):
         # Add text input area
         dummy_frame = ttk.Frame(parts_frame)
 
-        self.parts_text = CustomText(dummy_frame, width=70, height=15, wrap='none', font=('TkDefaultFont', '10'), undo=True)
+        self.parts_text = CustomText(dummy_frame, width=70, height=15, wrap='none', font=('TkDefaultFont'), undo=True)
         self.parts_text.grid(row=0, column=0, sticky=(N, E, S, W))
-        self.parts_text.tag_configure('delimeter-0-good', font=('Courier', '10', 'bold'), foreground='green')
-        self.parts_text.tag_configure('delimeter-0-bad', font=('Courier', '10', 'bold'), foreground='red')
-        self.parts_text.tag_configure('delimeter-1-good', font=('Courier', '10', 'bold'), foreground='blue')
-        self.parts_text.tag_configure('delimeter-1-bad', font=('Courier', '10', 'bold'), foreground='red')
+        self.parts_text.tag_configure('delimeter-0-good', font=('TkFixedFont'), foreground='green')
+        self.parts_text.tag_configure('delimeter-0-bad', font=('TkFixedFont'), foreground='red')
+        self.parts_text.tag_configure('delimeter-1-good', font=('TkFixedFont'), foreground='blue')
+        self.parts_text.tag_configure('delimeter-1-bad', font=('TkFixedFont'), foreground='red')
         self.parts_text.bind('<<TextModified>>', self.tag_delimeters)
 
         scrollx = ttk.Scrollbar(dummy_frame, orient='horizontal', command=self.parts_text.xview)
