@@ -117,7 +117,7 @@ def parse_options(filename, path = "res/options/", from_=None):
 # Parse title of a file into [chartname, partname (if applicable), mimeType]
 def parse_file(filename, alias_map=None):
     # title - part format
-    match = re.search('(.*) - (.*).(.*)', filename)
+    match = re.search('(.*) - (.*)\.(.*)', filename)
     if match:
         return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
     
