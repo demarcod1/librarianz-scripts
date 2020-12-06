@@ -22,7 +22,6 @@ class OptionsParent(Toplevel):
         self.title("Folder Creator Options")
         self.lift()
         self.focus_force()
-        self.attributes('-notify', 1)
         self.minsize(600, 525)
 
         # Create mainframe

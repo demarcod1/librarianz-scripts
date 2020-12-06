@@ -21,7 +21,6 @@ class ScriptProgress(Toplevel):
         Toplevel.__init__(self, parent)
         self.lift()
         self.focus_force()
-        self.attributes('-notify', 1)
         self.title(title)
         self.resizable(FALSE, FALSE)
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)
