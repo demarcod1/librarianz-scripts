@@ -1,4 +1,5 @@
-from scripts.util.thread_events import reset_stop_script, stop_scripts, thread_print
+import sys
+from scripts.util.thread_events import reset_stop_script, stop_scripts
 from gui.util.util import bind_button, spawn_thread
 from tkinter import *
 from tkinter import ttk, messagebox
@@ -18,6 +19,8 @@ class ScriptProgress(Toplevel):
 
         # Initialize window
         Toplevel.__init__(self, parent)
+        self.lift()
+        self.focus_force()
         self.title(title)
         self.resizable(FALSE, FALSE)
         self.protocol("WM_DELETE_WINDOW", self.destroy_self)

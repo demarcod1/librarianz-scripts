@@ -20,6 +20,8 @@ class OptionsParent(Toplevel):
 
         # Set title
         self.title("Folder Creator Options")
+        self.lift()
+        self.focus_force()
         self.minsize(600, 525)
 
         # Create notebook
