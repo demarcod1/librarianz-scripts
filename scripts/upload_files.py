@@ -1,4 +1,4 @@
-from scripts.util.thread_events import check_stop_script, stop_scripts
+from scripts.util.thread_events import check_stop_script
 from scripts.util import util
 from scripts.util import lib_management
 
