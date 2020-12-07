@@ -72,16 +72,18 @@ class Multiselect(ttk.Labelframe):
 
             current_chartz = ttk.Radiobutton(select_dest_frame, text='Current Chartz', variable=self.destination, value=0)
             old_chartz = ttk.Radiobutton(select_dest_frame, text='Old Chartz', variable=self.destination, value=1)
+            future_chartz = ttk.Radiobutton(select_dest_frame, text='Future Chartz', variable=self.destination, value=2)
 
 
             current_chartz.grid(row=0, column=0, sticky=(N, S))
             old_chartz.grid(row=0, column=1, sticky=(N, S))
+            future_chartz.grid(row=0, column=2, sticky=(N, S))
 
             if kwargs.get("archive"):
-                archive = ttk.Radiobutton(select_dest_frame, text='Archive', variable=self.destination, value=2)
-                archive.grid(row=0, column=2, sticky=(N, S))
+                archive = ttk.Radiobutton(select_dest_frame, text='Archive', variable=self.destination, value=3)
+                archive.grid(row=0, column=3, sticky=(N, S))
 
-            for i in range(3):
+            for i in range(4):
                 select_dest_frame.columnconfigure(i, weight="1")
 
         
@@ -137,8 +139,7 @@ class Multiselect(ttk.Labelframe):
 
     # Get the chosen values (all items from the tree)
     def get_chosen_values(self, key1=None, key2=None):
-        dest_to_num = lambda dest: 0 if dest == "Current" else 1 if dest == "Old" else 2
-        res = []
+        dest_to_num = lambda dest: 0 if dest == "Current" else 1 if dest == "Old" else 2 if dest == "Future" else 3
         if len(self.right_col) > 0:
             return [{ key1: val1, key2: dest_to_num(val2)} for (val1, val2) in [(self.tree.item(k)['text'], self.tree.item(k)['values'][0]) for k in self.tree.get_children('')]]
         return [self.tree.item(k)['text'] for k in self.tree.get_children('')]
@@ -204,7 +205,7 @@ class Multiselect(ttk.Labelframe):
 
     # Performs the actual insertion operation
     def insert_data(self, item, loc=None, index="end"):
-        values = [] if loc == None else ["Current"] if loc == 0 else ["Old"] if loc == 1 else ["Archive"]
+        values = [] if loc == None else ["Current"] if loc == 0 else ["Old"] if loc == 1 else ["Future"] if loc == 2 else ["Archive"]
         self.tree.insert('', index=index, text=item, values=values)
         self.del_all.state(['!disabled'])
 

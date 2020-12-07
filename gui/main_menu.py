@@ -15,7 +15,7 @@ class MainMenu:
         # Set title
         parent.title("Digital Library Manager")
         parent.iconphoto(True, PhotoImage(file=resourcePath(os.path.join('res', 'icons', 'embo.png'))))
-        parent.minsize(600, 550)
+        parent.minsize(650, 600)
 
         # Prompt user to specify credentials path
         res_options = parse_options("res_paths.json", from_=data_dir)
@@ -27,7 +27,7 @@ class MainMenu:
                 write_options(res_options, "res_paths.json")
 
         # Create notebook
-        n = ttk.Notebook(parent, width=650, height=600, padding=5)
+        n = ttk.Notebook(parent, width=700, height=650, padding=5)
 
         # Add each frame to the notebook
         folder_creator_frame = FolderCreatorScreen(n)

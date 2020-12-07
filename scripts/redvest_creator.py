@@ -2,7 +2,7 @@ from scripts.util.thread_events import check_stop_script
 from scripts.util import util
 
 # List of acceptable resources
-RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv"]
+RESOURCES = [".mid", ".mp3", ".mp4", ".mov", ".wav", ".wmv", ".m4a"]
 
 # Verify redvest location and create new class folder
 def verify_redvest(service, redvest_options):
@@ -76,11 +76,11 @@ def add_resources(service, chart, chart_id, new_resources_id):
     if len(items) == 0:
         print(f'WARNING: Resource files not found for "{chart}"')
 
-def write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
+def write_song(service, chart, parent_ids, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
     check_stop_script()
     print(f"Writing chart \"{chart}\"...")
 
-    chart_id = util.get_chart_id(service, chart, [current_chartz_id]).get("chart_id")
+    chart_id = util.get_chart_id(service, chart, parent_ids).get("chart_id")
     if (chart_id == None): return
 
     # add shortcut to parts folder
@@ -102,8 +102,10 @@ def redvest_creator():
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
-    _, current_chartz_id, _ = util.get_digital_library(service)
-    if current_chartz_id == None: return 1
+    lib_ids = util.get_digital_library(service)
+    current_chartz_id = lib_ids.get("current_id")
+    future_chartz_id = lib_ids.get("future_id")
+    if current_chartz_id == None or future_chartz_id == None: return 1
     print("Verifying Redvest folder...")
     new_folder_id, new_resources_id = verify_redvest(service, redvest_options)
     if new_folder_id == None or new_resources_id == None: return 1
@@ -126,7 +128,7 @@ def redvest_creator():
 
     # Write each chart to the new redvest folder
     for chart in redvest_options["chartz"]:
-        write_song(service, chart, current_chartz_id, new_folder_id, new_resources_id, section_ids, alias_map)
+        write_song(service, chart, [current_chartz_id, future_chartz_id], new_folder_id, new_resources_id, section_ids, alias_map)
     
     print(f'Successfully created new folder "{redvest_options["folder-name"]}"!')
     return 0

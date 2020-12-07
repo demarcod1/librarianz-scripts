@@ -16,7 +16,7 @@ def download_parts():
 
     # Get the current parts id
     print("Verifying DigitalLibrary format...")
-    library_id, _, _ = util.get_digital_library(service)
+    library_id = util.get_digital_library(service).get("library_id")
     if library_id == None: return 1
     
     curr_parts_id = util.get_separated_folders(service, library_id)["sec_curr"]
