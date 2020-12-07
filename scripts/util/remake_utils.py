@@ -25,11 +25,11 @@ def new_sep_structure(service, sep_sec_id, sep_sib_id, parts_dict: Dict):
     return output
 
 # Returns a dictionary containing the names and ids of all the chartz in the Digital Library
-def get_all_chart_folders(service, curr_id, old_id):
+def get_all_chart_folders(service, curr_id, old_id, future_id):
     output = {}
 
     # Get every chart folder per age group
-    for parent, age in [(curr_id, 'curr'), (old_id, 'old')]:
+    for parent, age in [(curr_id, 'curr'), (old_id, 'old'), (future_id, 'future')]:
         check_stop_script()
         output[age] = {}
         res = util.get_drive_files(service, parent, files_only=False, folders_only=True)
