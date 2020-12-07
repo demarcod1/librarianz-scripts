@@ -379,19 +379,13 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
                 return title
 
     # Go through all the file lists and make repairs if necessary
-    for i, song in enumerate(options["dollie-songs"]):
-        if not song in titles:
-            if update_path:
-                match = find_match(song)
-                if match: options["dollie-songs"][i] = match
-                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "dollie-songs" was not found in for {part}.')
-    
-    for i, song in enumerate(options["lettered-chartz"]):
-        if not song in titles:            
-            if update_path:
-                match = find_match(song)
-                if match: options["lettered-chartz"][i] = match
-                elif verbose: thread_print(f'WARNING: Song "{song}" specified in "lettered-chartz" was not found for part {part}.')
+    for key in ("dollie-songs", "lettered-chartz", "exclude-songs"):
+        for i, song in enumerate(options[key]):
+            if not song in titles:
+                if update_path:
+                    match = find_match(song)
+                    if match: options[key][i] = match
+                    elif verbose: thread_print(f'WARNING: Song "{song}" specified in "{key}" was not found in for {part}.')
     
     for i, rule in enumerate(options["enforce-order"]):
         for j, song in enumerate(rule):
@@ -400,6 +394,11 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
                     match = find_match(song)
                     if match: options["enforce-order"][i][j] = match
                     elif verbose: thread_print(f'WARNING: Song "{song}" specified in "enforce-order" was not found.')
+    
+    # Remove any songs on the exclude list
+    for excluded_song in options["exclude-songs"]:
+        if excluded_song in title_map:
+            del title_map[excluded_song]
     
     if update_path:
         with open(update_path, 'w') as f:
