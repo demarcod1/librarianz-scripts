@@ -374,7 +374,7 @@ def validate_titles(title_map, options, update_path=None, verbose=False, part=No
     def find_match(song: str):
         song_lower = song.lower()
         for title in titles:
-            if song_lower == title.lower():
+            if ''.join(song_lower.split()) == ''.join(title.lower().split()):
                 if verbose: thread_print(f'DEBUG: Found match for song "{song}": "{title}".')
                 return title
 
