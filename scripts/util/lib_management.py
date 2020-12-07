@@ -11,10 +11,11 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     if not chart in cache: return False
     chart_id = cache[chart]["chart_id"]
     parts_id = cache[chart]["parts_id"]
-    current = cache[chart]["is_current"]
-    if not chart_id or not parts_id or current == None: return False
-    sep_sec_id = separated_ids[f'sec_{"curr" if current else "old"}']
-    sep_sib_id = separated_ids[f'sib_{"curr" if current else "old"}']
+    loc_raw = cache[chart]["loc"]
+    if not chart_id or not parts_id or loc_raw == None: return False
+    loc = "curr" if loc_raw == 0 else "old" if loc_raw == 1 else "future"
+    sep_sec_id = separated_ids[f'sec_{loc}']
+    sep_sib_id = separated_ids[f'sib_{loc}']
 
     # See if this file already exists
     for file in cache[chart]["files"]:
@@ -51,27 +52,28 @@ def create_chart_structure(service, chartz_id, chart_name):
     return chart_id, parts_id
 
 # Populates the cache with all the relevant information about the specific file
-def populate_cache(service, curr_id, old_id, chart, cache, options):
+def populate_cache(service, curr_id, old_id, future_id, chart, cache, options):
     try:
         # Find this chart's folder id
-        res = util.get_chart_id(service, chart, [curr_id, old_id])
+        res = util.get_chart_id(service, chart, [curr_id, old_id, future_id])
         if not res: raise RuntimeError
         chart_id = res.get("chart_id")
         if chart_id == None: raise RuntimeError
         
-        # Determine whether the chart is in the "current chartz" or "old chartz" folder
-        is_current = curr_id == res.get("parent_id")
+        # Determine whether the chart is in the "current chartz", "future chartz", or "old chartz" folder
+        parent_id = res.get("parent_id")
+        loc = 0 if curr_id == parent_id else 1 if old_id == parent_id else 2
 
         # Find this chart's parts foler id
         parts_id = util.get_parts_folder(service, chart, chart_id)
         if parts_id == None: raise RuntimeError
         
         # Populate cache with this chart's data
-        cache[chart] = { "chart_id": chart_id, "is_current": is_current, "parts_id": parts_id, "files": [] }
+        cache[chart] = { "chart_id": chart_id, "loc": loc, "parts_id": parts_id, "files": [] }
         cache[chart]["files"] = util.get_drive_files(service, chart_id, options["supported-file-types"])
         cache[chart]["files"].extend(util.get_drive_files(service, parts_id, options["supported-file-types"]))
     except RuntimeError:
-        cache[chart] = { "chart_id": None, "is_current": None, "parts_id": None, "files": []}
+        cache[chart] = { "chart_id": None, "loc": None, "parts_id": None, "files": []}
 
 # Update the file with the specified path, return whether the update was successful
 def update_file(service, filename, alias_map, cache, options):
