@@ -64,6 +64,7 @@
         ]
     ],
     "enumerate-pages": true,
+    "exclude-songs": [],
     "fingering-chart": {
         "include": true,
         "titles": [
