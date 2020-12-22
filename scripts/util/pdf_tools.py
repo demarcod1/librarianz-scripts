@@ -1,5 +1,6 @@
 import io
 import json, os, glob
+from PyPDF2.generic import RectangleObject
 from scripts.util.thread_events import check_stop_script, thread_print
 from typing import List
 from scripts.util.util import resourcePath
@@ -155,11 +156,12 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
             # Add all the pages to the list
             for i in range(num_pages):
-                input_page = input.getPage(i)
+                input_page: PageObject = input.getPage(i)
 
                 # Verify that it has the proper dimensions
-                if not validate_mediabox(input_page, options):
-                    thread_print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions')
+                mediabox = input_page.mediaBox
+                if not validate_mediabox(mediabox, options):
+                    thread_print(f'WARNING: Page {i + 1} in "{file}" has incorrect dimensions\nExpected {options["page-size"]["width"]} x {options["page-size"]["height"]}, received {float(mediabox.getWidth()) / inch} x {float(mediabox.getHeight()) / inch}.')
                     continue
 
                 # Calculate this page number
@@ -360,9 +362,8 @@ def validate_part(part, options):
     return title_map
 
 # Validates that a page has the proper dimensions
-def validate_mediabox(page: PageObject, options):
+def validate_mediabox(mediabox: RectangleObject, options):
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
-    mediabox = page.mediaBox
 
     return mediabox.getWidth() == width and mediabox.getHeight() == height
 
