@@ -249,6 +249,16 @@ This configuration file for the folder creator is relatively complex. The fields
 * `"enforce-order"` - An array of orders that must be followed, where each order is an array of song names that must appear one-after-the-other
    * For example, if the song `Foreplay` must be followed by `Knights of Cydonia`, then you will need to add the following rule: `"enforce-order": [ [ "Foreplay", "Knights of Cydonia" ] ]`
 * `"enumerate-pages"` - `true` if you wish to add letters/numbers to the chartz, `false` otherwise. For troubleshooting, setting this to `false` make the generation take significantly less time, but remember to set this back to `true` before generating the production folder
+* `"filler"`
+   * `"directory"` - The path to the directory where the filler pdf files will be read
+   * `"include"` - `true` if you wish to include filler in the folder
+   * `"order"` - A list of filler filenames in the order that they should appear in the folder. Only files included in this list and stored in the filler directory will be present in the folder
+   * `"position"` - Specifies where in the folder the filler should be placed
+      * `0` - After Table of Contents
+      * `1` - After Lettered Chartz
+      * `2` - After Numbered Chartz
+      * `3` - End of the folder
+      * `4` - Interlaced between Numbered Chartz. Filler will not be placed within an ordered group of chartz.
 * `"fingering-chart"`
    * `"include"` - `true` if you wish to include the fingering chart in the folder, `false` otherwise
    * `"titles"` - An array of names of files that contain the fingering chart data
