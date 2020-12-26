@@ -296,29 +296,34 @@ def get_digital_library(service):
     """Verify that the DigitalLibrary folder and subfolders are in the correct locations.
     """
     check_stop_script()
-    library_id, full_dig_id, current_id, past_id = None, None, None, None
+    library_id, full_dig_id, current_id, future_id = None, None, None, None
 
     # DigitalLibrary folder
     library_res = get_folder_ids(service, name="DigitalLibrary", parent="root")
-    if not has_unique_folder(library_res, "DigitalLibrary", "My Drive"): return None, None, None
+    if not has_unique_folder(library_res, "DigitalLibrary", "My Drive"): return {}
     library_id = library_res[0]
 
     # Digitized Chart Data folder
     full_dig_res = get_folder_ids(service, name="LSJUMB Full Digitized Chart Data", parent=library_id)
-    if not has_unique_folder(full_dig_res, "LSJUMB Full Digitized Chart Data", "DigitalLibrary"): return None, None, None
+    if not has_unique_folder(full_dig_res, "LSJUMB Full Digitized Chart Data", "DigitalLibrary"): return {}
     full_dig_id = full_dig_res[0]
 
     # Current Chartz folder
     current_res = get_folder_ids(service, name="Current Chartz", parent=full_dig_id)
-    if not has_unique_folder(current_res, "Current Chartz", "LSJUMB Full Digitized Chart Data"): return None, None, None
+    if not has_unique_folder(current_res, "Current Chartz", "LSJUMB Full Digitized Chart Data"): return {}
     current_id = current_res[0]
 
     # Old Chartz folder
     past_res = get_folder_ids(service, name="Old Chartz", parent=full_dig_id)
-    if not has_unique_folder(past_res, "Old Chartz", "LSJUMB Full Digitized Chart Data"): return None, None, None
+    if not has_unique_folder(past_res, "Old Chartz", "LSJUMB Full Digitized Chart Data"): return {}
     past_id = past_res[0]
 
-    return library_id, current_id, past_id
+    # Future Chartz folder
+    future_res = get_folder_ids(service, name="Future Chartz", parent=full_dig_id)
+    if not has_unique_folder(future_res, "Future Chartz", "LSJUMB Full Digitized Chart Data"): return {}
+    future_id = future_res[0]
+
+    return {"library_id": library_id, "current_id": current_id, "past_id": past_id, "future_id": future_id}
 
 # Get the chart data archive
 def get_chart_data_archive(service, library_id):
@@ -344,15 +349,12 @@ def get_separated_folders(service, library_id):
         if not has_unique_folder(ids, folder_name, "Digital Library"): return None       
         separated_ids[abbr] = ids[0]
 
-        # Look for Current Chartz folder
-        curr_ids = get_folder_ids(service, name="Current Chartz", parent=ids[0])
-        if not has_unique_folder(curr_ids, "Current Chartz", folder_name): return None
-        separated_ids[f'{abbr}_curr'] = curr_ids[0]
-        
-        # Look for Old Chartz folder
-        old_ids = get_folder_ids(service, name="Old Chartz", parent=ids[0])
-        if not has_unique_folder(old_ids, "Old Chartz", folder_name): return None
-        separated_ids[f'{abbr}_old'] = old_ids[0]
+        # Look for Current, Old, Future Chartz folders
+        for age_name, age in [("Current Chartz", "curr"), ("Old Chartz", "old"), ("Future Chartz", "future")]:
+            age_ids = get_folder_ids(service, name=age_name, parent=ids[0])
+            if not has_unique_folder(age_ids, "Current Chartz", folder_name): return None
+            separated_ids[f'{abbr}_{age}'] = age_ids[0]
+
     
     return separated_ids
 

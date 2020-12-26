@@ -63,7 +63,14 @@
             "All Right Now (Victory Mix)"
         ]
     ],
-    "enumerate-pages": true,
+    "enumerate-pages": false,
+    "exclude-songs": [],
+    "filler": {
+        "directory": "../test_folder/filler",
+        "include": true,
+        "order": [],
+        "position": 4
+    },
     "fingering-chart": {
         "include": true,
         "titles": [
@@ -71,15 +78,9 @@
         ]
     },
     "folder-dir": "..\\test_folder",
-    "folder-name": "November 2020 Folder",
+    "folder-name": "Filler Test Folder",
     "folder-parts": [
-        "Altoz",
-        "Clarz",
-        "Mellz",
-        "Picz",
-        "Tenrz",
-        "Toobz",
-        "Trumpz"
+        "Altoz"
     ],
     "lettered-chartz": [
         "All Right Now",

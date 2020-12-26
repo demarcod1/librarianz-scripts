@@ -1,3 +1,4 @@
+from gui.screens.options.filler_options import FillerOptions
 from gui.screens.options.rules_options import RulesOptions
 from scripts.util.util import write_options
 from gui.screens.options.pages_options import PagesOptions
@@ -34,6 +35,7 @@ class OptionsParent(Toplevel):
         self.download = DownloadOptions(n, self.options)
         self.verify = ValidateOptions(n, self.options)
         self.pages = PagesOptions(n, self.options)
+        self.filler = FillerOptions(n, self.options)
         self.toc = TOCOptions(n, self.options)
         self.chartz = ChartzOptions(n, self.options)
         self.dollies = DollieOptions(n, self.options)
@@ -43,6 +45,7 @@ class OptionsParent(Toplevel):
         n.add(self.verify, text='Review', underline=0)
         n.add(self.chartz, text='Chartz', underline=0)
         n.add(self.dollies, text='Dollies', underline=2)
+        n.add(self.filler, text='Filler', underline=0)
         n.add(self.toc, text='Table of Contents', underline=0)
         n.add(self.pages, text='Pages', underline=0)
         n.add(self.rules, text='Custom Rules', underline=1)   
@@ -84,6 +87,7 @@ class OptionsParent(Toplevel):
         self.options.update(self.dollies.get_dollie_options())
         self.options.update(self.pages.get_page_options())
         self.options.update(self.rules.get_rule_options())
+        self.options.update(self.filler.get_filler_options())
         
         write_options(self.options, "folder_creator_options.json")
 

@@ -19,7 +19,8 @@ def upload_files():
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
-    library_id, curr_id, old_id = util.get_digital_library(service)
+    lib_ids = util.get_digital_library(service)
+    library_id = lib_ids.get("library_id")
     if library_id == None: return 1
     check_stop_script()
     
@@ -37,10 +38,11 @@ def upload_files():
     if mode != 0:
         for chart_info in options["new-chartz"]:
             check_stop_script()
-            is_curr = chart_info["to"] == 0
-            chart_id, parts_id = lib_management.create_chart_structure(service, curr_id if is_curr else old_id, chart_info["name"])
+            chart_dest = chart_info["to"]
+            new_chart_dest_key = "current_id" if chart_dest == 0 else "past_id" if chart_dest == 1 else "future_id" 
+            chart_id, parts_id = lib_management.create_chart_structure(service, lib_ids.get(new_chart_dest_key), chart_info["name"])
             if chart_id:
-                cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "is_current": is_curr, "files": [] }
+                cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "loc": chart_info["to"], "files": [] }
     
     # Operate on files
     for file in files:
@@ -48,7 +50,7 @@ def upload_files():
         check_stop_script()
 
         # Populate cache
-        lib_management.populate_cache(service, curr_id, old_id, util.parse_file(file, alias_map)[0], cache, options)
+        lib_management.populate_cache(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"), util.parse_file(file, alias_map)[0], cache, options)
         updated = None
         added = None
 

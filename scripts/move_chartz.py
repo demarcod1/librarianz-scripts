@@ -56,15 +56,16 @@ def move_shortcuts(service, ids, sep_parts, chart, src, dst):
 def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     # Parse the destination
     chart = chart_to_move["name"]
-    dest = "curr" if chart_to_move["to"] == 0 else "old" if chart_to_move["to"] == 1 else "archive"
+    raw_dest = chart_to_move["to"]
+    dest = "curr" if raw_dest == 0 else "old" if raw_dest == 1 else "future" if raw_dest == 2 else "archive"
 
     # Ensure we're not trying to move to the same place
     check_stop_script()
-    res = util.get_chart_id(service, chart, [ ids["curr"], ids["old"], ids["archive"] ])
+    res = util.get_chart_id(service, chart, [ ids["curr"], ids["old"], ids["future"], ids["archive"] ])
     if res["chart_id"] == None: return
     chart_id = res["chart_id"]
     parent_id = res["parent_id"]
-    src = "curr" if parent_id == ids["curr"] else "old" if parent_id == ids["old"] else "archive" 
+    src = "curr" if parent_id == ids["curr"] else "old" if parent_id == ids["old"] else "future" if parent_id == ids["future"] else "archive" 
     if src == dest:
         print(f'ERROR: Unable to move chart "{chart}" - chart already in destination!')
         return
@@ -76,12 +77,12 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
     # Handle shortcuts
     if (dest == "archive"):
         collect_shortcuts(service, ids, sep_parts, chart, chart_id, src)
-    elif (parent_id == ids["archive"]):
+    elif (src == "archive"):
         replace_shortcuts(service, ids, sep_parts, chart, chart_id, dest, alias_map)
     else:
-        move_shortcuts(service, ids, sep_parts, chart, "curr" if dest == "old" else "old", dest)
+        move_shortcuts(service, ids, sep_parts, chart, src, dest)
     
-    dirname = "Current Chartz" if dest == "curr" else "Old Chartz" if dest == "old" else "Archive/Chart Data"
+    dirname = "Current Chartz" if dest == "curr" else "Old Chartz" if dest == "old" else "Future Chartz" if dest == "future" else "Archive/Chart Data"
     print(f'Successfully moved chart "{chart}" to "{dirname}"')
 
 # Main method
@@ -96,7 +97,11 @@ def move_chartz():
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
-    library_id, curr_id, old_id = util.get_digital_library(service)
+    lib_ids = util.get_digital_library(service)
+    library_id = lib_ids.get("library_id")
+    curr_id = lib_ids.get("current_id")
+    old_id = lib_ids.get("past_id")
+    future_id = lib_ids.get("future_id")
     if library_id == None: return 1
 
     archive_id = util.get_chart_data_archive(service, library_id)
@@ -105,10 +110,10 @@ def move_chartz():
     ids = util.get_separated_folders(service, library_id)
     if ids == None: return 1
     
-    ids.update({ "curr": curr_id, "old": old_id, "archive": archive_id })
+    ids.update({ "curr": curr_id, "old": old_id, "future": future_id, "archive": archive_id })
     sep_parts = {
         age: { folder["name"]: folder["id"] for folder in util.get_drive_files(service, ids[f"sec_{age}"], files_only=False) }
-            for age in ["curr", "old"]
+            for age in ["curr", "old", "future"]
     }
 
     for chart_to_move in options["chartz"]:

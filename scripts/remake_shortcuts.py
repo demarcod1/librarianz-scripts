@@ -17,7 +17,8 @@ def remake_shortcuts():
 
     # Verify all needed folders exist and retrieve their ids
     print("Verifying DigitalLibrary format...")
-    library_id, curr_id, old_id = util.get_digital_library(service)
+    lib_ids = util.get_digital_library(service)
+    library_id = lib_ids.get("library_id")
     if library_id == None: return 1
 
     live_id = rm.get_lsjumb_digital_chartz_id(service, library_id)
@@ -27,7 +28,7 @@ def remake_shortcuts():
     if sep_ids == None: return 1
 
     print("Retrieving chart data...")
-    all_chartz = rm.get_all_chart_folders(service, curr_id, old_id)
+    all_chartz = rm.get_all_chart_folders(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"))
 
     print("Creating Separated Section Parts and Sibelius Files folders...")
     new_folders = rm.new_sep_structure(service, sep_ids['sec'], sep_ids['sib'], parts_dict)
