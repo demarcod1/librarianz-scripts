@@ -14,7 +14,7 @@ from scripts.remake_shortcuts import remake_shortcuts
 from scripts.upload_files import upload_files
 from scripts.validate_folder_files import validate_folder_files
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 
 SCRIPT_DICT = {
     "download_parts": download_parts,

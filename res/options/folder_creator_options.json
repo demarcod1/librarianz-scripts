@@ -68,18 +68,7 @@
     "filler": {
         "directory": "../test_folder/filler",
         "include": true,
-        "order": [
-            "filler1",
-            "filler2",
-            "filler3",
-            "filler4",
-            "filler5",
-            "filler6",
-            "filler7",
-            "filler8",
-            "filler9",
-            "filler10"
-        ],
+        "order": [],
         "position": 4
     },
     "fingering-chart": {
