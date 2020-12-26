@@ -9,7 +9,7 @@ class FillerOptions(ttk.Frame):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
 
         # List of different position values
-        filler_positions = ["Before Lettered Chartz", "After Lettered Chartz", "After Numbered Chartz", "End of Folder", "Interlaced with Numbered Chartz"]
+        filler_positions = ["After Table of Contents", "After Lettered Chartz", "After Numbered Chartz", "End of Folder", "Interlaced with Numbered Chartz"]
 
         # Filler Directory selection
         self.filler_dir = SelectDirectory(self, title='Select Filler Directory', path=options["filler"]["directory"])
