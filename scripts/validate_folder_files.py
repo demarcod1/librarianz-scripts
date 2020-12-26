@@ -20,6 +20,10 @@ def validate_folder_files():
     for part in options["folder-parts"]:
         check_stop_script()
 
+        # Validate filler
+        if options["filler"]["include"]:
+            pdf_tools.add_filler(options)
+
         # Validate part files
         title_map = pdf_tools.validate_part(part, options)
         if not title_map: continue

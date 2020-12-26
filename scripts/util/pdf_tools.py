@@ -14,8 +14,9 @@ from reportlab.lib.units import inch
 from reportlab.lib.styles import ParagraphStyle
 
 # Create and return an array of pages, containing all the filler in the proper order
-def add_filler(filler_data):
+def add_filler(options):
     output = []
+    filler_data = options['filler']
     if not filler_data["include"]: return []
     if not len(filler_data["order"]):
         thread_print("WARNING: No filler ordering was specified, filler will not be added")
@@ -25,8 +26,11 @@ def add_filler(filler_data):
         try:
             filler = PdfFileReader(open(os.path.join(filler_data["directory"], f'{filename}.pdf'), 'rb'))
             for i in range(filler.getNumPages()):
+                page: PageObject = filler.getPage(i)
+                if not validate_mediabox(page.mediaBox, options):
+                    thread_print(f'WARNING: Page {i + 1} in "{filename}" has incorrect dimensions\nExpected {options["page-size"]["width"]} x {options["page-size"]["height"]}, received {float(page.mediaBox.getWidth()) / inch} x {float(page.mediaBox.getHeight()) / inch}.')
                 output.append(filler.getPage(i))
-        except OSError as e:
+        except OSError:
             thread_print(f'WARNING: Unable to open file "{filename}.pdf", this item will be skipped.')
             continue
     return output
@@ -164,7 +168,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 
     # Read filler pages if filler needs to be interlaced
     filler = None
-    if no_filler_before: filler = add_filler(options["filler"])
+    if no_filler_before: filler = add_filler(options)
     valid_filler_indeces = []
 
     for file in files:
@@ -173,11 +177,6 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
             # Save page num assignment to map
             if page_map != None: page_map[counter] = file
             if filler and file not in no_filler_before: valid_filler_indeces.append(len(pages))
-
-            # Exit iteration if we don't wish to assemble pages
-            if not write_pages:
-                counter = (counter + 1) if style == 0 else (chr(ord(counter) + 1))
-                continue
 
             # Read input file
             input = PdfFileReader(open(file, 'rb'))
@@ -195,6 +194,7 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
                     continue
 
                 # Calculate this page number
+                if not write_pages: continue
                 if num_pages > 1: page_num = f'{counter}.{i + 1}'
                 pages.append(add_page_num(input_page, page_num, options) if options["enumerate-pages"] else input_page)
 
@@ -212,12 +212,12 @@ def enumerate_pages(files, options, style=0, start=None, page_map=None, write_pa
 # Generates the song files for a folder, returning a list of pages
 # If write_pages is false, it will populate maps but not write any actual pages
 def generate_parts_pages(title_map, toc_maps, options, part, write_pages=False, verbose=False):
-    filler_data = options["filler"]
     output = []
+    filler_pos = options['filler']['position']
     lettered, numbered, special = categorize_parts(title_map, options)
 
     # Fingering chart
-    if filler_data["position"] == 0: output.extend(add_filler(filler_data))
+    if filler_pos == 0: output.extend(add_filler(options))
     if write_pages and len(special["fingering_chart"]):
         if verbose:
             thread_print(f'Writing fingering chart to {part} folder')
@@ -227,24 +227,24 @@ def generate_parts_pages(title_map, toc_maps, options, part, write_pages=False, 
     if verbose:
         thread_print(f'Writing lettered chartz to {part} folder')
     output.extend(enumerate_pages(lettered, options, style=1, page_map=toc_maps[0], write_pages=write_pages, verbose=verbose))
-    if filler_data["position"] == 1: output.extend(add_filler(filler_data))
+    if filler_pos == 1: output.extend(add_filler(options))
 
     # Numbered chartz
     if verbose:
         thread_print(f'Writing numbered chartz to {part} folder')
     # interlace filler
     no_filler_before = None
-    if filler_data["position"] == 4:
+    if filler_pos == 4:
         no_filler_before = enforceRules(numbered, options["enforce-order"], title_map)
     output.extend(enumerate_pages(numbered, options, page_map=toc_maps[1], write_pages=write_pages, no_filler_before=no_filler_before, verbose=verbose))
-    if filler_data["position"] == 2: output.extend(add_filler(filler_data))
+    if filler_pos == 2: output.extend(add_filler(options))
 
     # Teazers
     if len(special["teazers"]):
         if verbose:
             thread_print(f'Writing teazers to {part} folder')
         output.extend(enumerate_pages(special["teazers"], options, style=1, start='a', page_map=toc_maps[2], write_pages=write_pages, verbose=verbose))
-    if filler_data["position"] == 3: output.extend(add_filler(filler_data))
+    if filler_pos == 3: output.extend(add_filler(options))
 
     return output
 
@@ -424,7 +424,7 @@ def validate_part(part, options):
 def validate_mediabox(mediabox: RectangleObject, options):
     width, height = (inch * options["page-size"]["width"], inch * options["page-size"]["height"])
 
-    return mediabox.getWidth() == width and mediabox.getHeight() == height
+    return (mediabox.getWidth() == width and mediabox.getHeight() == height) or (mediabox.getWidth() == height and mediabox.getHeight() == width)
 
 # Validate and update the lists of files in the options list
 def validate_titles(title_map, options, update_path=None, verbose=False, part=None):
