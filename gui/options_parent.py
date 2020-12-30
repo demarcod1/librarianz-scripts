@@ -29,7 +29,7 @@ class OptionsParent(Toplevel):
         mainframe = ttk.Frame(self)
 
         # Create notebook
-        n = ttk.Notebook(mainframe, width=600, height=450, padding=5)
+        n = ttk.Notebook(mainframe, width=750, height=500, padding=5)
 
         # Add each frame to the notebook
         self.download = DownloadOptions(n, self.options)

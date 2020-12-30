@@ -17,17 +17,8 @@ class MainMenu:
         parent.iconphoto(True, PhotoImage(file=resourcePath(os.path.join('res', 'icons', 'embo.png'))))
         parent.minsize(650, 600)
 
-        # Prompt user to specify credentials path
-        res_options = parse_options("res_paths.json", from_=data_dir)
-        creds_path = res_options['creds-path']
-        if not os.path.exists(creds_path) or not os.path.isfile(creds_path):
-            new_path = filedialog.askopenfilename(title='Select Credentials File', filetypes=[('Credentials JSON File','*.json')])
-            if new_path != None:
-                res_options['creds-path'] = new_path
-                write_options(res_options, "res_paths.json")
-
         # Create notebook
-        n = ttk.Notebook(parent, width=700, height=650, padding=5)
+        n = ttk.Notebook(parent, width=800, height=650, padding=5)
 
         # Add each frame to the notebook
         folder_creator_frame = FolderCreatorScreen(n)
@@ -48,3 +39,13 @@ class MainMenu:
         # Allow resizing
         parent.columnconfigure(0, weight='1', minsize=350)
         parent.rowconfigure(0, weight='1', minsize=250)
+
+
+        # Prompt user to specify credentials path
+        res_options = parse_options("res_paths.json", from_=data_dir)
+        creds_path = res_options['creds-path']
+        if not os.path.exists(creds_path) or not os.path.isfile(creds_path):
+            new_path = filedialog.askopenfilename(title='Select Credentials File', filetypes=[('Credentials JSON File','*.json')])
+            if new_path != None:
+                res_options['creds-path'] = new_path
+                write_options(res_options, "res_paths.json")
