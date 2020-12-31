@@ -44,6 +44,7 @@ class ScriptProgress(Toplevel):
 
         self.console = Text(dummy_frame, width=70, height=15, wrap='none', font='TkFixedFont')
         self.console["state"] = "disabled"
+        self.console.bind("<1>", lambda event: self.console.focus_set())
         self.console.grid(row=0, column=0, sticky=(N, E, S, W))
         self.console.tag_configure('warning', foreground='Orange')
         self.console.tag_configure('error', foreground='Red')
