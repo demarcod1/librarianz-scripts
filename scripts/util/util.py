@@ -120,7 +120,8 @@ def parse_file(filename, alias_map=None):
     match = re.search('(.*) - (.*)\.(.*)', filename)
     if match:
         return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
-    
+
+
     # other file type format
     match = re.search('(.*)\.[\w+]', filename)
     if match:
@@ -152,19 +153,24 @@ def get_chart_id(service, chart, id_list):
     return { "chart_id": None, "parent_id": None }
 
 # Gets the chart's parts folder, return its id (or None)
-def get_parts_folder(service, chart, chart_id):
-    # Search for parts folder
-    folder_results = service.files().list(corpora="user",
-                                        fields="files(id)",
-                                        q=f'mimeType = "application/vnd.google-apps.folder" and'
-                                          f'"{chart_id}" in parents and'
-                                          f'name="Parts"',
-                                        spaces="drive").execute()
-    items = folder_results.get('files', [])
-    if len(items) != 1:
-        print("ERROR: Parts folder not found for current chart with name:", chart)
-        return None
-    return items[0].get('id')
+def get_parts_and_audio_folders(service, chart, chart_id):
+    output = []
+    for folder_name in ("Parts", "Audio"):
+        # Search for parts folder
+        folder_results = service.files().list(corpora="user",
+                                            fields="files(id)",
+                                            q=f'mimeType = "application/vnd.google-apps.folder" and'
+                                            f'"{chart_id}" in parents and'
+                                            f'name="{folder_name}"',
+                                            spaces="drive").execute()
+        items = folder_results.get('files', [])
+        if len(items) != 1:
+            print(f"ERROR: {folder_name} folder not found for current chart with name:", chart)
+            output.append(None)
+        else:
+            output.append(items[0].get('id'))
+    
+    return tuple(output)
 
 # Creates a folder
 def make_folder(service, name, parent):
@@ -342,7 +348,7 @@ def get_chart_data_archive(service, library_id):
 def get_separated_folders(service, library_id):
     check_stop_script()
     separated_ids = {}
-    folder_names = [("Separated Sibelius Files", "sib"), ("Separated Section Parts", "sec")]
+    folder_names = [("Separated Sibelius Files", "sib"), ("Separated Section Parts", "sec"), ("Separated Part Audio", "aud")]
     for folder_name, abbr in folder_names:
         # Look for folder within Digital Library
         ids = get_folder_ids(service, name=folder_name, parent=library_id)

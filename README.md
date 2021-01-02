@@ -212,18 +212,28 @@ My Drive
 |   +-- LSJUMB Full Digitized Chart Data
 |   |   +-- Current Chartz
 |   |   +-- Old Chartz
+|   |   +-- Future Chartz
+|   +-- Separated Part Audio
+|   |   +-- Current Charts
+|   |   +-- Old Chartz
+|   |   +-- Future Chartz
 |   +-- Separated Section Parts
 |   |   +-- Current Charts
 |   |   +-- Old Chartz
+|   |   +-- Future Chartz
 |   +-- Separated Sibelius Files
 |       +-- Current Chartz
 |       +-- Old Chartz
+|       +-- Future Chartz
 +-- Red Vest   
 ```
 
 ## Chart Folders Structure
 ```
 Chart Name
++-- Audio
+|   +-- Chart Name - Altoz.mp3
+|   +-- etc.
 +-- Parts
 |   +-- Chart Name - Altoz.pdf
 |   +-- etc.
@@ -234,7 +244,7 @@ Chart Name
 ### Notes
 1. The directories shown in the tree are a subset of the Librarianz Drive. They are the minimum requirements needed to the scripts to execute properly
 2. This program does not support a different directory structure
-3. Within the `LSJUMB Full Digitized Chart Data/Current Chartz` or `Old Chartz` folders are the individual Chart folders. If you use the [Upload Files Script](#upload-files-script) to create a new chart folder, you do not need to worry about manually creating chart folders.
+3. Within the `LSJUMB Full Digitized Chart Data/Current Chartz`, `Old Chartz`, or `Future Chartz` folders are the individual Chart folders. You should use the [Upload Files Script](#upload-files-script) to automatically create a new chart folder.
 
 </details>
 
