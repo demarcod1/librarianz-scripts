@@ -2,7 +2,7 @@ from scripts.util.thread_events import check_stop_script
 from scripts.util import util
 
 # Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
-def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
+def collect_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src):
     # Create "Shortcuts" folder
     shortcut_id = util.make_folder(service, "Shortcuts", chart_id)
 
@@ -10,13 +10,14 @@ def collect_shortcuts(service, ids, sep_parts, chart, chart_id, src):
     for file in util.get_drive_files(service, ids[f"sib_{src}"], file_types=[".sib"], name=chart):
         util.move_file(service, file.get("id"), ids[f'sib_{src}'], shortcut_id)
     
-    # Section parts file shortcut
-    for _, id in sep_parts[src].items():
-        for file in util.get_drive_files(service, id, file_types=".pdf", name=chart):
-            util.move_file(service, file.get("id"), id, shortcut_id)
+    # Section parts and audio file shortcuts
+    for sep_data in (sep_parts, sep_audio):
+        for _, id in sep_data[src].items():
+            for file in util.get_drive_files(service, id, name=chart):
+                util.move_file(service, file.get("id"), id, shortcut_id)
 
 # Places the shortcuts back in their separated directories
-def replace_shortcuts(service, ids, sep_parts, chart, chart_id, dst, alias_map):
+def replace_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dst, alias_map):
     # Find "Shortcuts" folder
     res = util.get_folder_ids(service, name="Shortcuts", parent=chart_id)
     if res == None:
@@ -25,35 +26,39 @@ def replace_shortcuts(service, ids, sep_parts, chart, chart_id, dst, alias_map):
     shortcut_id = res[0]
 
     # Re-add shortcuts
-    for file in util.get_drive_files(service, shortcut_id, [".pdf", ".sib"], name=chart):
-        _, part, _ = util.parse_file(file.get("name"), alias_map)
+    for file in util.get_drive_files(service, shortcut_id, name=chart):
+        _, part, mimeType = util.parse_file(file.get("name"), alias_map)
         
         # If it's a sibelius file...
         if not part and file.get("name").endswith(".sib"):
             util.move_file(service, file.get("id"), shortcut_id, ids[f'sib_{dst}'])
         # If it's a pdf part...
-        elif sep_parts[dst].get(part):
+        elif sep_parts[dst].get(part) and mimeType == 'application/pdf' or file.get("name").endswith(".pdf"):
             util.move_file(service, file.get("id"), shortcut_id, sep_parts[dst][part])
+        # If it's an audio part...
+        elif sep_audio[dst].get(part) and mimeType.startswith('audio'):
+            util.move_file(service, file.get("id"), shortcut_id, sep_audio[dst][part])
     
     # Remove old "Shortcuts" folder
     service.files().delete(fileId=shortcut_id).execute()
 
-def move_shortcuts(service, ids, sep_parts, chart, src, dst):
+def move_shortcuts(service, ids, sep_parts, sep_audio, chart, src, dst):
     # Move sibelius file shortcut
     for file in util.get_drive_files(service, ids[f'sib_{src}'], file_types=[".sib"], name=chart):
         util.move_file(service, file.get("id"), ids[f'sib_{src}'], ids[f'sib_{dst}'])
 
     # Move section part pdf shortcuts
-    for part in sep_parts[src]:
-        # Ensure part parity (this check should never fail)
-        if not sep_parts[dst].get(part):
-            continue
+    for sep_dir in (sep_parts, sep_audio):
+        for part in sep_dir[src]:
+            # Ensure part parity (this check should never fail)
+            if not sep_dir[dst].get(part):
+                continue
 
-        for file in util.get_drive_files(service, sep_parts[src][part], [".pdf"], name=chart):
-            util.move_file(service, file.get("id"), sep_parts[src][part], sep_parts[dst][part])
+            for file in util.get_drive_files(service, sep_dir[src][part], name=chart):
+                util.move_file(service, file.get("id"), sep_dir[src][part], sep_dir[dst][part])
         
 # Moves the chart to new location
-def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
+def move_chart(service, ids, sep_parts, sep_audio, chart_to_move, alias_map):
     # Parse the destination
     chart = chart_to_move["name"]
     raw_dest = chart_to_move["to"]
@@ -76,11 +81,11 @@ def move_chart(service, ids, sep_parts, chart_to_move, alias_map):
 
     # Handle shortcuts
     if (dest == "archive"):
-        collect_shortcuts(service, ids, sep_parts, chart, chart_id, src)
+        collect_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src)
     elif (src == "archive"):
-        replace_shortcuts(service, ids, sep_parts, chart, chart_id, dest, alias_map)
+        replace_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dest, alias_map)
     else:
-        move_shortcuts(service, ids, sep_parts, chart, src, dest)
+        move_shortcuts(service, ids, sep_parts, sep_audio, chart, src, dest)
     
     dirname = "Current Chartz" if dest == "curr" else "Old Chartz" if dest == "old" else "Future Chartz" if dest == "future" else "Archive/Chart Data"
     print(f'Successfully moved chart "{chart}" to "{dirname}"')
@@ -115,10 +120,14 @@ def move_chartz():
         age: { folder["name"]: folder["id"] for folder in util.get_drive_files(service, ids[f"sec_{age}"], files_only=False) }
             for age in ["curr", "old", "future"]
     }
+    sep_audio = {
+        age: { folder["name"]: folder["id"] for folder in util.get_drive_files(service, ids[f"aud_{age}"], files_only=False) }
+            for age in ["curr", "old", "future"]
+    }
 
     for chart_to_move in options["chartz"]:
         print(f'Moving chart {chart_to_move["name"]}...')
-        move_chart(service, ids, sep_parts, chart_to_move, alias_map)
+        move_chart(service, ids, sep_parts, sep_audio, chart_to_move, alias_map)
 
     print("Finished moving chartz")
     return 0

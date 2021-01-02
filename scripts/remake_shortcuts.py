@@ -30,8 +30,8 @@ def remake_shortcuts():
     print("Retrieving chart data...")
     all_chartz = rm.get_all_chart_folders(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"))
 
-    print("Creating Separated Section Parts and Sibelius Files folders...")
-    new_folders = rm.new_sep_structure(service, sep_ids['sec'], sep_ids['sib'], parts_dict)
+    print("Creating Separated Section Parts, Audio Files, and Sibelius Files folders...")
+    new_folders = rm.new_sep_structure(service, sep_ids['sec'], sep_ids['sib'], sep_ids['aud'], parts_dict)
 
     # Write shortcuts
     for age in all_chartz:
@@ -56,8 +56,13 @@ def remake_shortcuts():
         prev_live_old_id,
         sep_ids['sec_old'],
         sep_ids['sec_curr'],
+        sep_ids['sec_future'],
         sep_ids['sib_old'],
-        sep_ids['sib_curr']
+        sep_ids['sib_curr'],
+        sep_ids['sib_future'],
+        sep_ids['aud_old'],
+        sep_ids['aud_curr'],
+        sep_ids['aud_future'],
         ])
     
     print("Successfully remade shortcuts - changes are live!")

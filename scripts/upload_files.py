@@ -40,9 +40,9 @@ def upload_files():
             check_stop_script()
             chart_dest = chart_info["to"]
             new_chart_dest_key = "current_id" if chart_dest == 0 else "past_id" if chart_dest == 1 else "future_id" 
-            chart_id, parts_id = lib_management.create_chart_structure(service, lib_ids.get(new_chart_dest_key), chart_info["name"])
+            chart_id, parts_id, audio_id = lib_management.create_chart_structure(service, lib_ids.get(new_chart_dest_key), chart_info["name"])
             if chart_id:
-                cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "loc": chart_info["to"], "files": [] }
+                cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "audio_id": audio_id, "loc": chart_info["to"], "files": [] }
     
     # Operate on files
     for file in files:

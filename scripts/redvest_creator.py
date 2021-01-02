@@ -34,13 +34,17 @@ def verify_redvest(service, redvest_options):
 def make_section_folders(service, new_folder_id, parts):
     output = {}
     instrument_folder_id = util.make_folder(service, "Parts by Instrument", new_folder_id)
-    for part in parts:
-        output[part] = util.make_folder(service, part, instrument_folder_id)
+    audio_folder_id = util.make_folder(service, "Audio by Instrument", new_folder_id)
+
+    for id, abbr in ((instrument_folder_id, 'sec'), (audio_folder_id, 'aud')):
+        output[abbr] = {}
+        for part in parts:
+            output[abbr][part] = util.make_folder(service, part, id)
     return output        
 
 def add_parts_shortcut(service, chart, chart_id, new_folder_id, section_ids=None, alias_map=None):
     # Search for parts folder
-    parts_id = util.get_parts_folder(service, chart, chart_id)
+    parts_id, audio_id = util.get_parts_and_audio_folders(service, chart, chart_id)
     if (parts_id == None): return
     
     # Create shortcut in Redvest folder
@@ -48,22 +52,23 @@ def add_parts_shortcut(service, chart, chart_id, new_folder_id, section_ids=None
 
     # Add individual parts
     if (not section_ids or not alias_map): return
-    add_individual_parts(service, parts_id, section_ids, alias_map)
+    add_individual_parts(service, parts_id, audio_id, section_ids, alias_map)
 
-def add_individual_parts(service, parts_id, section_ids, alias_map):
+def add_individual_parts(service, parts_id, audio_id, section_ids, alias_map):
     # Get and process parts
-    for item in util.get_drive_files(service, parts_id, [".pdf"]):
-        check_stop_script()
-        alias = item.get('name').split('-')[-1].strip()[:-4]
-        part = alias_map.get(alias)
+    for id, abbr in ((parts_id, 'sec'), (audio_id, 'aud')):
+        if id == None: continue
+        for item in util.get_drive_files(service, id):
+            check_stop_script()
+            _, part, _ = util.parse_file(item.get('name'), alias_map)
 
-        # Part mapping doesn't exist
-        if (not part):
-            print(f'WARNING: Cannot add "{item.get("name")}" - part not found')
-            continue
-        
-        # Make shortcut
-        util.make_shortcut(service, item.get('name'), item.get('id'), section_ids[part])
+            # Part mapping doesn't exist
+            if (not part):
+                print(f'WARNING: Cannot add "{item.get("name")}" - part not found')
+                continue
+            
+            # Make shortcut
+            util.make_shortcut(service, item.get('name'), item.get('id'), section_ids[abbr][part])
 
 def add_resources(service, chart, chart_id, new_resources_id):
     # Search chart folder for audio/video resources

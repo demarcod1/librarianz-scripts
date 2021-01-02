@@ -4,23 +4,25 @@ from typing import Dict
 import  scripts.util.util as util
 
 # Make a new seperated parts substructure
-def new_sep_structure(service, sep_sec_id, sep_sib_id, parts_dict: Dict):
+def new_sep_structure(service, sep_sec_id, sep_sib_id, sep_aud_id, parts_dict: Dict):
     # Create new "Current Chartz" and "Old Chartz" separated section part folders
     output = {}
 
-    for parent, abbr in [(sep_sec_id, 'sec'), (sep_sib_id, 'sib')]:
-        for prefix, age in [("Current", 'curr'), ("Old", 'old')]:
+    for parent, abbr in [(sep_sec_id, 'sec'), (sep_sib_id, 'sib'), (sep_aud_id, 'aud')]:
+        for prefix, age in [("Current", 'curr'), ("Old", 'old'), ("Future", 'future')]:
             res = util.make_folder(service, f'{prefix} Chartz', parent)
             if not res: return None
             output[f'sep_{abbr}_{age}'] = res
 
     # Create individual part folders
-    for age in ('old', 'curr'):
-        output[age] = {}
-        for part in parts_dict.keys():
-            res = util.make_folder(service, part, output[f'sep_sec_{age}'])
-            if not res: return None
-            output[age][part] = res
+    for dest in ('sec', 'aud'):
+        output[dest] = {}
+        for age in ('old', 'curr', 'future'):
+            output[dest][age] = {}
+            for part in parts_dict.keys():
+                res = util.make_folder(service, part, output[f'sep_{dest}_{age}'])
+                if not res: return None
+                output[dest][age][part] = res
     
     return output
 
@@ -52,7 +54,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
     
     # Find the chart's Parts folder
     check_stop_script()
-    parts_id = util.get_parts_folder(service, chartname, id)
+    parts_id, audio_id = util.get_parts_and_audio_folders(service, chartname, id)
     if not parts_id: return
 
     # Create a shortcut for each part in the Parts folder
@@ -71,7 +73,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
             continue
         
         # Make the shortcut
-        util.make_shortcut(service, partfile_name, partfile.get('id'), new_folders[age][part])
+        util.make_shortcut(service, partfile_name, partfile.get('id'), new_folders['sec'][age][part])
 
 # Gets the id of the 'LSJUMB Digital Chartz'
 def get_lsjumb_digital_chartz_id(service, library_id):
@@ -111,12 +113,12 @@ def get_curr_old_live_ids(service, live_id):
 
 # Adds the relevant parts shortcuts to the live digital library
 def add_live_part_shortcuts(service, live_id, age, new_folders, exclude):
-    for part in new_folders[age]:
+    for part in new_folders['sec'][age]:
         check_stop_script()
         if part in exclude:
             print(f'WARNING: Part "{part}" will be excluded from the Live Digital Library')
             continue
-        util.make_shortcut(service, part, new_folders[age][part], live_id)
+        util.make_shortcut(service, part, new_folders['sec'][age][part], live_id)
 
 # Adds new "Current Chartz" and "Old Chartz" folders to the live library
 def add_live_part_folders(service, live_id):
