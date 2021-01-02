@@ -1,9 +1,6 @@
 {
-    "parent-name": "Red Vest Winter Break 2020",
-    "folder-name": "Audio Support Test",
-    "chartz": [
-        "Call Me",
-        "Fast Car"
-    ],
+    "parent-name": "Parent Folder",
+    "folder-name": "New Redvest Folder",
+    "chartz": [],
     "individual-sections": true
 }
