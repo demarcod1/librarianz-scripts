@@ -60,7 +60,7 @@
     "enumerate-pages": false,
     "exclude-songs": [],
     "filler": {
-        "directory": ".",
+        "directory": "Select Filler Directory...",
         "include": true,
         "order": [],
         "position": 4
@@ -71,7 +71,7 @@
             "fingering chart"
         ]
     },
-    "folder-dir": ".",
+    "folder-dir": "Select Folder Destination Directory...",
     "folder-name": "Folder Name",
     "folder-parts": [
         "Altoz",
