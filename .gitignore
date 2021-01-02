@@ -133,3 +133,7 @@ dmypy.json
 # Credentials
 credentials.json
 token.pickle
+
+# Icons
+.ico
+.icns

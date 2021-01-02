@@ -43,15 +43,9 @@
         "Zoot Suit Riot"
     ],
     "download-parts": [
-        "ABF",
         "Altoz",
         "Bonz",
-        "Clarz",
-        "Mellz",
-        "Picz",
-        "Tenrz",
-        "Toobz",
-        "Trumpz"
+        "Clarz"
     ],
     "enforce-order": [
         [
@@ -66,7 +60,7 @@
     "enumerate-pages": false,
     "exclude-songs": [],
     "filler": {
-        "directory": "../test_folder/filler",
+        "directory": "Select Filler Directory...",
         "include": true,
         "order": [],
         "position": 4
@@ -77,10 +71,12 @@
             "fingering chart"
         ]
     },
-    "folder-dir": "..\\test_folder",
-    "folder-name": "Filler Test Folder",
+    "folder-dir": "Select Folder Destination Directory...",
+    "folder-name": "Folder Name",
     "folder-parts": [
-        "Altoz"
+        "Altoz",
+        "Bonz",
+        "Clarz"
     ],
     "lettered-chartz": [
         "All Right Now",
@@ -121,7 +117,7 @@
             "size": 10
         },
         "footer": {
-            "label": "Folder Created by Dominic \"Frodo\" DeMarco",
+            "label": "Folder creation software authored by Dominic \"Frodo\" DeMarco",
             "font": "Courier-Bold",
             "size": 8
         },
