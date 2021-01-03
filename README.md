@@ -16,16 +16,18 @@ The scripts included in this folder are to be edited and used at your own risk. 
 
 ### Setup steps
 
-1. Clone this repository
+1. Clone and unzip this repository
 1. Log in to librarian@lsjumb.com online
 1. Follow the instructions [here](https://developers.google.com/drive/api/v3/quickstart/python#step_1_turn_on_the) after clicking the "Enable the Drive API" button.
-1. When prompted, download the "credentials.json" file and move it into your working directory (likely called librarianz-scripts).
-2. Open a terminal window and navigate to the working directory.
-3. Run `pip3 install -r requirements.txt` in terminal (or `py -m pip install -r requirements.txt` if on Windows).
-4. Run `python3 librarianz_scripts.py -s login` in terminal (or `py .\librarianz_scripts.py -s login` if on Windows).
-5. Follow the link in the Terminal and authorize the program for the webmaster account.
+1. When prompted, download the "credentials.json" file.
+2. Open a terminal window and navigate to the working directory. If you're new to using the terminal, you can run `cd path/to/librarianz-scripts` to navigate to this repo. For example, if you unzip the `librarianz-scripts-main` file into your downloads file, you will need to run `cd Downloads/librarianz-scripts-main` when you open the terminal. 
+3. Run `pip3 install -r requirements.txt` in terminal (or `py -m pip install -r requirements.txt` if on Windows). If you prefer, you can install dependencies in a virtual environment (in a non-Windows terminal, you'll need to run `python3 -m venv env` and then `source env/bin/activate` to create and activate your environment).
+4. Run `python3 librarianz_scripts.py` in terminal (or `py .\librarianz_scripts.py` if on Windows).
+5. The GUI will prompt you to select the credentials.json file you downloaded. This is your key to the Librarianz Google Drive. It is essential that you do not share this file publicly with any other party.
 
-After you run the login script, you will not need to run it again. If the tokens are somehow invalidated, any script you run will prompt you with a link in the Terminal, which corresponds to the final step.
+The first time you run a script that requires Google Drive Access, you will be prompted to login to the librarian@lsjumb.com account and authorize the program (which will be called `quickstart`).
+
+In the future, whenever you wish to use these tools, all you need to do is run the `librarianz-scripts.py` file!
 
 </details>
 
