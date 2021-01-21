@@ -81,12 +81,9 @@ def add_resources(service, chart, chart_id, new_resources_id):
     if len(items) == 0:
         print(f'WARNING: Resource files not found for "{chart}"')
 
-def write_song(service, chart, parent_ids, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
+def write_song(service, chart, chart_id, new_folder_id, new_resources_id, section_ids=None, alias_map=None):
     check_stop_script()
     print(f"Writing chart \"{chart}\"...")
-
-    chart_id = util.get_chart_id(service, chart, parent_ids).get("chart_id")
-    if (chart_id == None): return
 
     # add shortcut to parts folder
     check_stop_script()
@@ -95,6 +92,15 @@ def write_song(service, chart, parent_ids, new_folder_id, new_resources_id, sect
     # add audio/video content to 'Resources' folder
     check_stop_script()
     add_resources(service, chart, chart_id, new_resources_id)
+
+def verify_chart_name(service, chart, parent_ids):
+    check_stop_script()
+    chart_id = util.get_chart_id(service, chart, parent_ids).get("chart_id")
+    if (chart_id == None):
+        print('Try double-check your spelling, chart names are case-sensitive')
+        print('ERROR: Redvest folder will not be created')
+        return None
+    return chart_id
 
 # Main method
 def redvest_creator():
@@ -111,6 +117,12 @@ def redvest_creator():
     current_chartz_id = lib_ids.get("current_id")
     future_chartz_id = lib_ids.get("future_id")
     if current_chartz_id == None or future_chartz_id == None: return 1
+
+    # Verify (and collect) all chart ids
+    print("Validating Chartz...")
+    chart_ids = [verify_chart_name(service, chart, [current_chartz_id, future_chartz_id]) for chart in redvest_options["chartz"]]
+    if None in chart_ids: return 1
+
     print("Verifying Redvest folder...")
     new_folder_id, new_resources_id = verify_redvest(service, redvest_options)
     if new_folder_id == None or new_resources_id == None: return 1
@@ -131,9 +143,10 @@ def redvest_creator():
         # Invert parts_dict to create map of alias's -> folder
         alias_map = util.make_alias_map(parts_dict)
 
+
     # Write each chart to the new redvest folder
-    for chart in redvest_options["chartz"]:
-        write_song(service, chart, [current_chartz_id, future_chartz_id], new_folder_id, new_resources_id, section_ids, alias_map)
+    for index, chart in enumerate(redvest_options["chartz"]):
+        write_song(service, chart, chart_ids[index], new_folder_id, new_resources_id, section_ids, alias_map)
     
     print(f'Successfully created new folder "{redvest_options["folder-name"]}"!')
     return 0
