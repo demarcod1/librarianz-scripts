@@ -96,10 +96,6 @@ def write_song(service, chart, chart_id, new_folder_id, new_resources_id, sectio
 def verify_chart_name(service, chart, parent_ids):
     check_stop_script()
     chart_id = util.get_chart_id(service, chart, parent_ids).get("chart_id")
-    if (chart_id == None):
-        print('Try double-check your spelling, chart names are case-sensitive')
-        print('ERROR: Redvest folder will not be created')
-        return None
     return chart_id
 
 # Main method
@@ -121,7 +117,10 @@ def redvest_creator():
     # Verify (and collect) all chart ids
     print("Validating Chartz...")
     chart_ids = [verify_chart_name(service, chart, [current_chartz_id, future_chartz_id]) for chart in redvest_options["chartz"]]
-    if None in chart_ids: return 1
+    if None in chart_ids:
+        print('Try double-check your spelling, chart names are case-sensitive')
+        print('ERROR: Redvest folder will not be created')
+        return 1
 
     print("Verifying Redvest folder...")
     new_folder_id, new_resources_id = verify_redvest(service, redvest_options)
