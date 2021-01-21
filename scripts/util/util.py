@@ -140,6 +140,7 @@ def make_alias_map(parts_dict):
 def get_chart_id(service, chart, id_list):
     for id in id_list:
         results = service.files().list(corpora="user",
+                                       pageSize=1000,
                                        fields="files(id)",
                                        q=f'mimeType = "application/vnd.google-apps.folder" and'
                                          f'"{id}" in parents and '
@@ -159,6 +160,7 @@ def get_parts_and_audio_folders(service, chart, chart_id):
         # Search for parts folder
         folder_results = service.files().list(corpora="user",
                                             fields="files(id)",
+                                            pageSize=1000,
                                             q=f'mimeType = "application/vnd.google-apps.folder" and'
                                             f'"{chart_id}" in parents and'
                                             f'name="{folder_name}"',
@@ -292,6 +294,7 @@ def get_folder_ids(service, id = None, name = None, parent = None):
 
     results = service.files().list(q=qstring,
                                     corpora='user',
+                                    pageSize=1000,
                                     fields='files(id)',
                                     includeItemsFromAllDrives=True,
                                     supportsAllDrives=True).execute()
@@ -376,6 +379,7 @@ def get_drive_files(service, id, file_types=None, files_only=True, folders_only=
 
     # Get all files/folders in the folder
     file_results = service.files().list(corpora="user",
+                                        pageSize=1000,
                                         fields=fields,
                                         q=q,
                                         spaces="drive").execute()
