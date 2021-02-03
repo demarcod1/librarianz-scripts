@@ -26,6 +26,7 @@ def remake_shortcuts():
 
     sep_ids = util.get_separated_folders(service, library_id)
     if sep_ids == None: return 1
+    rm.rename_old_folders(sep_ids)
 
     print("Retrieving chart data...")
     all_chartz = rm.get_all_chart_folders(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"))
