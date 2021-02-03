@@ -88,7 +88,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
         audiofile_name = audiofile.get('name')
         _, part, _ = util.parse_file(audiofile_name, alias_map)
         if part == None:
-            print(f'WARNING: Audio file "{partfile_name}" has no matching part folder')
+            print(f'WARNING: Audio file "{audiofile_name}" has no matching part folder')
             continue
 
         # Make the shortcut
@@ -96,11 +96,11 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
 
 # Changes the name of all the old folders to 
 def rename_old_folders(service, sep_ids):
-    for abbr, full in [('old', 'Old'), ('curr', 'Current'), ('fut', 'Future')]:
+    for abbr, full in [('old', 'Old'), ('curr', 'Current'), ('future', 'Future')]:
         for loc in ['sec', 'aud', 'sib']:
             try:
-                service.files().update(fileId=sep_ids[f'{abbr}_{loc}'],
-                                       name=f'{full} Chartz (Staged to be Deleted)').execute()
+                service.files().update(fileId=sep_ids[f'{loc}_{abbr}'],
+                    body={'name': f'{full} Chartz (To be Deleted)'}).execute()
             except HttpError:
                 print('WARNING: Unable to rename file')
 
