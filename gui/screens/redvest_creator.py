@@ -16,11 +16,11 @@ class RedvestCreatorScreen(ttk.Frame):
         self.options = parse_options("redvest_options.json")
 
         # Parent folder selection
-        self.parent_entry = LabledEntry(self, title='Enter Course Folder', label='Course Folder Name', defaultEntry=self.options['parent-name'])
+        self.parent_entry = LabledEntry(self, title='Redvest Subdirectory Folder', label='Enter Subdirectory Folder Name', defaultEntry=self.options['parent-name'], info='Directory Structure: Redvest -> Subdirectory -> Session')
         self.parent_entry.grid(row=0, column=0, columnspan=2, sticky=(N, S, E, W), padx=20, pady=10)
 
         # Folder name selection
-        self.folder_entry = LabledEntry(self, title='Create New Class Folder', label='New Folder Name', defaultEntry=self.options['folder-name'])
+        self.folder_entry = LabledEntry(self, title='Create New Redvest Session Folder', label='New Folder Name', defaultEntry=self.options['folder-name'])
         self.folder_entry.grid(row=1, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 
         # Select Chartz multiselect

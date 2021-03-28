@@ -24,11 +24,11 @@ class FolderCreatorScreen(ttk.Frame):
         self.select_directory.grid(row=0, column=0, columnspan=3, sticky=(N, E, S, W), padx=20, pady=10)
 
         # Folder Name Selection
-        self.folder_name_entry = LabledEntry(self, title='Enter Folder Name', label='LSJUMB Folder Name', defaultEntry=self.options['folder-name'])
+        self.folder_name_entry = LabledEntry(self, title='Enter Output Folder Name', label='Output Name', defaultEntry=self.options['folder-name'])
         self.folder_name_entry.grid(row=1, column=0, sticky=(N, S, W, E), padx=20, pady=10)
 
         # Verbose Output Selection
-        verbose_frame = ttk.LabelFrame(self, text='Console Output')
+        verbose_frame = ttk.LabelFrame(self, text='Console Logging')
 
         self.verbose = BooleanVar()
         self.verbose.set(self.options['verbose'])

@@ -1,7 +1,8 @@
 from os import name
 from scripts.util.thread_events import check_stop_script
 from typing import Dict
-import  scripts.util.util as util
+from googleapiclient.errors import HttpError
+import scripts.util.util as util
 
 # Make a new seperated parts substructure
 def new_sep_structure(service, sep_sec_id, sep_sib_id, sep_aud_id, parts_dict: Dict):
@@ -52,7 +53,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
             print(f'WARNING: Multiple Sibelius files found for chart "{chartname}". The first one seen will be used in the shortcut.')
         util.make_shortcut(service, res[0].get('name'), res[0].get('id'), new_folders[f'sep_sib_{age}'])
     
-    # Find the chart's Parts folder
+    # Find the chart's Parts and Audio folder
     check_stop_script()
     parts_id, audio_id = util.get_parts_and_audio_folders(service, chartname, id)
     if not parts_id: return
@@ -74,6 +75,34 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
         
         # Make the shortcut
         util.make_shortcut(service, partfile_name, partfile.get('id'), new_folders['sec'][age][part])
+    
+    # Create a shortcut for each part in the Audio folder
+    res = util.get_drive_files(service, audio_id)
+    if not res or len(res) == 0:
+        print(f'WARNING: No audio files found for chart "{chartname}"')
+        return
+    
+    for audiofile in res:
+        # Ensure audio part exists in the system
+        check_stop_script()
+        audiofile_name = audiofile.get('name')
+        _, part, _ = util.parse_file(audiofile_name, alias_map)
+        if part == None:
+            print(f'WARNING: Audio file "{audiofile_name}" has no matching part folder')
+            continue
+
+        # Make the shortcut
+        util.make_shortcut(service, audiofile_name, audiofile.get('id'), new_folders['aud'][age][part])
+
+# Changes the name of all the old folders to 
+def rename_old_folders(service, sep_ids):
+    for abbr, full in [('old', 'Old'), ('curr', 'Current'), ('future', 'Future')]:
+        for loc in ['sec', 'aud', 'sib']:
+            try:
+                service.files().update(fileId=sep_ids[f'{loc}_{abbr}'],
+                    body={'name': f'{full} Chartz (To be Deleted)'}).execute()
+            except HttpError:
+                print('WARNING: Unable to rename file')
 
 # Gets the id of the 'LSJUMB Digital Chartz'
 def get_lsjumb_digital_chartz_id(service, library_id):
