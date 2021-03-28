@@ -31,7 +31,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
         sep_dest_parent = None
         sep_dest_title = "None"
 
-        if mimeType == 'application/pdf' or file_name.endswith('.sib'):
+        if mimeType == 'application/pdf' or file_name.endswith('.pdf'):
             upload_dest = parts_id
             sep_dest_parent = sep_sec_id
             sep_dest_title = "Separated Section Parts"
@@ -44,6 +44,9 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
             return False
         
         file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, upload_dest, mime_type=mimeType)
+        if part == util.NO_PART:
+            print(f'WARNING: No matching part found for "{file_name}"')
+            return True
         sep_dest_ids = util.get_folder_ids(service, name=part, parent=sep_dest_parent)
         if sep_dest_ids == None:
             print(f'WARNING: Unable to create shortcut in {sep_dest_title} for "{file_name}"')

@@ -63,7 +63,7 @@ def add_individual_parts(service, parts_id, audio_id, section_ids, alias_map):
             _, part, _ = util.parse_file(item.get('name'), alias_map)
 
             # Part mapping doesn't exist
-            if (not part):
+            if (part == util.NO_PART or not part):
                 print(f'WARNING: Cannot add "{item.get("name")}" - part not found')
                 continue
             

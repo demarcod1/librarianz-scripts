@@ -6,6 +6,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
+# Value to represent no part
+NO_PART = "NO_PART"
+
 # Custom Exception for when credentials fail to load
 class CredentialsError(Exception):
     pass
@@ -119,7 +122,7 @@ def parse_file(filename, alias_map=None):
     # title - part format
     match = re.search('(.*) - (.*)\.(.*)', filename)
     if match:
-        return match.group(1), alias_map.get(match.group(2)) if alias_map else None, mimetypes.guess_type(filename)[0]
+        return match.group(1), (alias_map.get(match.group(2)) or NO_PART) if alias_map else None, mimetypes.guess_type(filename)[0]
 
 
     # other file type format

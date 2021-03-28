@@ -69,7 +69,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
         check_stop_script()
         partfile_name = partfile.get('name')
         _, part, _ = util.parse_file(partfile_name, alias_map)
-        if part == None:
+        if part == None or part == util.NO_PART:
             print(f'WARNING: Part file "{partfile_name}" has no matching part folder')
             continue
         
@@ -87,7 +87,7 @@ def write_shortcuts(service, chartname, id, age, new_folders, alias_map):
         check_stop_script()
         audiofile_name = audiofile.get('name')
         _, part, _ = util.parse_file(audiofile_name, alias_map)
-        if part == None:
+        if part == None or part == util.NO_PART:
             print(f'WARNING: Audio file "{audiofile_name}" has no matching part folder')
             continue
 
