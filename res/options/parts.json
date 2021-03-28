@@ -44,7 +44,21 @@
             "Drum Set",
             "Percussion",
             "Snare Drum",
-            "Marching, Tenor Drums"
+            "Marching, Tenor Drums",
+            "Marching, Tenor Drums",
+            "Marching Tenor Drums",
+            "Marching\nTenor Drums",
+            "Bass Drum",
+            "Cymbals",
+            "Timbales",
+            "Claves",
+            "Guiro",
+            "G\u00fciro",
+            "Gourd",
+            "Handclap",
+            "Clap",
+            "CL",
+            "Cl"
         ]
     },
     "exclude": [
