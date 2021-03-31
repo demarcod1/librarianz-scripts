@@ -89,7 +89,9 @@ def create_chart_structure(service, chartz_id, chart_name):
     # Create new chart folder
     chart_id = util.make_folder(service, chart_name, chartz_id)
     parts_id = util.make_folder(service, "Parts", chart_id, True)
+    service.permissions().create(fileId=parts_id, body={'type': 'anyone', 'role': 'reader'}).execute()
     audio_id = util.make_folder(service, "Audio", chart_id, True)
+    service.permissions().create(fileId=audio_id, body={'type': 'anyone', 'role': 'reader'}).execute()
     print(f'Successfully created chart folder for "{chart_name}"')
     return chart_id, parts_id, audio_id
 
