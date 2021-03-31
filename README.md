@@ -197,6 +197,31 @@ This script repopulates the `Separated Section Parts` and `Seperated Sibelius Fi
 
 </details>
 
+## Reset Permissions script
+This script checks all permissions in the `LSJUMB Digital Chartz` directory tree, automatically fixing any permissions inconsistencies
+it finds. Unless the [permissions protocol](#current-permissions-protocol) changes, this script should never need to be run, as permissions are automatically updated
+when creating chartz or adding files.
+
+<details>
+   <summary>Show/Hide Details</summary>
+
+### To reset permissions to ensure the security of our music and midi files
+1. Run `python3 librarianz_script -s reset_permissions` in the Terminal
+
+#### Current permissions protocol
+1. Song folders are restricted
+2. Parts and Audio folders have anyone can read permission
+2. Anyone can read permissions are granted to pdf and non-midi audio formats
+3. Editables (sib, musescore, xml files, along with midis) are restricted
+4. All other files inherit permissions
+
+#### Notes
+1. This script has a running time of 5-10 minutes when run through the command line (and up to double this time when run on the GUI)
+2. While this script is designed to smoothly update the Live Digital Library, active users may temporarily lose access to files that they would normally be able to view.
+
+</details>
+
+
 # Digital Library Google Drive Structure
 These scripts assumes the Librarianz Google Drive is structured according to the directory tree below.
 
