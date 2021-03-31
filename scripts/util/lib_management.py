@@ -1,3 +1,4 @@
+from scripts.util.permissions_utils import get_file_permissions, public_id, should_be_private, should_be_public
 import scripts.util.util as util
 import os
 
@@ -25,6 +26,9 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
             print(f'ERROR: File with name "{file_name}" already exists!')
             return False
     
+    ensure_public = should_be_public(file_name)
+    ensure_private = should_be_private(file_name)
+
     # Add parts or part audio files to the Parts/Audio folder and create a shortcut
     if part:
         upload_dest = None
@@ -51,12 +55,28 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
         if sep_dest_ids == None:
             print(f'WARNING: Unable to create shortcut in {sep_dest_title} for "{file_name}"')
         else: util.make_shortcut(service, file_name, file_id, sep_dest_ids[0])
+
+        # Update permissions, if needed
+        permission_id = public_id(get_file_permissions(service, file_id))
+        if permission_id and ensure_private:
+            print("Was public, should be private")
+            service.permissions().delete(fileId=file_id, permissionId=permission_id).execute()
+        if not permission_id and ensure_public:
+            service.permissions().create(fileId=file_id, body={'type': 'anyone', 'role': 'reader'}).execute()
         return True
     
     # Add other files to the chart's main folder
     file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, chart_id, mime_type=mimeType)
     if (file_name.endswith('.sib')):
         util.make_shortcut(service, file_name, file_id, sep_sib_id)
+    
+    # Update permissions, if needed
+    permission_id = public_id(get_file_permissions(service, file_id))
+    if permission_id and ensure_private:
+        service.permissions().delete(fileId=file_id, permissionId=permission_id).execute()
+    if not permission_id and ensure_public:
+        service.permissions().create(fileId=file_id, body={'type': 'anyone', 'role': 'reader'}).execute()
+
     return True
 
 # Creates a new directory + parts folder for a new chart to be housed
@@ -68,8 +88,8 @@ def create_chart_structure(service, chartz_id, chart_name):
     
     # Create new chart folder
     chart_id = util.make_folder(service, chart_name, chartz_id)
-    parts_id = util.make_folder(service, "Parts", chart_id)
-    audio_id = util.make_folder(service, "Audio", chart_id)
+    parts_id = util.make_folder(service, "Parts", chart_id, True)
+    audio_id = util.make_folder(service, "Audio", chart_id, True)
     print(f'Successfully created chart folder for "{chart_name}"')
     return chart_id, parts_id, audio_id
 

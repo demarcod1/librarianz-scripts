@@ -178,7 +178,7 @@ def get_parts_and_audio_folders(service, chart, chart_id):
     return tuple(output)
 
 # Creates a folder
-def make_folder(service, name, parent):
+def make_folder(service, name, parent, makePublic=False):
 
     file_metadata = {
         'name': name,
@@ -187,6 +187,9 @@ def make_folder(service, name, parent):
     }
     try:
         response = service.files().create(body=file_metadata, fields='id').execute()
+        folderId = response.get('id')
+        if makePublic:
+            service.permissions().create(fileId=folderId, body={'type': 'anyone', 'role': 'reader'})
         return response.get('id')
     except HttpError:
         print(f'ERROR: Unable to create folder "{name}"')
