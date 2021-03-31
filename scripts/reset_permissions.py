@@ -48,10 +48,3 @@ def reset_permissions():
     
     print("Successfully reset permissions")
     
-    # check_stop_script()
-    # print(f'Executing permissions updates')
-    # entry_batch.execute()
-
-
-    # res = service.files().get(fileId=sep_ids['sib'], fields="permissions").execute()
-    # print(res)
