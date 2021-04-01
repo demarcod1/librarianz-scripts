@@ -1,3 +1,4 @@
+from scripts.reset_permissions import reset_permissions
 from scripts.util.util import is_frozen, make_application_data, parse_options, write_options
 from appdirs import user_data_dir
 from gui.main_menu import MainMenu
@@ -23,6 +24,7 @@ SCRIPT_DICT = {
     "move_chartz": move_chartz,
     "redvest_creator": redvest_creator,
     "remake_shortcuts": remake_shortcuts,
+    "reset_permissions": reset_permissions,
     "upload_files": upload_files,
     "validate_folder_files": validate_folder_files
 }
