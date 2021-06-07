@@ -43,7 +43,8 @@ class UploadFilesScreen(ttk.Frame):
                                         key2='to',
                                         header='Chart Name',
                                         addText='Add New Chart',
-                                        height=3)
+                                        height=3,
+                                        archive=True)
         self.new_chartz.grid(row=2, column=0, columnspan=2, sticky=(N, E, S, W), padx=20, pady=10)
 
         # File extensions selection
