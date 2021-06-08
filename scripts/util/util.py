@@ -345,19 +345,6 @@ def get_digital_library(service):
 
     return {"library_id": library_id, "current_id": current_id, "past_id": past_id, "future_id": future_id, "archive_id": archive_id}
 
-# Get the chart data archive (DEFUNCT)
-# def get_chart_data_archive(service, library_id):
-#     # Archive folder
-#     check_stop_script()
-#     archive_res = get_folder_ids(service, name="Archive", parent=library_id)
-#     if not has_unique_folder(archive_res, "Archive", "Digital Library"): return None
-#     archive_id = archive_res[0]
-
-#     # Chart Data folder
-#     chart_data_res = get_folder_ids(service, name="Chart Data", parent=archive_id)
-#     if not has_unique_folder(chart_data_res, "Chart Data", "Archive"): return None
-#     return chart_data_res[0]
-
 # Get seperated section or separated sibelius parts folders
 def get_separated_folders(service, library_id):
     check_stop_script()

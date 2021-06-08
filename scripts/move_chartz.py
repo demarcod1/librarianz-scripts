@@ -1,8 +1,8 @@
 from scripts.util.thread_events import check_stop_script
 from scripts.util import util
 
-# Collects all the shortcuts in the separated directories and puts them in the archive under a new folder
-def collect_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src):
+# Collects and removes all the shortcuts in the separated directories and puts them in the archive under a new folder
+def remove_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src):
     # Create "Shortcuts" folder
     shortcut_id = util.make_folder(service, "Shortcuts", chart_id)
 
@@ -20,33 +20,7 @@ def collect_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src):
     print("Clearing old shortcuts...")
     service.files().delete(fileId=shortcut_id).execute()
 
-# Places the shortcuts back in their separated directories (DEFUNCT)
-# def replace_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dst, alias_map):
-#     # Find "Shortcuts" folder
-#     res = util.get_folder_ids(service, name="Shortcuts", parent=chart_id)
-#     if res == None:
-#         print(f'WARNING: Unable to find "Shortcuts" folder within "{chart}"')
-#         return
-#     shortcut_id = res[0]
-
-#     # Re-add shortcuts
-#     for file in util.get_drive_files(service, shortcut_id, name=chart):
-#         _, part, mimeType = util.parse_file(file.get("name"), alias_map)
-        
-#         # If it's a sibelius file...
-#         if not part and file.get("name").endswith(".sib"):
-#             util.move_file(service, file.get("id"), shortcut_id, ids[f'sib_{dst}'])
-#         # If it's a pdf part...
-#         elif sep_parts[dst].get(part) and mimeType == 'application/pdf' or file.get("name").endswith(".pdf"):
-#             util.move_file(service, file.get("id"), shortcut_id, sep_parts[dst][part])
-#         # If it's an audio part...
-#         elif sep_audio[dst].get(part) and mimeType.startswith('audio'):
-#             util.move_file(service, file.get("id"), shortcut_id, sep_audio[dst][part])
-    
-#     # Remove old "Shortcuts" folder
-#     service.files().delete(fileId=shortcut_id).execute()
-
-def recreate_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dst, alias_map):
+def replace_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dst, alias_map):
     # Find this chart's parts and audio foler ids
     parts_id, audio_id = util.get_parts_and_audio_folders(service, chart, chart_id)
     if parts_id is None or audio_id is None:
@@ -115,9 +89,9 @@ def move_chart(service, ids, sep_parts, sep_audio, chart_to_move, alias_map):
 
     # Handle shortcuts
     if (dest == "archive"):
-        collect_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src)
+        remove_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, src)
     elif (src == "archive"):
-        recreate_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dest, alias_map)
+        replace_shortcuts(service, ids, sep_parts, sep_audio, chart, chart_id, dest, alias_map)
     else:
         move_shortcuts(service, ids, sep_parts, sep_audio, chart, src, dest)
     
