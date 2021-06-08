@@ -15,7 +15,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     audio_id = cache[chart]["audio_id"]
     loc_raw = cache[chart]["loc"]
     if not chart_id or not parts_id or loc_raw == None: return False
-    loc = "curr" if loc_raw == 0 else "old" if loc_raw == 1 else "future" if loc_raw == 2 else "archived"
+    loc = "curr" if loc_raw == 0 else "old" if loc_raw == 1 else "future" # Archvied chartz don't get shortcuts made for them
     sep_sec_id = separated_ids[f'sec_{loc}']
     sep_sib_id = separated_ids[f'sib_{loc}']
     sep_aud_id = separated_ids[f'aud_{loc}']
@@ -54,7 +54,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
         sep_dest_ids = util.get_folder_ids(service, name=part, parent=sep_dest_parent)
         if sep_dest_ids == None:
             print(f'WARNING: Unable to create shortcut in {sep_dest_title} for "{file_name}"')
-        elif loc != "archived": # Don't make shortcuts for archived files
+        elif loc_raw < 3: # Don't make shortcuts for archived files
             util.make_shortcut(service, file_name, file_id, sep_dest_ids[0])
 
         # Update permissions, if needed
@@ -68,7 +68,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     
     # Add other files to the chart's main folder
     file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, chart_id, mime_type=mimeType)
-    if (file_name.endswith('.sib')):
+    if (file_name.endswith('.sib') and loc_raw < 3):
         util.make_shortcut(service, file_name, file_id, sep_sib_id)
     
     # Update permissions, if needed

@@ -370,9 +370,9 @@ def get_separated_folders(service, library_id):
         separated_ids[abbr] = ids[0]
 
         # Look for Current, Old, Future, Archived Chartz folders
-        for age_name, age in [("Current Chartz", "curr"), ("Old Chartz", "old"), ("Future Chartz", "future"), ("Archived Chartz", "archived")]:
+        for age_name, age in [("Current Chartz", "curr"), ("Old Chartz", "old"), ("Future Chartz", "future")]:
             age_ids = get_folder_ids(service, name=age_name, parent=ids[0])
-            if not has_unique_folder(age_ids, "Current Chartz", folder_name): return None
+            if not has_unique_folder(age_ids, age_name, folder_name): return None
             separated_ids[f'{abbr}_{age}'] = age_ids[0]
 
     
