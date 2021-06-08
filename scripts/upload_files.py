@@ -39,7 +39,7 @@ def upload_files():
         for chart_info in options["new-chartz"]:
             check_stop_script()
             chart_dest = chart_info["to"]
-            new_chart_dest_key = "current_id" if chart_dest == 0 else "past_id" if chart_dest == 1 else "future_id" 
+            new_chart_dest_key = "current_id" if chart_dest == 0 else "past_id" if chart_dest == 1 else "future_id" if chart_dest == 2 else "archive_id"
             chart_id, parts_id, audio_id = lib_management.create_chart_structure(service, lib_ids.get(new_chart_dest_key), chart_info["name"])
             if chart_id:
                 cache[chart_info["name"]] = { "chart_id": chart_id, "parts_id": parts_id, "audio_id": audio_id, "loc": chart_info["to"], "files": [] }
@@ -50,7 +50,7 @@ def upload_files():
         check_stop_script()
 
         # Populate cache
-        lib_management.populate_cache(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"), util.parse_file(file, alias_map)[0], cache, options)
+        lib_management.populate_cache(service, lib_ids.get("current_id"), lib_ids.get("past_id"), lib_ids.get("future_id"), lib_ids.get("archive_id"), util.parse_file(file, alias_map)[0], cache, options)
         updated = None
         added = None
 

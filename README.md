@@ -235,11 +235,12 @@ My Drive
 |   +-- [LIVE] DigitalLibrary
 |   |   +-- LSJUMB Digital Chartz
 |   +-- Archive
-|   |   +-- Chart Data
+|   |   +-- Chart Data (Will be deprecated soon)
 |   +-- LSJUMB Full Digitized Chart Data
 |   |   +-- Current Chartz
 |   |   +-- Old Chartz
 |   |   +-- Future Chartz
+|   |   +-- Archived Chartz
 |   +-- Separated Part Audio
 |   |   +-- Current Charts
 |   |   +-- Old Chartz
@@ -252,7 +253,7 @@ My Drive
 |       +-- Current Chartz
 |       +-- Old Chartz
 |       +-- Future Chartz
-+-- Red Vest   
++-- Red Vest (Deprecated) 
 ```
 
 ## Chart Folders Structure

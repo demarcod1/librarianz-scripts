@@ -15,7 +15,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     audio_id = cache[chart]["audio_id"]
     loc_raw = cache[chart]["loc"]
     if not chart_id or not parts_id or loc_raw == None: return False
-    loc = "curr" if loc_raw == 0 else "old" if loc_raw == 1 else "future"
+    loc = "curr" if loc_raw == 0 else "old" if loc_raw == 1 else "future" # Archvied chartz don't get shortcuts made for them
     sep_sec_id = separated_ids[f'sec_{loc}']
     sep_sib_id = separated_ids[f'sib_{loc}']
     sep_aud_id = separated_ids[f'aud_{loc}']
@@ -54,7 +54,8 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
         sep_dest_ids = util.get_folder_ids(service, name=part, parent=sep_dest_parent)
         if sep_dest_ids == None:
             print(f'WARNING: Unable to create shortcut in {sep_dest_title} for "{file_name}"')
-        else: util.make_shortcut(service, file_name, file_id, sep_dest_ids[0])
+        elif loc_raw < 3: # Don't make shortcuts for archived files
+            util.make_shortcut(service, file_name, file_id, sep_dest_ids[0])
 
         # Update permissions, if needed
         permission_id = public_id(get_file_permissions(service, file_id))
@@ -67,7 +68,7 @@ def add_file(service, file_name, separated_ids, alias_map, cache, options):
     
     # Add other files to the chart's main folder
     file_id = util.upload_file(service, os.path.join(directory, file_name), file_name, chart_id, mime_type=mimeType)
-    if (file_name.endswith('.sib')):
+    if (file_name.endswith('.sib') and loc_raw < 3):
         util.make_shortcut(service, file_name, file_id, sep_sib_id)
     
     # Update permissions, if needed
@@ -94,17 +95,17 @@ def create_chart_structure(service, chartz_id, chart_name):
     return chart_id, parts_id, audio_id
 
 # Populates the cache with all the relevant information about the specific chart
-def populate_cache(service, curr_id, old_id, future_id, chart, cache, options):
+def populate_cache(service, curr_id, old_id, future_id, archive_id, chart, cache, options):
     try:
         # Find this chart's folder id
-        res = util.get_chart_id(service, chart, [curr_id, old_id, future_id])
+        res = util.get_chart_id(service, chart, [curr_id, old_id, future_id, archive_id])
         if not res: raise RuntimeError
         chart_id = res.get("chart_id")
         if chart_id == None: raise RuntimeError
         
         # Determine whether the chart is in the "current chartz", "future chartz", or "old chartz" folder
         parent_id = res.get("parent_id")
-        loc = 0 if curr_id == parent_id else 1 if old_id == parent_id else 2
+        loc = 0 if curr_id == parent_id else 1 if old_id == parent_id else 2 if future_id == parent_id else 3
 
         # Find this chart's parts foler id
         parts_id, audio_id = util.get_parts_and_audio_folders(service, chart, chart_id)
