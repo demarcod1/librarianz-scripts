@@ -1,5 +1,5 @@
 from time import sleep
-from scripts.util.permissions_utils import batch_callback, fix_permissions, get_all_chart_permissions, get_all_entry_permissions, get_file_permissions
+from scripts.util.permissions_utils import batch_callback, fix_permissions, get_all_chart_permissions, get_all_entry_permissions
 from scripts.util.thread_events import check_stop_script
 import scripts.util.util as util
 import scripts.util.remake_utils as rm
