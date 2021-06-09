@@ -134,6 +134,9 @@ dmypy.json
 credentials.json
 token.pickle
 
+# Internal Drive Structure
+drive.json
+
 # Icons
 .ico
 .icns

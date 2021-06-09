@@ -1,3 +1,4 @@
+from scripts.clear_broken_shortcuts import clear_broken_shortcuts
 from scripts.reset_permissions import reset_permissions
 from scripts.util.util import is_frozen, make_application_data, parse_options, write_options
 from appdirs import user_data_dir
@@ -18,6 +19,7 @@ from scripts.validate_folder_files import validate_folder_files
 VERSION = '0.2.0'
 
 SCRIPT_DICT = {
+    "clear_broken_shortcuts": clear_broken_shortcuts,
     "download_parts": download_parts,
     "login" : login,
     "folder_creator": folder_creator,
